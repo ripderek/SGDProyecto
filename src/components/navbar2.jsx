@@ -19,7 +19,14 @@ import {
   DialogFooter,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { PowerIcon } from "@heroicons/react/24/solid";
+import {
+  PowerIcon,
+  HomeIcon,
+  UserIcon,
+  PresentationChartBarIcon,
+  CogIcon,
+  Square2StackIcon,
+} from "@heroicons/react/24/solid";
 
 import { FaSearch, FaAlignLeft } from "react-icons/fa";
 import { AiOutlineNotification } from "react-icons/ai";
@@ -53,13 +60,7 @@ export default function Navbar2() {
           >
             <FaAlignLeft size="20px" />
           </Button>
-          <div className="flex">
-            <img
-              className="ml-5 h-12 w-12 rounded-full "
-              src="/img/Home/1487716857-user_81635.png"
-              alt="User image"
-            />
-          </div>
+
           <Typography
             as="a"
             href="#"
@@ -142,7 +143,49 @@ export default function Navbar2() {
               <XMarkIcon strokeWidth={2} className="h-5 w-5" />
             </IconButton>
           </div>
+          <div className="flex justify-center">
+            <img
+              className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 "
+              src="/img/Home/photo-1633332755192-727a05c4013d.jpg"
+              alt="User image"
+            />
+          </div>
+          <div className="mb-2 flex items-center justify-center p-4">
+            <Typography variant="h5" color="blue-gray">
+              Nombre usuario
+            </Typography>
+          </div>
           <List>
+            <ListItem onClick={handleOpen}>
+              <ListItemPrefix>
+                <HomeIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Inicio
+            </ListItem>
+            <ListItem onClick={handleOpen}>
+              <ListItemPrefix>
+                <PresentationChartBarIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Proyectos
+            </ListItem>
+            <ListItem onClick={handleOpen}>
+              <ListItemPrefix>
+                <UserIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Perfil
+            </ListItem>
+            <ListItem onClick={handleOpen}>
+              <ListItemPrefix>
+                <Square2StackIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Opciones de Area
+            </ListItem>
+            <ListItem onClick={handleOpen}>
+              <ListItemPrefix>
+                <CogIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Opciones de Admin
+            </ListItem>
             <ListItem onClick={handleOpen}>
               <ListItemPrefix>
                 <PowerIcon className="h-5 w-5" />

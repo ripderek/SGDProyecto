@@ -10,11 +10,11 @@ import {
 import Router from "next/router"; //Rutas para redireccionar a otra pagina
 
 export default function Logout() {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+  const [openS, setOpenS] = useState(false);
+  const handleOpen = () => setOpenS(!open);
   return (
     <Fragment>
-      <Dialog open={open} handler={handleOpen}>
+      <Dialog open={openS} handler={handleOpen}>
         <DialogHeader>Its a simple dialog.</DialogHeader>
         <DialogBody divider>
           The key to more success is to have a lot of pillows. Put it this way,

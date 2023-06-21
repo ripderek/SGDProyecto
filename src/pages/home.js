@@ -11,6 +11,8 @@ import {
 } from "@material-tailwind/react";
 import Recientes from '../components/recientes';
 import Footer from '../components/footer'
+import AllDocuments from '@/components/AllDocuments';
+
 
 const inter = Inter({ subsets: ['latin'] })
 export default function Home() {
@@ -112,6 +114,7 @@ export default function Home() {
                     </TabsBody>
                 </Tabs>
                 <Recientes />
+                <AllDocuments />
                 <Footer />
             </div>
         </div>
