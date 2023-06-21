@@ -21,7 +21,7 @@ export default function Navbar1() {
   const toggleOpen = () => setOpenc((cur) => !cur);
   return (
     <Fragment>
-      <Navbar className=" rounded-none shadow-none  bg-black  p-4 ">
+      <Navbar className=" rounded-none shadow-none  bg-orange-600  p-4 ">
         <div className="flex flex-wrap items-center justify-between gap-y-4 text-blue-gray-900">
           <Typography
             as="a"
