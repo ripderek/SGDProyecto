@@ -17,7 +17,8 @@ export default function Home() {
 
     return (
         <div className='p-0 m-0'>
-            <Navbar1 />
+            <div className='bg-gray-900'>            <Navbar1 />
+            </div>
             <div className={` ${inter.className}`}>
                 <Tabs value="html">
                     <TabsHeader>
@@ -36,14 +37,14 @@ export default function Home() {
                     </TabsHeader>
                     <TabsBody>
                         <TabPanel key="op1" value="op1" >
-                            <div className="grid   grid-flow-col border-b-blue-gray-900 border-b-4 ">
+                            <div className="grid   grid-flow-col border-b-light-green-900 border-b-4 ">
                                 <div className=" cuadro row-span-3 h-80" style={{ backgroundImage: `url("/img/Home/gdocs_edit2.gif")` }}>
                                 </div>
                                 <div className="row-span-2  w-full h-full col-span-2  text-justify">
                                     <Typography
                                         variant="h6"
                                         color="#33691e"
-                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-light-green-900"
+                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-black"
                                     >
                                         Trabaja con el editor de texto
                                     </Typography>
@@ -62,7 +63,7 @@ export default function Home() {
                                     <Typography
                                         variant="h6"
                                         color="#33691e"
-                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-light-green-900"
+                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-black"
                                     >
                                         Crea un flujo para el documento
                                     </Typography>
@@ -80,7 +81,7 @@ export default function Home() {
                                     <Typography
                                         variant="h6"
                                         color="#33691e"
-                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-light-green-900"
+                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-black"
                                     >
                                         Publica el documento
                                     </Typography>
@@ -98,7 +99,7 @@ export default function Home() {
                                     <Typography
                                         variant="h6"
                                         color="#33691e"
-                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-light-green-900"
+                                        className="mr-4 text-center items-center mx-auto cursor-pointer py-1.5 mt-0 md:mt-14 md:text-4xl text-black"
                                     >
                                         Versión de documentos automáticas
                                     </Typography>

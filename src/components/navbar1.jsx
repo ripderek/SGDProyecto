@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { UserIcon } from "@heroicons/react/24/solid";
 import { FaSearch } from "react-icons/fa";
+import Router from "next/router"; //Rutas para redireccionar a otra pagina
 
 export default function Navbar1() {
   const [open, setOpen] = useState(false);
@@ -21,8 +22,8 @@ export default function Navbar1() {
   const toggleOpen = () => setOpenc((cur) => !cur);
   return (
     <Fragment>
-      <Navbar className=" rounded-none shadow-none  bg-black  p-4 ">
-        <div className="flex flex-wrap items-center justify-between gap-y-4 text-blue-gray-900">
+      <Navbar className=" rounded-none shadow-none w-full  bg-gray-900  p-4 border-none mx-auto ">
+        <div className="flex flex-wrap items-center justify-between gap-y-4 ">
           <Typography
             as="a"
             href="#"
@@ -69,18 +70,25 @@ export default function Navbar1() {
           className="p-4"
           placement="right"
         >
-          <div className="mb-6 flex items-center justify-between">
-            <Typography variant="h5" color="blue-gray">
+          <div className="mb-6 flex items-center justify-between mt-6">
+            <Typography variant="h3" color="blue-gray">
               Iniciar Sesion
             </Typography>
           </div>
+          <div className="flex justify-center mb-4">
+            <img
+              className="h-2/5 w-2/5 rounded-full "
+              src="/img/Home/1487716857-user_81635.png"
+              alt="User image"
+            />
+          </div>
+
           <Typography color="gray" className="mb-8 pr-4 font-normal">
             Por favor ingrese sus credenciales:
           </Typography>
           <Input
             className="pr-20"
-            label="Correo"
-            variant="outlined"
+            variant="standard"
             placeholder="Correo"
             color="black"
             containerProps={{
@@ -89,27 +97,37 @@ export default function Navbar1() {
           />
           <Input
             className="pr-20"
-            label="Contraseña"
-            variant="outlined"
+            variant="standard"
             placeholder="Contraseña"
             color="black"
             containerProps={{
-              className: "min-w-[30px] mt-4 mb-6",
+              className: "min-w-[30px] mt-4 mb-6 ",
             }}
           />
-          <div className="flex gap-2">
-            <Button size="sm" variant="outlined" color="green">
-              Recuperar cuenta
-            </Button>
-            <Button size="sm" className="bg-light-green-900">
+          <div className="flex gap-2 justify-center">
+            <Button
+              size="sm"
+              className="bg-light-green-900 w-full rounded-none"
+              onClick={() => Router.push("/Dashboard/")}
+            >
               Iniciar Sesion
+            </Button>
+          </div>
+          <div className="flex justify-center mt-3">
+            <Button
+              size="sm"
+              variant="text"
+              color="green"
+              className="w-full rounded-none"
+            >
+              Recuperar cuenta
             </Button>
           </div>
         </Drawer>
       </Fragment>
       <Fragment>
         <Collapse open={openc}>
-          <Card className="my-4 mx-auto w-8/12">
+          <Card className="my-4 mx-auto w-11/12 ">
             <CardBody>
               <Typography>Resultados de la búsqueda</Typography>
             </CardBody>
