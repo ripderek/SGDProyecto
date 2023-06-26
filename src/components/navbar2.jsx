@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
   Navbar,
   Typography,
@@ -27,29 +27,85 @@ import {
   CogIcon,
   Square2StackIcon,
 } from "@heroicons/react/24/solid";
+import axios from "axios";
 
 import { FaSearch, FaAlignLeft } from "react-icons/fa";
 import { AiOutlineNotification } from "react-icons/ai";
 import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import CardsNotification from "./Dashboard/CardsNotification";
+import Cookies from "universal-cookie";
 
 export default function Navbar2() {
+  //Estados para el diseno del layout
   const [open, setOpen] = useState(false);
   const [openM, setOpenM] = useState(false);
-
   const openDrawer = () => setOpen(true);
   const openDrawerM = () => setOpenM(true);
-
   const closeDrawer = () => setOpen(false);
   const closeDrawerM = () => setOpenM(false);
-
   const [openc, setOpenc] = useState(false);
   const toggleOpen = () => setOpenc((cur) => !cur);
-
   const [openS, setOpenS] = useState(false);
-
   const handleOpen = () => setOpenS(!openS);
 
+  //Estado para almacenar la data del usuario
+  const [dataUser, setDataUser] = useState({
+    correo_institucional_user: "",
+    correo_personal_user: "",
+    estado_user: "",
+    identi: "",
+    isadmin_user: "",
+    nombre_firma_user: "",
+    nombres_user: "",
+    numero_celular_user: "",
+    tip_iden: "",
+    url_foto_user: "",
+  });
+  //loading
+  const [loading, setLoading] = useState(false);
+
+  //Crear un effect cuando cargue la paguina para hacer una consulta sobre el usuario que inicio sesion
+  useEffect(() => {
+    load();
+  }, []);
+
+  //Funcion para obtener cookies y almacenarlas en estados para los datos del usuario
+  const load = async () => {
+    try {
+      //obtener el id mediante cookies
+      const cookies = new Cookies();
+      setLoading(true);
+      const result = await axios.get(
+        "http://localhost:4000/api/user/User/" + cookies.get("id_user"),
+        {
+          withCredentials: true,
+        }
+      );
+      //console.log(result.data.rows[0]);
+      console.log("");
+      console.log("Result data");
+      //console.log(result.data);
+      const data = result.data;
+      setDataUser({
+        correo_institucional_user: data.correo_institucional_user,
+        correo_personal_user: data.correo_personal_user,
+        estado_user: data.estado_user,
+        identi: data.identi,
+        isadmin_user: data.isadmin_user,
+        nombre_firma_user: data.nombre_firma_user,
+        nombres_user: data.nombres_user,
+        numero_celular_user: data.numero_celular_user,
+        tip_iden: data.tip_iden,
+        url_foto_user: data.url_foto_user,
+      });
+      console.log(dataUser);
+      setLoading(false);
+    } catch (error) {
+      //Mostrar algun error por consola
+      console.log(error);
+    }
+  };
+  if (loading) return "Cargando UI";
   return (
     <Fragment>
       <Navbar className=" rounded-none shadow-none w-full  bg-gray-900  p-4 border-none mx-auto ">
@@ -152,7 +208,7 @@ export default function Navbar2() {
           </div>
           <div className="mb-2 flex items-center justify-center p-4">
             <Typography variant="h5" color="blue-gray">
-              Nombre usuario
+              {dataUser.nombres_user}
             </Typography>
           </div>
           <List>
