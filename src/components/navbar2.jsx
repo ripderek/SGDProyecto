@@ -35,6 +35,9 @@ import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import CardsNotification from "./Dashboard/CardsNotification";
 import Cookies from "universal-cookie";
 
+//importar las ventanas para las opciones
+import AdminOptions from "./MenuOptions/AdminOptions";
+
 export default function Navbar2() {
   //Estados para el diseno del layout
   const [open, setOpen] = useState(false);
@@ -47,6 +50,14 @@ export default function Navbar2() {
   const toggleOpen = () => setOpenc((cur) => !cur);
   const [openS, setOpenS] = useState(false);
   const handleOpen = () => setOpenS(!openS);
+
+  //Estados para abrir las opciones del menu
+  //opcion Admin
+  const [openAdminOptions, setOpenAdmin] = useState(false);
+  const handleAdmin = () => {
+    setOpenAdmin(!openAdminOptions);
+    setOpenM(false);
+  };
 
   //Estado para almacenar la data del usuario
   const [dataUser, setDataUser] = useState({
@@ -68,12 +79,12 @@ export default function Navbar2() {
   useEffect(() => {
     load();
   }, []);
+  const cookies = new Cookies();
 
   //Funcion para obtener cookies y almacenarlas en estados para los datos del usuario
   const load = async () => {
     try {
       //obtener el id mediante cookies
-      const cookies = new Cookies();
       setLoading(true);
       const result = await axios.get(
         "http://localhost:4000/api/user/User/" + cookies.get("id_user"),
@@ -105,7 +116,18 @@ export default function Navbar2() {
       console.log(error);
     }
   };
+
+  //Metodo para cerrar la sesion y eliminar las cookies
+  const CerrarSesion = () => {
+    cookies.remove("myTokenName");
+    cookies.remove("id_user");
+    cookies.remove("AD");
+    //Redireccionar al home
+    Router.push("/home/");
+  };
+  //SI el estado esta cargando devolver un spinner load
   if (loading) return "Cargando UI";
+  //si ya cargo renderizar
   return (
     <Fragment>
       <Navbar className=" rounded-none shadow-none w-full  bg-gray-900  p-4 border-none mx-auto ">
@@ -159,6 +181,7 @@ export default function Navbar2() {
           </Fragment>
         </div>
       </Navbar>
+
       <Fragment>
         <Drawer
           open={open}
@@ -175,6 +198,7 @@ export default function Navbar2() {
           <CardsNotification />
         </Drawer>
       </Fragment>
+
       <Fragment>
         <Collapse open={openc}>
           <Card className="my-4 mx-auto w-11/12 ">
@@ -236,17 +260,21 @@ export default function Navbar2() {
               </ListItemPrefix>
               Opciones de Area
             </ListItem>
-            <ListItem onClick={handleOpen}>
-              <ListItemPrefix>
-                <CogIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Opciones de Admin
-            </ListItem>
+            {dataUser.isadmin_user ? (
+              <ListItem onClick={handleAdmin}>
+                <ListItemPrefix>
+                  <CogIcon className="h-5 w-5" />
+                </ListItemPrefix>
+                Opciones de Admin
+              </ListItem>
+            ) : (
+              ""
+            )}
             <ListItem onClick={handleOpen}>
               <ListItemPrefix>
                 <PowerIcon className="h-5 w-5" />
               </ListItemPrefix>
-              Salir
+              Cerrar Sesion
             </ListItem>
           </List>
         </Drawer>
@@ -263,15 +291,14 @@ export default function Navbar2() {
             >
               <span>Cancelar</span>
             </Button>
-            <Button
-              variant="gradient"
-              color="green"
-              onClick={() => Router.push("/home/")}
-            >
+            <Button variant="gradient" color="green" onClick={CerrarSesion}>
               <span>Confirmar</span>
             </Button>
           </DialogFooter>
         </Dialog>
+      </Fragment>
+      <Fragment>
+        {openAdminOptions ? <AdminOptions></AdminOptions> : ""}
       </Fragment>
     </Fragment>
   );

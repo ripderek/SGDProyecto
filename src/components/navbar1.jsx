@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import {
   Navbar,
   Typography,
@@ -33,6 +33,13 @@ export default function Navbar1() {
     email: "",
     password: "",
   });
+  //Borrar cookies en caso de existir alguna
+  useEffect(() => {
+    const cookies = new Cookies();
+    cookies.remove("id_user");
+    cookies.remove("AD");
+  }, []);
+
   //Evento click para verificar el inicio de sesion y obtener el token y guardalo en una cookie
   const HandleSUbumit = async (e) => {
     e.preventDefault();
@@ -158,6 +165,7 @@ export default function Navbar1() {
               variant="standard"
               placeholder="Contraseña"
               color="black"
+              type="password"
               containerProps={{
                 className: "min-w-[30px] mt-4 mb-6 ",
               }}
