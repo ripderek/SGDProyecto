@@ -9,8 +9,12 @@ import {
   IconButton,
   Tooltip,
   Alert,
+  ButtonGroup,
+  Button,
 } from "@material-tailwind/react";
 import { Fragment, useState, useEffect, React } from "react";
+import { ChevronDownIcon } from "@heroicons/react/24/outline";
+
 import axios from "axios";
 const TABLE_HEAD = ["Datos", "Identificacion", "Rol", "Agregar"];
 
@@ -27,8 +31,18 @@ export default function AgregarUserArea(id) {
     p_id_area: 1,
     p_id_rol: 1,
   });
+  //cargar los roles
+  const [roles, setRoles] = useState([]);
+  //estado para almacenar el rol
+  const [rol, setRol] = useState("");
   //mensaje de error
   const [error, setError] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [color, setColor] = useState("yellow");
+
+  const handleOpen = () => {
+    setOpen(!open);
+  };
   useEffect(() => {
     load();
   }, []);
@@ -45,6 +59,16 @@ export default function AgregarUserArea(id) {
 
     const data = await result.json();
     setUsers(data);
+
+    //cargar los roles para el combobox
+    const roles = await fetch("http://localhost:4000/api/area/roles", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    const rolesuser = await roles.json();
+    setRoles(rolesuser);
   };
   const HandleSUbumit = async () => {
     try {
@@ -64,7 +88,7 @@ export default function AgregarUserArea(id) {
     }
   };
   return (
-    <div>
+    <div className="h-auto">
       <DialogHeader className="justify-between"></DialogHeader>
       <Alert
         color="yellow"
@@ -150,7 +174,6 @@ export default function AgregarUserArea(id) {
                       </div>
                     </div>
                   </td>
-
                   <td className="p-4 border-b border-blue-gray-50">
                     <Typography
                       variant="small"
@@ -158,25 +181,31 @@ export default function AgregarUserArea(id) {
                       className="font-normal"
                     >
                       {user1.u_identificacion}
+                      {rol}
                     </Typography>
                   </td>
-
-                  <td className="p-4 border-b border-blue-gray-50">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      Rol
-                    </Typography>
+                  <td>
+                    <div className="my-4 flex items-center ">
+                      {roles.map((roles) => (
+                        <ButtonGroup size="sm">
+                          <Button
+                            className="rounded-none"
+                            key={roles.r_id}
+                            onClick={() => setRol(roles.r_id)}
+                          >
+                            {roles.r_rol}
+                          </Button>
+                        </ButtonGroup>
+                      ))}
+                    </div>
                   </td>
-
                   <td
                     className="p-4 border-b border-blue-gray-50"
                     onClick={() => {
                       setUser({
                         p_id_user: user1.u_id_user,
                         p_id_area: id.id,
+                        p_id_rol: rol,
                       }),
                         HandleSUbumit();
                     }}

@@ -37,6 +37,8 @@ import Cookies from "universal-cookie";
 
 //importar las ventanas para las opciones
 import AdminOptions from "./MenuOptions/AdminOptions";
+//importa la venta del area_usuario
+import User_area from "./MenuOptions/Areas/User_area";
 
 export default function Navbar2() {
   //Estados para el diseno del layout
@@ -51,11 +53,20 @@ export default function Navbar2() {
   const [openS, setOpenS] = useState(false);
   const handleOpen = () => setOpenS(!openS);
 
+  //Estado para el user data area
+  const [UserAreaData, setUserAreaData] = useState([]);
+
   //Estados para abrir las opciones del menu
   //opcion Admin
   const [openAdminOptions, setOpenAdmin] = useState(false);
   const handleAdmin = () => {
     setOpenAdmin(!openAdminOptions);
+    setOpenM(false);
+  };
+  //Estado para el area data
+  const [UserArea, setUserArea] = useState(false);
+  const handleArea = () => {
+    setUserArea(!UserArea);
     setOpenM(false);
   };
 
@@ -110,7 +121,23 @@ export default function Navbar2() {
         url_foto_user: data.url_foto_user,
       });
       console.log(dataUser);
+
+      //almacenar datos del usuario con respecto al area para que ingrese a las opciones de usuario administrador de area
+      //y para mostrar opciones
+      const resultdata = await fetch(
+        "http://localhost:4000/api/area/data_area_user/" +
+          cookies.get("id_user"),
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      const dataU = await resultdata.json();
+      setUserAreaData(dataU);
       setLoading(false);
+      console.log(UserAreaData);
     } catch (error) {
       //Mostrar algun error por consola
       console.log(error);
@@ -242,7 +269,7 @@ export default function Navbar2() {
               </ListItemPrefix>
               Inicio
             </ListItem>
-            <ListItem onClick={handleOpen}>
+            <ListItem onClick={handleArea}>
               <ListItemPrefix>
                 <PresentationChartBarIcon className="h-5 w-5" />
               </ListItemPrefix>
@@ -254,12 +281,17 @@ export default function Navbar2() {
               </ListItemPrefix>
               Perfil
             </ListItem>
-            <ListItem onClick={handleOpen}>
-              <ListItemPrefix>
-                <Square2StackIcon className="h-5 w-5" />
-              </ListItemPrefix>
-              Opciones de Area
-            </ListItem>
+            {UserAreaData.r_isadmin_area ? (
+              <ListItem onClick={handleOpen}>
+                <ListItemPrefix>
+                  <Square2StackIcon className="h-5 w-5" />
+                </ListItemPrefix>
+                Opciones de Area
+              </ListItem>
+            ) : (
+              ""
+            )}
+
             {dataUser.isadmin_user ? (
               <ListItem onClick={handleAdmin}>
                 <ListItemPrefix>
@@ -299,6 +331,7 @@ export default function Navbar2() {
       </Fragment>
       <Fragment>
         {openAdminOptions ? <AdminOptions></AdminOptions> : ""}
+        {UserArea ? <User_area id_area={UserAreaData.r_id_area} /> : ""}
       </Fragment>
     </Fragment>
   );

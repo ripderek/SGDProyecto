@@ -44,7 +44,7 @@ export default function UsersAreas(id) {
             size="xl"
             open={openUser}
             handler={handlerOpenUsers}
-            className="overflow-y-scroll rounded-none"
+            className="overflow-y-scroll rounded-none h-4/5"
           >
             <button
               className="bg-green-900 w-full"
@@ -156,7 +156,7 @@ export default function UsersAreas(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    Rol
+                    {user.u_rol}
                   </Typography>
                 </td>
 
