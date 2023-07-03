@@ -56,9 +56,13 @@ export default function Users() {
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
+  //para enviar la foto de perfil
+  const [file, setFile] = useState(null);
+  //img preview
+  const [fileP, setFileP] = useState();
 
   //mensaje de error
-  const [error, setError] = useState([]);
+  const [error, setError] = useState();
 
   useEffect(() => {
     load();
@@ -115,20 +119,37 @@ export default function Users() {
       console.log("datos del usuario para enviar");
       console.log(user);
 
-      const result = await axios.post(
-        "http://localhost:4000/api/user/crear_usuario",
-        user,
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(result);
-      hadleAlert();
-      handleOpen();
-      load();
+      //Verificar si no se esta enviando lo mismo que esta en el combobox xd
+      if (tipoidentificacion === "Tipo identificacion") {
+        setError("Escoja un tipo de identificacion");
+        hadleAlerterror();
+      } else {
+        const form = new FormData();
+        form.set("file", file);
+        form.set("nombres", user.nombres);
+        form.set("tipo_identificacion", user.tipo_identificacion);
+        form.set("identificacion", user.identificacion);
+        form.set("correo1", user.correo1);
+        form.set("correo2", user.correo2);
+        form.set("celular", user.celular);
+        form.set("firma", user.firma);
+        const result = await axios.post(
+          "http://localhost:4000/api/user/crear_usuario",
+          form,
+          {
+            withCredentials: true,
+          }
+        );
+        console.log(result);
+        hadleAlert();
+        handleOpen();
+        load();
+      }
     } catch (error) {
-      console.log(error);
-      setError(error);
+      let error1 = error.response.data.message;
+      console.log(error1);
+      setError(error1);
+      if (!error1) setError("Formato de imagen no admitido");
       hadleAlerterror();
     }
   };
@@ -163,12 +184,16 @@ export default function Users() {
               onClose={() => setOpenAlerterror(false)}
               open={openAlerterror}
             >
-              {error.message}
+              {error}
             </Alert>
             <div className="flex justify-center mb-5">
               <img
                 className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 cursor-pointer"
-                src="/img/Home/photo-1633332755192-727a05c4013d.jpg"
+                src={
+                  !fileP
+                    ? "/img/Home/photo-1633332755192-727a05c4013d.jpg"
+                    : fileP
+                }
                 alt="User image"
               />
             </div>
@@ -179,6 +204,13 @@ export default function Users() {
             >
               <form className=" sm:w-full" onSubmit={HandleSUbumit}>
                 <div className="mb-4 flex flex-col gap-6">
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      setFile(e.target.files[0]);
+                      setFileP(URL.createObjectURL(e.target.files[0]));
+                    }}
+                  />
                   <Input
                     size="lg"
                     name="nombres"
@@ -186,6 +218,7 @@ export default function Users() {
                     color="black"
                     placeholder="Nombres y Apellidos"
                     onChange={HandleChange}
+                    required
                   />
                   <div className="my-4 flex items-center gap-4">
                     <Accordion
@@ -265,6 +298,7 @@ export default function Users() {
                       color="black"
                       placeholder="Numero de identificacion"
                       onChange={HandleChange}
+                      required
                     />
                   </div>
                   <Input
@@ -274,6 +308,7 @@ export default function Users() {
                     color="black"
                     placeholder="Correo Personal"
                     onChange={HandleChange}
+                    required
                   />
                   <Input
                     size="lg"
@@ -282,6 +317,7 @@ export default function Users() {
                     color="black"
                     placeholder="Correo Institucional"
                     onChange={HandleChange}
+                    required
                   />
                   <Input
                     size="lg"
@@ -290,6 +326,7 @@ export default function Users() {
                     color="black"
                     placeholder="Numero Celular"
                     onChange={HandleChange}
+                    required
                   />
                   <Input
                     size="lg"
@@ -298,6 +335,7 @@ export default function Users() {
                     color="black"
                     placeholder="Nombres para la firma"
                     onChange={HandleChange}
+                    required
                   />
                 </div>
 
@@ -382,7 +420,9 @@ export default function Users() {
                   <td className="p-4 border-b border-blue-gray-50">
                     <div className="flex items-center gap-3">
                       <Avatar
-                        src={user.url_foto_user}
+                        src={
+                          "http://localhost:4000/api/user/foto/" + user.userid
+                        }
                         alt={user.nombres_user}
                         size="sm"
                       />

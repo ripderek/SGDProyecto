@@ -50,6 +50,10 @@ export default function Areas() {
   //estado para cuando se de click en el boton ver area se guarde el id
   const [idArea, setIdArea] = useState("");
   const [nameArea, setNameArea] = useState("");
+  //para enviar la foto de perfil
+  const [file, setFile] = useState(null);
+  //img preview
+  const [fileP, setFileP] = useState();
 
   useEffect(() => {
     load();
@@ -72,7 +76,6 @@ export default function Areas() {
   const [area, setArea] = useState({
     nombre_area: "",
     nivel_area: "",
-    url_foto: "/img/Home/logo-fci-1.jpg",
   });
   // llenar automaticamente los datos del area a medida que se escribe en los txt
   const HandleChange = (e) => {
@@ -85,9 +88,13 @@ export default function Areas() {
       console.log("datos del usuario para enviar");
       console.log(area);
 
+      const form = new FormData();
+      form.set("file", file);
+      form.set("nombre_area", area.nombre_area);
+      form.set("nivel_area", area.nivel_area);
       const result = await axios.post(
         "http://localhost:4000/api/area/crear_area",
-        area,
+        form,
         {
           withCredentials: true,
         }
@@ -116,7 +123,9 @@ export default function Areas() {
           className="overflow-y-scroll"
         >
           <button onClick={handleOpenArea} className="bg-yellow-900">
-            <h4 className="text-black">Cerrar opciones de area</h4>
+            <Typography variant="h2" color="white">
+              Cerrar opciones de area
+            </Typography>
           </button>
           <Typography variant="h3" className="text-black ml-12 mt-4">
             {nameArea}
@@ -171,7 +180,11 @@ export default function Areas() {
               <div className="flex justify-center mb-5">
                 <img
                   className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 cursor-pointer"
-                  src="/img/Home/logo-fci-1.jpg"
+                  src={
+                    !fileP
+                      ? "/img/Home/photo-1633332755192-727a05c4013d.jpg"
+                      : fileP
+                  }
                   alt="User image"
                 />
               </div>
@@ -182,6 +195,13 @@ export default function Areas() {
               >
                 <form className=" sm:w-full" onSubmit={HandleSUbumit}>
                   <div className="mb-4 flex flex-col gap-6">
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        setFile(e.target.files[0]);
+                        setFileP(URL.createObjectURL(e.target.files[0]));
+                      }}
+                    />
                     <Input
                       size="lg"
                       name="nombre_area"
@@ -269,7 +289,10 @@ export default function Areas() {
                   <div className="mx-auto">
                     <div className="text-center">
                       <Avatar
-                        src={task.logoarea}
+                        src={
+                          "http://localhost:4000/api/area/Areaimagen/" +
+                          task.area_id
+                        }
                         alt={task.logoarea}
                         size="xl"
                         className="mt-3"

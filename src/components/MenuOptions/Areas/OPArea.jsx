@@ -22,6 +22,7 @@ export default function OPArea(idArea, asdasda) {
   const handleUsers = () => {
     setOpenUsers(!openUsers);
     setOpenAreas(false);
+    setFondo(!fondo);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -29,6 +30,7 @@ export default function OPArea(idArea, asdasda) {
     setOpenAreas(!openAreas);
     setOpenUsers(false);
   };
+  const [fondo, setFondo] = useState(true);
   return (
     <div>
       <DialogHeader className="justify-between">
@@ -59,6 +61,23 @@ export default function OPArea(idArea, asdasda) {
               </div>
               <div className="row-span-2  w-full h-full col-span-12 ">
                 {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
+
+                {fondo ? (
+                  <div>
+                    <div className="flex justify-center mt-7">
+                      <img
+                        className="ml-5 h-80 w-80 rounded-full border-4 border-yellow-600 center opacity-30"
+                        src={
+                          "http://localhost:4000/api/area/Areaimagen/" +
+                          idArea.idArea
+                        }
+                        alt="User image"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           </div>

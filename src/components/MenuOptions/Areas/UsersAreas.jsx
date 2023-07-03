@@ -50,7 +50,9 @@ export default function UsersAreas(id) {
               className="bg-green-900 w-full"
               onClick={() => (handlerOpenUsers(), load())}
             >
-              <h4 className="text-white">Cerrar opciones de area</h4>
+              <Typography variant="h2" color="white">
+                Cerrar
+              </Typography>
             </button>
             <AgregarUserArea id={id.id} key={id} />
           </Dialog>
@@ -88,10 +90,16 @@ export default function UsersAreas(id) {
         <tbody>
           {users.map((user) => {
             return (
-              <tr key={user.userid}>
+              <tr key={user.u_id_user}>
                 <td className="p-4 border-b border-blue-gray-50">
                   <div className="flex items-center gap-3">
-                    <Avatar src={user.u_foto} alt={user.u_nombres} size="sm" />
+                    <Avatar
+                      src={
+                        "http://localhost:4000/api/user/foto/" + user.u_id_user
+                      }
+                      alt={user.u_nombres}
+                      size="sm"
+                    />
                     <div className="flex flex-col">
                       <Typography
                         variant="small"

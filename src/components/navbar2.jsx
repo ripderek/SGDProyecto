@@ -52,7 +52,7 @@ export default function Navbar2() {
   const toggleOpen = () => setOpenc((cur) => !cur);
   const [openS, setOpenS] = useState(false);
   const handleOpen = () => setOpenS(!openS);
-
+  const [userImage, setUserImage] = useState("");
   //Estado para el user data area
   const [UserAreaData, setUserAreaData] = useState([]);
 
@@ -133,7 +133,9 @@ export default function Navbar2() {
           credentials: "include",
         }
       );
-
+      setUserImage(
+        "http://localhost:4000/api/user/foto/" + cookies.get("id_user")
+      );
       const dataU = await resultdata.json();
       setUserAreaData(dataU);
       setLoading(false);
@@ -253,7 +255,7 @@ export default function Navbar2() {
           <div className="flex justify-center">
             <img
               className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 "
-              src="/img/Home/photo-1633332755192-727a05c4013d.jpg"
+              src={userImage}
               alt="User image"
             />
           </div>

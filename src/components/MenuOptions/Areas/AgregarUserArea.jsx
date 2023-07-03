@@ -127,11 +127,14 @@ export default function AgregarUserArea(id) {
           <tbody>
             {users.map((user1) => {
               return (
-                <tr key={user1.userid}>
+                <tr key={user1.u_id_user}>
                   <td className="p-4 border-b border-blue-gray-50">
                     <div className="flex items-center gap-3">
                       <Avatar
-                        src={user1.u_foto}
+                        src={
+                          "http://localhost:4000/api/user/foto/" +
+                          user1.u_id_user
+                        }
                         alt={user1.u_nombres}
                         size="sm"
                       />
