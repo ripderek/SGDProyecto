@@ -28,7 +28,8 @@ import {
   Square2StackIcon,
 } from "@heroicons/react/24/solid";
 import axios from "axios";
-
+import OPArea from "../components/MenuOptions/Areas/OPArea";
+import AreasAdmin from "../components/MenuOptions/Areas/AreasAdmin";
 import { FaSearch, FaAlignLeft } from "react-icons/fa";
 import { AiOutlineNotification } from "react-icons/ai";
 import Router from "next/router"; //Rutas para redireccionar a otra pagina
@@ -39,6 +40,9 @@ import Cookies from "universal-cookie";
 import AdminOptions from "./MenuOptions/AdminOptions";
 //importa la venta del area_usuario
 import User_area from "./MenuOptions/Areas/User_area";
+//importar la opcion PerfilUser
+import PerfilUser from "./MenuOptions/Users/PerfilUser";
+import { comment } from "postcss";
 
 export default function Navbar2() {
   //Estados para el diseno del layout
@@ -53,21 +57,45 @@ export default function Navbar2() {
   const [openS, setOpenS] = useState(false);
   const handleOpen = () => setOpenS(!openS);
   const [userImage, setUserImage] = useState("");
+  const [nameArea, setNameArea] = useState("");
   //Estado para el user data area
+  const [OpenAreaADmin, setOpenAreaADmin] = useState(false);
   const [UserAreaData, setUserAreaData] = useState([]);
-
+  const [idA, setIDa] = useState("");
+  const id_area = (id) => {
+    setIDa(id);
+    if (id) {
+      setOpenAreaADmin(true);
+      setUserArea(false);
+    } else setOpenAreaADmin(false);
+  };
   //Estados para abrir las opciones del menu
   //opcion Admin
   const [openAdminOptions, setOpenAdmin] = useState(false);
   const handleAdmin = () => {
     setOpenAdmin(!openAdminOptions);
     setOpenM(false);
+    setUserArea(false);
+    setOpPerfil(false);
+    setOpenAreaADmin(false);
   };
   //Estado para el area data
   const [UserArea, setUserArea] = useState(false);
   const handleArea = () => {
     setUserArea(!UserArea);
+    setOpenAreaADmin(false);
     setOpenM(false);
+    setOpenAdmin(false);
+    setOpPerfil(false);
+  };
+  //Estado para abrir la opcion perfil
+  const [opPerfil, setOpPerfil] = useState(false);
+  const HandleOpenPerfil = () => {
+    setOpPerfil(!opPerfil);
+    setUserArea(false);
+    setOpenM(false);
+    setOpenAdmin(false);
+    setOpenAreaADmin(false);
   };
 
   //Estado para almacenar la data del usuario
@@ -143,6 +171,7 @@ export default function Navbar2() {
     } catch (error) {
       //Mostrar algun error por consola
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -241,7 +270,7 @@ export default function Navbar2() {
         <Drawer
           open={openM}
           onClose={closeDrawerM}
-          className="p-4"
+          className="p-4 overflow-y-scroll"
           placement="left"
         >
           <div className="mb-2 flex items-center justify-between p-4">
@@ -277,14 +306,14 @@ export default function Navbar2() {
               </ListItemPrefix>
               Proyectos
             </ListItem>
-            <ListItem onClick={handleOpen}>
+            <ListItem onClick={HandleOpenPerfil}>
               <ListItemPrefix>
                 <UserIcon className="h-5 w-5" />
               </ListItemPrefix>
               Perfil
             </ListItem>
             {UserAreaData.r_isadmin_area ? (
-              <ListItem onClick={handleOpen}>
+              <ListItem onClick={handleArea}>
                 <ListItemPrefix>
                   <Square2StackIcon className="h-5 w-5" />
                 </ListItemPrefix>
@@ -333,7 +362,9 @@ export default function Navbar2() {
       </Fragment>
       <Fragment>
         {openAdminOptions ? <AdminOptions></AdminOptions> : ""}
-        {UserArea ? <User_area id_area={UserAreaData.r_id_area} /> : ""}
+        {UserArea ? <AreasAdmin id_area={id_area} /> : ""}
+        {opPerfil ? <PerfilUser iduser={cookies.get("id_user")} /> : ""}
+        {OpenAreaADmin ? <OPArea idArea={idA} /> : ""}
       </Fragment>
     </Fragment>
   );

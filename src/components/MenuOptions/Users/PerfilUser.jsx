@@ -5,12 +5,8 @@ import {
   ListItem,
   ListItemPrefix,
 } from "@material-tailwind/react";
-//importar opcion de users
-import Users from "../MenuOptions/Users/Users";
-import Areas from "../MenuOptions/Areas/Areas";
-import Empresa_Datos from "../MenuOptions/Empresa/Empresa_Datos";
-
-export default function AdminOptions() {
+import MiPerfi from "../Users/MiPerfi";
+export default function PerfilUser(iduser) {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
   const [openUsers, setOpenUsers] = useState(false);
@@ -44,55 +40,36 @@ export default function AdminOptions() {
             color="black"
             className=" Titulo mr-4 ml-2 py-1.5"
           >
-            Opciones de Administrador General
+            Opciones del Perfil
           </Typography>
         </div>
         <div className="grid grid-flow-col">
-          <div className="row-span-2 w-28 h-80 ">
+          <div className="row-span-2 w-48 h-80 ">
             <List>
               <ListItem
                 className="border-b-2 border-black rounded-none"
                 onClick={handleUsers}
               >
                 <ListItemPrefix></ListItemPrefix>
-                Usuarios
+                Mi perfil
               </ListItem>
             </List>
+
             <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleAreas}
-              >
+              <ListItem className="border-b-2 border-black rounded-none">
                 <ListItemPrefix></ListItemPrefix>
-                Areas
+                Cambiar foto
               </ListItem>
             </List>
             <List>
               <ListItem className="border-b-2 border-black rounded-none">
                 <ListItemPrefix></ListItemPrefix>
-                Documentos
-              </ListItem>
-            </List>
-            <List>
-              <ListItem className="border-b-2 border-black rounded-none">
-                <ListItemPrefix></ListItemPrefix>
-                Proyectos
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleEmpresa}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Empresa
+                Cambiar Contraseña
               </ListItem>
             </List>
           </div>
           <div className="row-span-2  w-full h-full col-span-12 bg-white">
-            {openUsers ? <Users /> : ""}
-            {openAreas ? <Areas /> : ""}
-            {openEmpresa ? <Empresa_Datos /> : ""}
+            {openUsers ? <MiPerfi iduser={iduser.iduser} /> : ""}
           </div>
         </div>
       </div>

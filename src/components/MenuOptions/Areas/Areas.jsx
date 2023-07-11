@@ -18,10 +18,13 @@ import {
   Alert,
   Chip,
   Avatar,
+  Drawer,
 } from "@material-tailwind/react";
 import axios from "axios";
 import OPArea from "../Areas/OPArea";
 import { useState, useEffect, Fragment } from "react";
+import { FaSearch } from "react-icons/fa";
+
 const TABS = [
   {
     label: "Todas",
@@ -54,6 +57,15 @@ export default function Areas() {
   const [file, setFile] = useState(null);
   //img preview
   const [fileP, setFileP] = useState();
+  //estado para abrir un modal y seleccionar un area padre xd
+  const [openModalArea, setOpenModalArea] = useState(false);
+  const HandleModalArea = () => {
+    setOpenModalArea(!openModalArea);
+  };
+
+  //Estado para almacenar al padre del area xd
+  const [areaPadre, setAreaPadre] = useState("None");
+  const [areaPadreN, setAreaPadreN] = useState(null);
 
   useEffect(() => {
     load();
@@ -82,6 +94,16 @@ export default function Areas() {
     setArea({ ...area, [e.target.name]: e.target.value });
     console.log(e.target.name, e.target.value);
   };
+  //funcion para cargar la preview de la imagen
+  const ImagePreview = (e) => {
+    try {
+      setFile(e.target.files[0]);
+      setFileP(URL.createObjectURL(e.target.files[0]));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const HandleSUbumit = async (e) => {
     e.preventDefault();
     try {
@@ -91,7 +113,10 @@ export default function Areas() {
       const form = new FormData();
       form.set("file", file);
       form.set("nombre_area", area.nombre_area);
-      form.set("nivel_area", area.nivel_area);
+
+      //en caso de ser un hijo hay que enviar el id del area padre
+      form.set("area_padre", areaPadre);
+
       const result = await axios.post(
         "http://localhost:4000/api/area/crear_area",
         form,
@@ -127,9 +152,6 @@ export default function Areas() {
               Cerrar opciones de area
             </Typography>
           </button>
-          <Typography variant="h3" className="text-black ml-12 mt-4">
-            {nameArea}
-          </Typography>
 
           <OPArea
             idArea={idArea}
@@ -162,12 +184,73 @@ export default function Areas() {
                 variant="text"
                 size="md"
                 className="!absolute top-3 right-3"
-                onClick={() => setOpen(false)}
+                onClick={() => (setOpen(false), setAreaPadre(null))}
               >
                 <Typography variant="h5" color="blue-gray">
                   X
                 </Typography>
               </Button>
+              <Fragment>
+                <Drawer
+                  open={openModalArea}
+                  onClose={HandleModalArea}
+                  className="p-4 overflow-y-scroll"
+                  placement="right"
+                >
+                  <div className="mb-6  items-center justify-between mt-6">
+                    <Typography variant="h3" color="blue-gray">
+                      Seleccionar área
+                    </Typography>
+                    <div className="flex w-auto">
+                      <Input
+                        label=""
+                        variant="standard"
+                        placeholder="Buscar"
+                        color="black"
+                      />
+                      <Button className="flex gap-1 rounded-none bg-light-green-900 h-auto w-auto">
+                        <FaSearch size="1.9em" />
+                      </Button>
+                    </div>
+                  </div>
+                  {areasdata.map((task) => (
+                    <Card className="mt-6 w- h-auto bg-blue-gray-50 shadow-2xl">
+                      <CardBody>
+                        <Typography
+                          variant="h5"
+                          color="blue-gray"
+                          className="mb-2"
+                        >
+                          {task.nombrearea}
+                        </Typography>
+                        <div className="text-center">
+                          <Avatar
+                            src={
+                              "http://localhost:4000/api/area/Areaimagen/" +
+                              task.area_id
+                            }
+                            alt={task.logoarea}
+                            size="xl"
+                            className="mt-3"
+                          />
+                        </div>
+                      </CardBody>
+                      <CardFooter className="pt-0">
+                        <Button
+                          className="bg-yellow-900"
+                          onClick={() => (
+                            HandleModalArea(),
+                            setAreaPadre(task.area_id),
+                            setAreaPadreN(task.nombrearea)
+                          )}
+                        >
+                          Seleccionar
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ))}
+                </Drawer>
+              </Fragment>
             </DialogHeader>
             <DialogBody>
               <Alert
@@ -197,10 +280,8 @@ export default function Areas() {
                   <div className="mb-4 flex flex-col gap-6">
                     <input
                       type="file"
-                      onChange={(e) => {
-                        setFile(e.target.files[0]);
-                        setFileP(URL.createObjectURL(e.target.files[0]));
-                      }}
+                      accept="image/png, .jpeg"
+                      onChange={ImagePreview}
                     />
                     <Input
                       size="lg"
@@ -211,16 +292,21 @@ export default function Areas() {
                       onChange={HandleChange}
                       required
                     />
-
-                    <Input
-                      size="lg"
-                      name="nivel_area"
-                      variant="standard"
-                      color="black"
-                      placeholder="Nivel de Area"
-                      onChange={HandleChange}
-                      required
-                    />
+                    {areaPadre != "None" ? (
+                      <div className="text-center text-black font-black ">
+                        {"Esta Area será hija de: " + areaPadreN}
+                      </div>
+                    ) : (
+                      ""
+                    )}
+                    <Button
+                      className="rounded-none"
+                      fullWidth
+                      color="yellow"
+                      onClick={HandleModalArea}
+                    >
+                      Seleccionar un Padre
+                    </Button>
                   </div>
 
                   <Button

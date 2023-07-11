@@ -49,7 +49,7 @@ export default function AgregarUserArea(id) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/area/users_sin_area",
+      "http://localhost:4000/api/area/users_sin_area/" + id.id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

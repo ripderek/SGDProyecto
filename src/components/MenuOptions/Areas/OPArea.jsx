@@ -1,4 +1,4 @@
-import { React, Fragment, useState } from "react";
+import { React, Fragment, useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -17,12 +17,17 @@ import { HeartIcon, ShareIcon } from "@heroicons/react/24/solid";
 import UsersAreas from "../Areas/UsersAreas";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 
-export default function OPArea(idArea, asdasda) {
+//prueba para dibujar el arbol
+import Arbol from "../Areas/VerArbol";
+import Flujo from "./Flujo";
+
+export default function OPArea(idArea) {
   const [openUsers, setOpenUsers] = useState(false);
   const handleUsers = () => {
     setOpenUsers(!openUsers);
     setOpenAreas(false);
-    setFondo(!fondo);
+    setOpenJerarquia(false);
+    setFondo(openUsers ? true : false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -30,12 +35,41 @@ export default function OPArea(idArea, asdasda) {
     setOpenAreas(!openAreas);
     setOpenUsers(false);
   };
+  //estado para abrir la opcion de jerarquia de area
+  const [openJerarquia, setOpenJerarquia] = useState(false);
+  const handleJeraquia = () => {
+    setOpenUsers(false);
+    setOpenAreas(false);
+    setOpenJerarquia(!openJerarquia);
+    setFondo(openJerarquia ? true : false);
+  };
   const [fondo, setFondo] = useState(true);
+  const [UserAreaData, setUserAreaData] = useState([]);
+
+  useEffect(() => {
+    load();
+  }, []);
+  const load = async () => {
+    try {
+      const resultdata = await fetch(
+        "http://localhost:4000/api/area/data_area_id/" + idArea.idArea,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const dataU = await resultdata.json();
+      setUserAreaData(dataU);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
-    <div>
+    <div className="bg-white">
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
-          <div className="-mt-px flex flex-col">{asdasda.nameArea}</div>
+          <div className="-mt-px flex flex-col">{UserAreaData.nombrearea}</div>
         </div>
       </DialogHeader>
       <DialogBody divider={true}>
@@ -58,10 +92,25 @@ export default function OPArea(idArea, asdasda) {
                     Proyectos
                   </ListItem>
                 </List>
+                <List>
+                  <ListItem
+                    className="border-b-2 border-black rounded-none"
+                    onClick={handleJeraquia}
+                  >
+                    <ListItemPrefix></ListItemPrefix>
+                    Jerarquia
+                  </ListItem>
+                </List>
+                <List>
+                  <ListItem className="border-b-2 border-black rounded-none">
+                    <ListItemPrefix></ListItemPrefix>
+                    Editar Datos
+                  </ListItem>
+                </List>
               </div>
               <div className="row-span-2  w-full h-full col-span-12 ">
                 {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
-
+                {openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
                 {fondo ? (
                   <div>
                     <div className="flex justify-center mt-7">
