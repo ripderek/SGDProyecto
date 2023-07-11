@@ -113,6 +113,7 @@ export default function Areas() {
       const form = new FormData();
       form.set("file", file);
       form.set("nombre_area", area.nombre_area);
+      form.set("prefijo", area.prefijo);
 
       //en caso de ser un hijo hay que enviar el id del area padre
       form.set("area_padre", areaPadre);
@@ -292,6 +293,15 @@ export default function Areas() {
                       onChange={HandleChange}
                       required
                     />
+                    <Input
+                      size="lg"
+                      name="prefijo"
+                      variant="standard"
+                      color="black"
+                      placeholder="Prefijo de 5 caracteres"
+                      onChange={HandleChange}
+                      required
+                    />
                     {areaPadre != "None" ? (
                       <div className="text-center text-black font-black ">
                         {"Esta Area será hija de: " + areaPadreN}
@@ -393,7 +403,15 @@ export default function Areas() {
                         variant="ghost"
                         size="sm"
                         value={task.estadoarea ? "Habilitada" : "Inhabilitada"}
-                        color={task.estadoarea ? "green" : "blue-gray"}
+                        color={task.estadoarea ? "green" : "red"}
+                      />
+                    </div>
+                    <div className="w-auto flex ml-2 mb-2">
+                      <Chip
+                        variant="ghost"
+                        size="sm"
+                        value={task.prefijo}
+                        color="blue-gray"
                       />
                     </div>
                   </div>

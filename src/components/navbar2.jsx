@@ -360,12 +360,12 @@ export default function Navbar2() {
           </DialogFooter>
         </Dialog>
       </Fragment>
-      <Fragment>
+      <div className="h-full">
         {openAdminOptions ? <AdminOptions></AdminOptions> : ""}
         {UserArea ? <AreasAdmin id_area={id_area} /> : ""}
         {opPerfil ? <PerfilUser iduser={cookies.get("id_user")} /> : ""}
         {OpenAreaADmin ? <OPArea idArea={idA} /> : ""}
-      </Fragment>
+      </div>
     </Fragment>
   );
 }

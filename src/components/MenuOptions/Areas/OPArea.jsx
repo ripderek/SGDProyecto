@@ -19,7 +19,7 @@ import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 
 //prueba para dibujar el arbol
 import Arbol from "../Areas/VerArbol";
-import Flujo from "./Flujo";
+import OpProyectos from "../Proyects/OpProyectos";
 
 export default function OPArea(idArea) {
   const [openUsers, setOpenUsers] = useState(false);
@@ -28,6 +28,7 @@ export default function OPArea(idArea) {
     setOpenAreas(false);
     setOpenJerarquia(false);
     setFondo(openUsers ? true : false);
+    setOpenProyectos(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -41,8 +42,19 @@ export default function OPArea(idArea) {
     setOpenUsers(false);
     setOpenAreas(false);
     setOpenJerarquia(!openJerarquia);
+    setOpenProyectos(false);
     setFondo(openJerarquia ? true : false);
   };
+  //estado para abrir la opcion de proyectos de area
+  const [openProyectos, setOpenProyectos] = useState(false);
+  const handleProyectos = () => {
+    setOpenUsers(false);
+    setOpenAreas(false);
+    setOpenProyectos(!openProyectos);
+    setOpenJerarquia(false);
+    setFondo(openProyectos ? true : false);
+  };
+
   const [fondo, setFondo] = useState(true);
   const [UserAreaData, setUserAreaData] = useState([]);
 
@@ -66,7 +78,7 @@ export default function OPArea(idArea) {
     }
   };
   return (
-    <div className="bg-white">
+    <div className="bg-white h-auto">
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{UserAreaData.nombrearea}</div>
@@ -87,7 +99,10 @@ export default function OPArea(idArea) {
                   </ListItem>
                 </List>
                 <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
+                  <ListItem
+                    className="border-b-2 border-black rounded-none"
+                    onClick={handleProyectos}
+                  >
                     <ListItemPrefix></ListItemPrefix>
                     Proyectos
                   </ListItem>
@@ -108,9 +123,11 @@ export default function OPArea(idArea) {
                   </ListItem>
                 </List>
               </div>
-              <div className="row-span-2  w-full h-full col-span-12 ">
+              <div className="row-span-2  w-full h-auto col-span-12 ">
                 {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
                 {openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
+                {openProyectos ? <OpProyectos id={idArea.idArea} /> : ""}
+
                 {fondo ? (
                   <div>
                     <div className="flex justify-center mt-7">

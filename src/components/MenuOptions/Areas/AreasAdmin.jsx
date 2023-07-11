@@ -55,12 +55,18 @@ export default function AreasAdmin({ id_area }) {
                 Lista de Areas
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                Participas en estas areas{" "}
+                Participas en estas areas
               </Typography>
             </div>
           </div>
         </CardHeader>
-
+        {areasdata.length === 0 ? (
+          <Typography variant="h5" color="blue-gray" className="mx-auto">
+            No pertence a ningun area
+          </Typography>
+        ) : (
+          ""
+        )}
         <div className="grid grid-cols-4 gap-3 p-14">
           {areasdata.map((task) => (
             <div
@@ -91,6 +97,13 @@ export default function AreasAdmin({ id_area }) {
                       size="sm"
                       value={task.a_rol}
                       color="green"
+                    />
+                    <Chip
+                      variant="ghost"
+                      className="ml-4"
+                      size="sm"
+                      value={task.a_prefijo}
+                      color="blue-gray"
                     />
                   </div>
                 </div>
