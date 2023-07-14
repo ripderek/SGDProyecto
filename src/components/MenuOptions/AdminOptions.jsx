@@ -9,7 +9,7 @@ import {
 import Users from "../MenuOptions/Users/Users";
 import Areas from "../MenuOptions/Areas/Areas";
 import Empresa_Datos from "../MenuOptions/Empresa/Empresa_Datos";
-
+import OpCategorias from "./Categorias/OpCategorias";
 export default function AdminOptions() {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
@@ -18,6 +18,7 @@ export default function AdminOptions() {
     setOpenUsers(!openUsers);
     setOpenAreas(false);
     setOpenEmpresa(false);
+    setOpenCategoria(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -25,6 +26,7 @@ export default function AdminOptions() {
     setOpenAreas(!openAreas);
     setOpenUsers(false);
     setOpenEmpresa(false);
+    setOpenCategoria(false);
   };
   //estado para abrir la opcion de empresa
   const [openEmpresa, setOpenEmpresa] = useState(false);
@@ -32,12 +34,20 @@ export default function AdminOptions() {
     setOpenAreas(false);
     setOpenUsers(false);
     setOpenEmpresa(!openEmpresa);
+    setOpenCategoria(false);
   };
-
+  //estado para categoria
+  const [openCategoria, setOpenCategoria] = useState(false);
+  const handleCategoria = () => {
+    setOpenAreas(false);
+    setOpenUsers(false);
+    setOpenEmpresa(false);
+    setOpenCategoria(!openCategoria);
+  };
   //Retornar interfaz
   return (
     <Fragment>
-      <div className="bg-white">
+      <div className="bg-white mb-20">
         <div className="bg-white">
           <Typography
             variant="h4"
@@ -88,11 +98,21 @@ export default function AdminOptions() {
                 Empresa
               </ListItem>
             </List>
+            <List>
+              <ListItem
+                className="border-b-2 border-black rounded-none"
+                onClick={handleCategoria}
+              >
+                <ListItemPrefix></ListItemPrefix>
+                Categorias
+              </ListItem>
+            </List>
           </div>
           <div className="row-span-2  w-full h-full col-span-12 bg-white">
             {openUsers ? <Users /> : ""}
             {openAreas ? <Areas /> : ""}
             {openEmpresa ? <Empresa_Datos /> : ""}
+            {openCategoria ? <OpCategorias /> : ""}
           </div>
         </div>
       </div>

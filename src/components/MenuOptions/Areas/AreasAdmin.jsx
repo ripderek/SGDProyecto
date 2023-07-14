@@ -1,5 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
 import Cookies from "universal-cookie";
+import axios from "axios";
+
 import {
   Card,
   CardHeader,
@@ -21,28 +23,28 @@ import {
   Drawer,
 } from "@material-tailwind/react";
 
-export default function AreasAdmin({ id_area, nombre_area }) {
+export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
 
   useEffect(() => {
     load();
   }, []);
-
+  const [task, setakc] = useState({
+    identi: isadmin,
+  });
   const load = async () => {
     //Cargar la lista de las areas
 
-    const result = await fetch(
+    const data = await axios.post(
       "http://localhost:4000/api/area/areas_usuario/" + cookies.get("id_user"),
+      { identi: isadmin },
       {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        withCredentials: true,
       }
     );
-
-    const data = await result.json();
-    setAreasData(data);
+    console.log(data.data);
+    setAreasData(data.data);
     console.log(areasdata);
   };
   return (

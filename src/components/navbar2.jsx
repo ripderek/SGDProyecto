@@ -121,6 +121,7 @@ export default function Navbar2() {
   //Estado para el area data
   const [UserArea, setUserArea] = useState(false);
   const handleArea = () => {
+    setA(true);
     setUserArea(!UserArea);
     setOpenAreaADmin(false);
     setOpenM(false);
@@ -158,7 +159,7 @@ export default function Navbar2() {
   });
   //loading
   const [loading, setLoading] = useState(false);
-
+  const [a, setA] = useState(false);
   //Crear un effect cuando cargue la paguina para hacer una consulta sobre el usuario que inicio sesion
   useEffect(() => {
     load();
@@ -345,7 +346,9 @@ export default function Navbar2() {
               </ListItemPrefix>
               Inicio
             </ListItem>
-            <ListItem onClick={() => (handleArea(), setOpenProyects(true))}>
+            <ListItem
+              onClick={() => (handleArea(), setOpenProyects(true), setA(false))}
+            >
               <ListItemPrefix>
                 <PresentationChartBarIcon className="h-5 w-5" />
               </ListItemPrefix>
@@ -408,7 +411,7 @@ export default function Navbar2() {
       <div className="h-full">
         {openAdminOptions ? <AdminOptions /> : ""}
         {UserArea ? (
-          <AreasAdmin id_area={id_area} nombre_area={nombre_area} />
+          <AreasAdmin id_area={id_area} nombre_area={nombre_area} isadmin={a} />
         ) : (
           ""
         )}
