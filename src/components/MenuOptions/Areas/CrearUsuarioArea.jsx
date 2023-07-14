@@ -152,7 +152,7 @@ export default function CrearUsuarioArea({ id_user }) {
             variant="h5"
             className="mr-auto font-normal text-center mt-4 mb-3"
           >
-            Crear Usuario {id_user}
+            Crear Usuario
           </Typography>
           <div className="flex justify-center mb-5">
             <img
@@ -323,7 +323,7 @@ export default function CrearUsuarioArea({ id_user }) {
                   color="black"
                   className="mr-auto font-normal text-center"
                 >
-                  El usuario tiene el rol de: {rol}
+                  El usuario tiene el rol de: {rol1}
                 </Typography>
               ) : (
                 ""

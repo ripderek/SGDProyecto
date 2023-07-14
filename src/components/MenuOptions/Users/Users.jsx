@@ -92,6 +92,9 @@ export default function Users() {
   };
   const [open1, setOpen1] = useState(false);
 
+  ///estado para abrir la modificacion de un usario desde el superusuario
+  const [openModificarUsuario, setOpenModificarUsuario] = useState(false);
+
   const handleOpen1 = () => {
     setOpen1(!open1);
   };
@@ -178,7 +181,7 @@ export default function Users() {
               Cerrar opciones de usuario
             </Typography>
           </button>
-          <PerfilUser iduser={userID} />
+          <PerfilUser iduser={userID} isadmin={true} />
         </Dialog>
       ) : (
         ""
@@ -531,8 +534,12 @@ export default function Users() {
                       className="p-4 border-b border-blue-gray-50"
                       onClick={() => (handleOpenArea(), setUserID(user.userid))}
                     >
-                      <Tooltip content="Edit User">
-                        <IconButton variant="text" color="blue-gray">
+                      <Tooltip content="Editar usuarios">
+                        <IconButton
+                          variant="text"
+                          color="blue-gray"
+                          onClick={() => setOpenModificarUsuario(true)}
+                        >
                           <PencilIcon className="h-4 w-4" />
                         </IconButton>
                       </Tooltip>

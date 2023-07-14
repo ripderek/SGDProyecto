@@ -15,11 +15,16 @@ import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", "Editar"];
 import AgregarUserArea from "../Areas/AgregarUserArea";
+import PerfilUser from "../Users/PerfilUser";
 export default function UsersAreas(id) {
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
+  const [userID, setUserID] = useState();
+
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
+  const [openArea, setOpenArea] = useState(false);
+  const handleOpenArea = () => setOpenArea(!openArea);
   useEffect(() => {
     load();
   }, []);
@@ -39,6 +44,23 @@ export default function UsersAreas(id) {
   };
   return (
     <div>
+      {openArea ? (
+        <Dialog
+          size="xxl"
+          open={openArea}
+          handler={handleOpenArea}
+          className="overflow-y-scroll"
+        >
+          <button onClick={handleOpenArea} className="bg-yellow-900">
+            <Typography variant="h2" color="white">
+              Cerrar opciones de usuario
+            </Typography>
+          </button>
+          <PerfilUser iduser={userID} isadminarea={true} idarea={id.id} />
+        </Dialog>
+      ) : (
+        ""
+      )}
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none">
         {openUser ? (
           <Dialog
@@ -179,7 +201,13 @@ export default function UsersAreas(id) {
 
                 <td className="p-4 border-b border-blue-gray-50">
                   <Tooltip content="Edit User">
-                    <IconButton variant="text" color="blue-gray">
+                    <IconButton
+                      variant="text"
+                      color="blue-gray"
+                      onClick={() => (
+                        handleOpenArea(), setUserID(user.u_id_user)
+                      )}
+                    >
                       <PencilIcon className="h-4 w-4" />
                     </IconButton>
                   </Tooltip>
