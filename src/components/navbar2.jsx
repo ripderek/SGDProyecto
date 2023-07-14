@@ -42,6 +42,10 @@ import AdminOptions from "./MenuOptions/AdminOptions";
 import User_area from "./MenuOptions/Areas/User_area";
 //importar la opcion PerfilUser
 import PerfilUser from "./MenuOptions/Users/PerfilUser";
+//importar la opcion de proyectos de areas
+import ProyectosAreas from "./MenuOptions/Proyects/ProyectosAreas";
+//importar la opcion para ver el proyecto
+import Proyecto from "./MenuOptions/Proyects/Proyecto";
 import { comment } from "postcss";
 
 export default function Navbar2() {
@@ -65,9 +69,37 @@ export default function Navbar2() {
   const id_area = (id) => {
     setIDa(id);
     if (id) {
-      setOpenAreaADmin(true);
+      if (opProyects) {
+        setOpenProyects1(true);
+        setUserArea(false);
+        setAbrirProyecto(false);
+      } else {
+        setOpenAreaADmin(true);
+        setUserArea(false);
+        setAbrirProyecto(false);
+      }
+    } else {
+      setOpenAreaADmin(false);
+      setOpenProyects1(false);
+      setAbrirProyecto(false);
+    }
+  };
+  const [idProyecto, setIdProyecto] = useState("");
+  const [abrirProyecto, setAbrirProyecto] = useState(false);
+  const addIDP = (id) => {
+    //guardar el id del proyecto y preguntar si existe el id para abrir las opciones del proyecto
+    if (id) {
+      setIdProyecto(id);
+      setAbrirProyecto(true);
+      setOpenProyects1(false);
       setUserArea(false);
-    } else setOpenAreaADmin(false);
+      setOpenAreaADmin(false);
+    }
+  };
+  //guardar el nombre del area seleccionada
+  const [Areaname, setAreaName] = useState("");
+  const nombre_area = (n) => {
+    setAreaName(n);
   };
   //Estados para abrir las opciones del menu
   //opcion Admin
@@ -78,7 +110,14 @@ export default function Navbar2() {
     setUserArea(false);
     setOpPerfil(false);
     setOpenAreaADmin(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
   };
+  //Estado para abrir la opcion de proyectos
+  const [opProyects, setOpenProyects] = useState(false);
+  const [opProyects1, setOpenProyects1] = useState(false);
+
   //Estado para el area data
   const [UserArea, setUserArea] = useState(false);
   const handleArea = () => {
@@ -87,6 +126,9 @@ export default function Navbar2() {
     setOpenM(false);
     setOpenAdmin(false);
     setOpPerfil(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
   };
   //Estado para abrir la opcion perfil
   const [opPerfil, setOpPerfil] = useState(false);
@@ -96,6 +138,9 @@ export default function Navbar2() {
     setOpenM(false);
     setOpenAdmin(false);
     setOpenAreaADmin(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
   };
 
   //Estado para almacenar la data del usuario
@@ -300,7 +345,7 @@ export default function Navbar2() {
               </ListItemPrefix>
               Inicio
             </ListItem>
-            <ListItem onClick={handleArea}>
+            <ListItem onClick={() => (handleArea(), setOpenProyects(true))}>
               <ListItemPrefix>
                 <PresentationChartBarIcon className="h-5 w-5" />
               </ListItemPrefix>
@@ -361,10 +406,28 @@ export default function Navbar2() {
         </Dialog>
       </Fragment>
       <div className="h-full">
-        {openAdminOptions ? <AdminOptions></AdminOptions> : ""}
-        {UserArea ? <AreasAdmin id_area={id_area} /> : ""}
+        {openAdminOptions ? <AdminOptions /> : ""}
+        {UserArea ? (
+          <AreasAdmin id_area={id_area} nombre_area={nombre_area} />
+        ) : (
+          ""
+        )}
         {opPerfil ? <PerfilUser iduser={cookies.get("id_user")} /> : ""}
         {OpenAreaADmin ? <OPArea idArea={idA} /> : ""}
+        {opProyects1 ? (
+          <ProyectosAreas idarea={idA} nombrearea={Areaname} addIDP={addIDP} />
+        ) : (
+          ""
+        )}
+        {abrirProyecto ? (
+          <Proyecto
+            idproyecto={idProyecto}
+            nombrearea={Areaname}
+            idarea={idA}
+          />
+        ) : (
+          ""
+        )}
       </div>
     </Fragment>
   );

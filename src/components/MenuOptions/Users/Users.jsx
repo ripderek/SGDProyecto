@@ -109,7 +109,14 @@ export default function Users() {
     firma: "",
   });
   // llenar automaticamente los datos del usuario a medida que se escribe en los txt
-
+  const ImagePreview = (e) => {
+    try {
+      setFile(e.target.files[0]);
+      setFileP(URL.createObjectURL(e.target.files[0]));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const HandleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
     console.log(e.target.name, e.target.value);
@@ -152,9 +159,8 @@ export default function Users() {
       }
     } catch (error) {
       let error1 = error.response.data.message;
-      console.log(error1);
+      console.log(error);
       setError(error1);
-      if (!error1) setError("Formato de imagen no admitido");
       hadleAlerterror();
     }
   };
@@ -234,10 +240,8 @@ export default function Users() {
                   <div className="mb-4 flex flex-col gap-6">
                     <input
                       type="file"
-                      onChange={(e) => {
-                        setFile(e.target.files[0]);
-                        setFileP(URL.createObjectURL(e.target.files[0]));
-                      }}
+                      onChange={ImagePreview}
+                      accept="image/png, .jpeg"
                     />
                     <Input
                       size="lg"

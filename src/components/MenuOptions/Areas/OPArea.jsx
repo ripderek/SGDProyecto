@@ -20,41 +20,91 @@ import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 //prueba para dibujar el arbol
 import Arbol from "../Areas/VerArbol";
 import OpProyectos from "../Proyects/OpProyectos";
-
+import EditarArea from "./EditarArea";
+import CambiarFoto from "./CambiarFoto";
+import CrearUsuarioArea from "./CrearUsuarioArea";
 export default function OPArea(idArea) {
   const [openUsers, setOpenUsers] = useState(false);
   const handleUsers = () => {
-    setOpenUsers(!openUsers);
+    setOpenUsers(true);
     setOpenAreas(false);
     setOpenJerarquia(false);
-    setFondo(openUsers ? true : false);
+    setOpenEditrArea(false);
+    setOpenCambiarFoto(false);
+    setOpenCrearUsuario(false);
+    setFondo(false);
+
     setOpenProyectos(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
   const handleAreas = () => {
-    setOpenAreas(!openAreas);
+    setOpenAreas(true);
+    setOpenEditrArea(false);
     setOpenUsers(false);
+    setOpenCambiarFoto(false);
+    setOpenCrearUsuario(false);
+    setFondo(false);
   };
   //estado para abrir la opcion de jerarquia de area
   const [openJerarquia, setOpenJerarquia] = useState(false);
   const handleJeraquia = () => {
     setOpenUsers(false);
     setOpenAreas(false);
-    setOpenJerarquia(!openJerarquia);
+    setOpenJerarquia(true);
     setOpenProyectos(false);
-    setFondo(openJerarquia ? true : false);
+    setOpenEditrArea(false);
+    setOpenCambiarFoto(false);
+    setOpenCrearUsuario(false);
+    setFondo(false);
   };
   //estado para abrir la opcion de proyectos de area
   const [openProyectos, setOpenProyectos] = useState(false);
   const handleProyectos = () => {
     setOpenUsers(false);
     setOpenAreas(false);
-    setOpenProyectos(!openProyectos);
+    setOpenProyectos(true);
     setOpenJerarquia(false);
+    setOpenEditrArea(false);
+    setOpenCrearUsuario(false);
     setFondo(openProyectos ? true : false);
+    setOpenCambiarFoto(false);
+    setFondo(false);
   };
 
+  const [openEditarArea, setOpenEditrArea] = useState(false);
+  const handleEditar = () => {
+    setOpenUsers(false);
+    setOpenAreas(false);
+    setOpenProyectos(false);
+    setOpenEditrArea(true);
+    setOpenCambiarFoto(false);
+    setOpenJerarquia(false);
+    setOpenCrearUsuario(false);
+    setFondo(false);
+  };
+  const [openCambiarFoto, setOpenCambiarFoto] = useState(false);
+  const handleCambiarFoto = () => {
+    setOpenUsers(false);
+    setOpenAreas(false);
+    setOpenProyectos(false);
+    setOpenEditrArea(false);
+    setOpenCambiarFoto(true);
+    setOpenJerarquia(false);
+    setOpenCrearUsuario(false);
+    setFondo(false);
+  };
+  const [openCrearUsuario, setOpenCrearUsuario] = useState(false);
+  const handleCrearUsuario = () => {
+    setOpenUsers(false);
+    setOpenAreas(false);
+    setOpenProyectos(false);
+    setOpenEditrArea(false);
+    setOpenCambiarFoto(false);
+    setOpenJerarquia(false);
+    setOpenCrearUsuario(true);
+    setFondo(false);
+  };
   const [fondo, setFondo] = useState(true);
   const [UserAreaData, setUserAreaData] = useState([]);
 
@@ -101,6 +151,15 @@ export default function OPArea(idArea) {
                 <List>
                   <ListItem
                     className="border-b-2 border-black rounded-none"
+                    onClick={handleCrearUsuario}
+                  >
+                    <ListItemPrefix></ListItemPrefix>
+                    Crear Usuario
+                  </ListItem>
+                </List>
+                <List>
+                  <ListItem
+                    className="border-b-2 border-black rounded-none"
                     onClick={handleProyectos}
                   >
                     <ListItemPrefix></ListItemPrefix>
@@ -117,9 +176,21 @@ export default function OPArea(idArea) {
                   </ListItem>
                 </List>
                 <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
+                  <ListItem
+                    className="border-b-2 border-black rounded-none"
+                    onClick={handleEditar}
+                  >
                     <ListItemPrefix></ListItemPrefix>
                     Editar Datos
+                  </ListItem>
+                </List>
+                <List>
+                  <ListItem
+                    className="border-b-2 border-black rounded-none"
+                    onClick={handleCambiarFoto}
+                  >
+                    <ListItemPrefix></ListItemPrefix>
+                    Cambiar foto
                   </ListItem>
                 </List>
               </div>
@@ -127,6 +198,13 @@ export default function OPArea(idArea) {
                 {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
                 {openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
                 {openProyectos ? <OpProyectos id={idArea.idArea} /> : ""}
+                {openEditarArea ? <EditarArea id_user={idArea.idArea} /> : ""}
+                {openCambiarFoto ? <CambiarFoto id_user={idArea.idArea} /> : ""}
+                {openCrearUsuario ? (
+                  <CrearUsuarioArea id_user={idArea.idArea} />
+                ) : (
+                  ""
+                )}
 
                 {fondo ? (
                   <div>

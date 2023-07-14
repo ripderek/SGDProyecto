@@ -62,7 +62,7 @@ export default function Flujo(idarea) {
             >
               <div className="flex justify-center">
                 <img
-                  className=" h-12 w-12 rounded-full border-4 border-yellow-600 cursor-pointer"
+                  className=" h-12 w-20 rounded-full border-4 border-yellow-600 cursor-pointer"
                   src={
                     "http://localhost:4000/api/area/Areaimagen/" + task.area_id
                   }

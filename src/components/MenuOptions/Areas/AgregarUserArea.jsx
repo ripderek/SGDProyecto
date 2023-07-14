@@ -11,6 +11,7 @@ import {
   Alert,
   ButtonGroup,
   Button,
+  Input,
 } from "@material-tailwind/react";
 import { Fragment, useState, useEffect, React } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -26,11 +27,7 @@ export default function AgregarUserArea(id) {
   const handleOpenArea = () => setOpenArea(!openArea);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
-  const [user, setUser] = useState({
-    p_id_user: "",
-    p_id_area: 1,
-    p_id_rol: 1,
-  });
+  const [user, setUser] = useState([]);
   //cargar los roles
   const [roles, setRoles] = useState([]);
   //estado para almacenar el rol
@@ -39,7 +36,7 @@ export default function AgregarUserArea(id) {
   const [error, setError] = useState([]);
   const [open, setOpen] = useState(false);
   const [color, setColor] = useState("yellow");
-
+  const [idarea, setIdeArea] = useState("");
   const handleOpen = () => {
     setOpen(!open);
   };
@@ -56,7 +53,7 @@ export default function AgregarUserArea(id) {
         credentials: "include",
       }
     );
-
+    setIdeArea(id.id);
     const data = await result.json();
     setUsers(data);
 
@@ -70,40 +67,55 @@ export default function AgregarUserArea(id) {
     const rolesuser = await roles.json();
     setRoles(rolesuser);
   };
-  const HandleSUbumit = async () => {
+  const HandleSUbumit = async (p1) => {
     try {
       const result = await axios.post(
         "http://localhost:4000/api/area/usuario_area",
-        user,
+        {
+          p_id_user: p1,
+          p_id_area: idarea,
+          p_id_rol: rol,
+        },
         {
           withCredentials: true,
         }
       );
+      console.log(user);
       load();
-      //console.log(result);
+      console.log(result);
     } catch (error) {
+      console.log(user);
       console.log(error);
-      setError(error.message);
+      setError(error.response.data.message);
       hadleAlerterror();
     }
   };
   return (
     <div className="h-auto">
-      <DialogHeader className="justify-between"></DialogHeader>
-      <Alert
-        color="yellow"
-        onClose={() => setOpenAlert(false)}
-        open={openAlert}
-      >
-        Se agrego un nuevo usuario al area
-      </Alert>
-      <Alert
-        color="red"
-        onClose={() => setOpenAlerterror(false)}
-        open={openAlerterror}
-      >
-        {error}
-      </Alert>
+      <DialogHeader className="justify-between">
+        <Alert
+          color="yellow"
+          onClose={() => setOpenAlert(false)}
+          open={openAlert}
+        >
+          Se agrego un nuevo usuario al area
+        </Alert>
+        <Alert
+          color="red"
+          onClose={() => setOpenAlerterror(false)}
+          open={openAlerterror}
+        >
+          {error}
+        </Alert>
+        <div className="w-full mt-0 p-5">
+          <Input
+            label=""
+            placeholder="Buscar usuarios"
+            color="black"
+            icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          />
+        </div>
+      </DialogHeader>
       <DialogBody divider={true}>
         <table className="mt-4 w-full min-w-max table-auto text-left">
           <thead>
@@ -184,7 +196,6 @@ export default function AgregarUserArea(id) {
                       className="font-normal"
                     >
                       {user1.u_identificacion}
-                      {rol}
                     </Typography>
                   </td>
                   <td>
@@ -204,14 +215,7 @@ export default function AgregarUserArea(id) {
                   </td>
                   <td
                     className="p-4 border-b border-blue-gray-50"
-                    onClick={() => {
-                      setUser({
-                        p_id_user: user1.u_id_user,
-                        p_id_area: id.id,
-                        p_id_rol: rol,
-                      }),
-                        HandleSUbumit();
-                    }}
+                    onClick={() => HandleSUbumit(user1.u_id_user)}
                   >
                     <Tooltip content="Edit User">
                       <IconButton variant="text" color="blue-gray">

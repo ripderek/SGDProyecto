@@ -44,7 +44,7 @@ export default function Areas() {
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   //mensaje de error
-  const [error, setError] = useState([]);
+  const [error, setError] = useState();
   //variables para almacenar todas las areas
   const [areasdata, setAreasData] = useState([]);
   //estado para abrir la modal ver area
@@ -133,8 +133,9 @@ export default function Areas() {
       load();
       //console.log(result);
     } catch (error) {
+      let error1 = error.response.data.message;
       console.log(error);
-      setError(error);
+      setError(error1);
       hadleAlerterror();
     }
   };
@@ -259,7 +260,7 @@ export default function Areas() {
                 onClose={() => setOpenAlerterror(false)}
                 open={openAlerterror}
               >
-                {error.message}
+                {error}
               </Alert>
               <div className="flex justify-center mb-5">
                 <img
@@ -373,6 +374,16 @@ export default function Areas() {
             </div>
           </div>
         </CardHeader>
+        {areasdata.length === 0 ? (
+          <div className="text-center">
+            <Typography variant="h2" color="blue-gray" className="font-normal">
+              No existen areas
+            </Typography>
+          </div>
+        ) : (
+          ""
+        )}
+
         <CardBody className="overflow-scroll px-0">
           <div className="grid grid-cols-4 gap-3 p-14">
             {areasdata.map((task) => (

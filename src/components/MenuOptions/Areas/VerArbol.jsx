@@ -20,6 +20,7 @@ export default function Arbol(idarea) {
   //constante para saber si el array solo tiene  1 elemento que seria la cabezera
   const [posiciones, setPosiciones] = useState([]);
   const verFlujo = () => {
+    console.log("ver flujo");
     var num = 0;
     var x = 10;
     var y = 0;
@@ -120,7 +121,7 @@ export default function Arbol(idarea) {
               >
                 <div className="flex justify-center">
                   <img
-                    className=" h-12 w-12 rounded-full border-4 border-yellow-600 cursor-pointer"
+                    className=" h-12 w-20 rounded-full border-4 border-yellow-600 cursor-pointer"
                     src={
                       "http://localhost:4000/api/area/Areaimagen/" +
                       task.area_id

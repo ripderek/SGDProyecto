@@ -9,6 +9,7 @@ import {
   Avatar,
   IconButton,
   Tooltip,
+  Input,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
@@ -54,12 +55,20 @@ export default function UsersAreas(id) {
                 Cerrar
               </Typography>
             </button>
+
             <AgregarUserArea id={id.id} key={id} />
           </Dialog>
         ) : (
           ""
         )}
-
+        <div className="w-full md:w-72 mr-5">
+          <Input
+            label=""
+            placeholder="Buscar usuarios"
+            color="black"
+            icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          />
+        </div>
         <Button
           className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
           onClick={handlerOpenUsers}

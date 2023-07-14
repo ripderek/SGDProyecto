@@ -51,6 +51,7 @@ export default function MiPerfi(iduser) {
   const openEditUser = (respuesta) => {
     setOpenEdit(respuesta);
     if (respuesta) load();
+    else load();
   };
   return (
     <Card className="">

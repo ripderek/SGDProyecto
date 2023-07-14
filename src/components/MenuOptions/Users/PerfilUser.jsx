@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import {
   Typography,
   List,
@@ -6,6 +6,8 @@ import {
   ListItemPrefix,
 } from "@material-tailwind/react";
 import MiPerfi from "../Users/MiPerfi";
+import CambiarFoto from "./CambiarFoto";
+import CambiarContra from "./CambiarContra";
 export default function PerfilUser(iduser) {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
@@ -56,13 +58,19 @@ export default function PerfilUser(iduser) {
             </List>
 
             <List>
-              <ListItem className="border-b-2 border-black rounded-none">
+              <ListItem
+                className="border-b-2 border-black rounded-none"
+                onClick={handleAreas}
+              >
                 <ListItemPrefix></ListItemPrefix>
                 Cambiar foto
               </ListItem>
             </List>
             <List>
-              <ListItem className="border-b-2 border-black rounded-none">
+              <ListItem
+                className="border-b-2 border-black rounded-none"
+                onClick={handleEmpresa}
+              >
                 <ListItemPrefix></ListItemPrefix>
                 Cambiar Contraseña
               </ListItem>
@@ -70,6 +78,8 @@ export default function PerfilUser(iduser) {
           </div>
           <div className="row-span-2  w-full h-full col-span-12 bg-white">
             {openUsers ? <MiPerfi iduser={iduser.iduser} /> : ""}
+            {openAreas ? <CambiarFoto id_user={iduser.iduser} /> : ""}
+            {openEmpresa ? <CambiarContra id_user={iduser.iduser} /> : ""}
           </div>
         </div>
       </div>

@@ -21,7 +21,7 @@ import {
   Drawer,
 } from "@material-tailwind/react";
 
-export default function AreasAdmin({ id_area }) {
+export default function AreasAdmin({ id_area, nombre_area }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
 
@@ -109,7 +109,9 @@ export default function AreasAdmin({ id_area }) {
                 </div>
                 <div
                   className="p-2  bg-green-400"
-                  onClick={() => id_area(task.a_id_area)}
+                  onClick={() => (
+                    id_area(task.a_id_area), nombre_area(task.a_nombre_area)
+                  )}
                 >
                   <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
                     <p className="text-lg font-semibold items-center text-white">

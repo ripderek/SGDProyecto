@@ -9,23 +9,38 @@ import {
   Avatar,
   IconButton,
   Tooltip,
+  Input,
 } from "@material-tailwind/react";
-import axios from "axios";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", "Editar"];
-import AgregarUserArea from "../Areas/AgregarUserArea";
+const TABLE_HEAD = [
+  "Titulo",
+  "Codigo",
+  "Estado",
+  "Prefijo",
+  "Categoria",
+  "Accion",
+];
+import CrearProyecto from "./CrearProyecto";
 export default function OpProyectos(id) {
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
+
+  //Funcion para cerrar el formulario de crear proyectos
+  const [openFOrm, setOpenForm] = useState(false);
+
+  const openDiv = (opend) => {
+    setOpenForm(opend);
+    load();
+  };
+
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/area/user_area/" + id.id,
+      "http://localhost:4000/api/proyects/proyectos_areas/" + id.id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -38,31 +53,25 @@ export default function OpProyectos(id) {
   };
   return (
     <div>
-      <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none">
-        {openUser ? (
-          <Dialog
-            size="xl"
-            open={openUser}
-            handler={handlerOpenUsers}
-            className="overflow-y-scroll rounded-none h-4/5"
-          >
-            <button
-              className="bg-green-900 w-full"
-              onClick={() => (handlerOpenUsers(), load())}
-            >
-              <Typography variant="h2" color="white">
-                Cerrar
-              </Typography>
-            </button>
-            <AgregarUserArea id={id.id} key={id} />
+      <div className="flex shrink-0 flex-col  sm:flex-row justify-end rounded-none">
+        {openFOrm ? (
+          <Dialog open={openFOrm} className="overflow-y-scroll rounded-none">
+            <CrearProyecto id={id.id} openDiv={openDiv} />
           </Dialog>
         ) : (
           ""
         )}
-
+        <div className="w-full md:w-72 mr-5">
+          <Input
+            label=""
+            placeholder="Buscar proyectos"
+            color="black"
+            icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+          />
+        </div>
         <Button
           className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
-          onClick={handlerOpenUsers}
+          onClick={setOpenForm}
         >
           <UserPlusIcon className="h-7 w-7" />
           <p className="mt-1"> Agregar Proyecto</p>
@@ -90,51 +99,16 @@ export default function OpProyectos(id) {
         <tbody>
           {users.map((user) => {
             return (
-              <tr key={user.u_id_user}>
+              <tr key={user.p_id_proyecto}>
                 <td className="p-4 border-b border-blue-gray-50">
                   <div className="flex items-center gap-3">
-                    <Avatar
-                      src={
-                        "http://localhost:4000/api/user/foto/" + user.u_id_user
-                      }
-                      alt={user.u_nombres}
-                      size="sm"
-                    />
                     <div className="flex flex-col">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.u_nombres}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_correo}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_correo2}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_id_user}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_nombrefirma}
+                        {user.p_titulo}
                       </Typography>
                     </div>
                   </div>
@@ -146,7 +120,7 @@ export default function OpProyectos(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_identificacion}
+                    {user.p_codigo}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-50">
@@ -155,7 +129,7 @@ export default function OpProyectos(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_celular}
+                    {user.p_estado ? "Habilitado" : "Deshabilitado"}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-50">
@@ -164,7 +138,16 @@ export default function OpProyectos(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_rol}
+                    {user.p_prefijo}
+                  </Typography>
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    {user.p_categoria}
                   </Typography>
                 </td>
 
