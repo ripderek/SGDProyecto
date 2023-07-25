@@ -89,10 +89,14 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
                       className="mt-3"
                     />
                   </div>
+                  <div className="w-full p-4">
+                    <input
+                      className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
+                      disabled
+                      value={task.a_nombre_area}
+                    />
+                  </div>
 
-                  <h1 className="text-lg font-bold text-black text-center mb-2 mt-4">
-                    {task.a_nombre_area}
-                  </h1>
                   <div className="w-auto flex ml-2 mb-2">
                     <Chip
                       variant="ghost"
