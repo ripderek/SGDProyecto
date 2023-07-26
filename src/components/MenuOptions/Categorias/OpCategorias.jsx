@@ -487,7 +487,7 @@ export default function OpCategorias() {
                           <Chip
                             variant="ghost"
                             size="sm"
-                            value={user.t_estado ? "True" : "False"}
+                            value={user.t_est}
                             color={user.t_estado ? "green" : "blue-gray"}
                           />
                         </div>

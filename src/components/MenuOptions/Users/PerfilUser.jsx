@@ -16,7 +16,13 @@ import MiPerfi from "../Users/MiPerfi";
 import CambiarFoto from "./CambiarFoto";
 import CambiarContra from "./CambiarContra";
 import CambiarContraAdmin from "./CambiarContraAdmin";
-export default function PerfilUser({ iduser, isadmin, isadminarea, idarea }) {
+export default function PerfilUser({
+  iduser,
+  isadmin,
+  isadminarea,
+  idarea,
+  admin,
+}) {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
   const [openUsers, setOpenUsers] = useState(false);
@@ -26,7 +32,6 @@ export default function PerfilUser({ iduser, isadmin, isadminarea, idarea }) {
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
-
     setOpenCambiarEstado(false);
   };
   //estado para abrir la opcion de areas
@@ -240,7 +245,7 @@ export default function PerfilUser({ iduser, isadmin, isadminarea, idarea }) {
             )}
           </div>
           <div className="row-span-2  w-full h-full col-span-12 bg-white">
-            {openUsers ? <MiPerfi iduser={iduser} /> : ""}
+            {openUsers ? <MiPerfi iduser={iduser} admin={admin} /> : ""}
             {openAreas ? <CambiarFoto id_user={iduser} /> : ""}
             {openEmpresa ? <CambiarContra id_user={iduser} /> : ""}
             {openContraAdmin ? <CambiarContraAdmin id_user={iduser} /> : ""}

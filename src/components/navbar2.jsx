@@ -415,7 +415,14 @@ export default function Navbar2() {
         ) : (
           ""
         )}
-        {opPerfil ? <PerfilUser iduser={cookies.get("id_user")} /> : ""}
+        {opPerfil ? (
+          <PerfilUser
+            iduser={cookies.get("id_user")}
+            admin={dataUser.isadmin_user}
+          />
+        ) : (
+          ""
+        )}
         {OpenAreaADmin ? <OPArea idArea={idA} /> : ""}
         {opProyects1 ? (
           <ProyectosAreas idarea={idA} nombrearea={Areaname} addIDP={addIDP} />

@@ -483,13 +483,7 @@ export default function Users() {
                           >
                             {user.correo_institucional_user}
                           </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.userid}
-                          </Typography>
+
                           <Typography
                             variant="small"
                             color="blue-gray"
@@ -525,7 +519,7 @@ export default function Users() {
                         <Chip
                           variant="ghost"
                           size="sm"
-                          value={user.estado_user ? "True" : "False"}
+                          value={user.estadou}
                           color={user.estado_user ? "green" : "blue-gray"}
                         />
                       </div>

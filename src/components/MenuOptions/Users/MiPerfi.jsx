@@ -1,6 +1,3 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
 import {
   CardHeader,
   CardBody,
@@ -10,6 +7,8 @@ import {
 } from "@material-tailwind/react";
 import { Fragment, useState, useEffect } from "react";
 import EditUser from "../Users/EditUser";
+import EditUserM from "../Users/EditUserM";
+
 const TABLE_HEAD = [
   "Tipo Identificacion",
   "Identificacion",
@@ -20,7 +19,7 @@ const TABLE_HEAD = [
   "Accion",
 ];
 
-export default function MiPerfi(iduser) {
+export default function MiPerfi({ admin, iduser }) {
   //Data para almacenar la respuesta del usuario
   const [UserData, setUserData] = useState([]);
   const [userImage, setUserImage] = useState("");
@@ -36,14 +35,14 @@ export default function MiPerfi(iduser) {
   const load = async () => {
     try {
       const resultdata = await fetch(
-        "http://localhost:4000/api/user/Datos/" + iduser.iduser,
+        "http://localhost:4000/api/user/Datos/" + iduser,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
         }
       );
-      setUserImage("http://localhost:4000/api/user/foto/" + iduser.iduser);
+      setUserImage("http://localhost:4000/api/user/foto/" + iduser);
       const dataU = await resultdata.json();
       setUserData(dataU);
     } catch (error) {}
@@ -56,7 +55,11 @@ export default function MiPerfi(iduser) {
   return (
     <Card className="">
       {openEdit ? (
-        <EditUser openEditUser={openEditUser} userID={iduser.iduser} />
+        admin ? (
+          <EditUserM openEditUser={openEditUser} userID={iduser} />
+        ) : (
+          <EditUser openEditUser={openEditUser} userID={iduser} />
+        )
       ) : (
         ""
       )}
