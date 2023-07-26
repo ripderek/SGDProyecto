@@ -83,7 +83,7 @@ export default function Navbar1() {
   return (
     <Fragment>
       <Navbar className=" rounded-none shadow-none w-full  bg-gray-900  p-4 border-none mx-auto ">
-        <div className="flex flex-wrap items-center justify-between gap-y-4 ">
+        <div className="flex flex-wrap items-center justify-between gap-y-4  ">
           <Typography
             as="a"
             href="#"
@@ -127,7 +127,7 @@ export default function Navbar1() {
         <Drawer
           open={open}
           onClose={closeDrawer}
-          className="p-4"
+          className="p-4 "
           placement="right"
         >
           <form onSubmit={HandleSUbumit}>
@@ -188,6 +188,18 @@ export default function Navbar1() {
               >
                 Recuperar cuenta
               </Button>
+            </div>
+            <div className="h-auto bg-gray-300  border-4 border-yellow-200  shadow-2xl flex mt-4 cursor-pointer">
+              <div className="flex p-4">
+                <img
+                  className=" h-7 w-7 rounded-full "
+                  src="/img/Home/Google.png"
+                  alt="User image"
+                />
+              </div>
+              <div className="flex flex-col gap-1 p-4 font-semibold">
+                Continuar con Google
+              </div>
             </div>
           </form>
           <Fragment>

@@ -59,20 +59,20 @@ export default function EditarArea({ id_user }) {
         >
           {error.message}
         </Alert>
-        <Card className="w-full max-w-[24rem] mx-auto bg-blue-gray-50 rounded-none">
+        <Card className="w-full max-w-[24rem] mx-auto bg-blue-gray-100 rounded-none shadow-2xl">
           <CardHeader
-            color="green"
+            color="white"
             floated={false}
             shadow={false}
-            className="m-0 grid place-items-center rounded-none py-8 px-4 text-center"
+            className="bg-gray-50 m-0 grid place-items-center rounded-none py-8 px-4 text-center"
           >
-            <Typography variant="h3" color="white" className="mb-4">
+            <Typography variant="h3" color="black" className="mb-4">
               Cambiar Datos
             </Typography>
             <div className="mb-4 w-full">
               <Input
                 variant="outlined"
-                color="white"
+                color="black"
                 label="Nombre del area"
                 name="p_nombre_area"
                 onChange={HandleChange}
@@ -81,17 +81,17 @@ export default function EditarArea({ id_user }) {
             <div className=" w-full">
               <Input
                 variant="outlined"
-                color="white"
+                color="black"
                 label="Prefijo"
                 name="p_prefijo_area"
                 onChange={HandleChange}
               />
             </div>
           </CardHeader>
-          <CardBody className="justify-items-end">
+          <CardBody className="items-end ">
             <div className="justify-end justify-items-end">
               <Button
-                className="bg-yellow-900 p-3 justify-items-end rounded-none"
+                className="bg-green-700 p-3 justify-items-end rounded-none"
                 onClick={HandleSUbumit}
               >
                 <Typography variant="h6" color="white">

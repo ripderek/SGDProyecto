@@ -181,7 +181,7 @@ export default function Users() {
               Cerrar opciones de usuario
             </Typography>
           </button>
-          <PerfilUser iduser={userID} isadmin={true} />
+          <PerfilUser iduser={userID} isadmin={true} admin={true} />
         </Dialog>
       ) : (
         ""

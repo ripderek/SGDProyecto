@@ -56,9 +56,9 @@ export default function MiPerfi({ admin, iduser }) {
     <Card className="">
       {openEdit ? (
         admin ? (
-          <EditUserM openEditUser={openEditUser} userID={iduser} />
-        ) : (
           <EditUser openEditUser={openEditUser} userID={iduser} />
+        ) : (
+          <EditUserM openEditUser={openEditUser} userID={iduser} />
         )
       ) : (
         ""

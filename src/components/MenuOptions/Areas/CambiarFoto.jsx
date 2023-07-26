@@ -61,9 +61,9 @@ export default function CambiarFoto({ id_user }) {
       >
         {error.message}
       </Alert>
-      <Card className="w-full max-w-[24rem] mx-auto bg-blue-gray-50 rounded-none">
+      <Card className="w-full max-w-[24rem] mx-auto  rounded-none shadow-2xl bg-blue-gray-100 ">
         <CardHeader
-          color="green"
+          color="white"
           floated={false}
           shadow={false}
           className="m-0 grid place-items-center rounded-none py-8 px-4 text-center"
@@ -79,16 +79,20 @@ export default function CambiarFoto({ id_user }) {
               alt="User image"
             />
           </div>
-          <input
-            type="file"
-            accept="image/png, .jpeg"
-            onChange={ImagePreview}
-          />
+          <div className="h-9">
+            <input
+              className="bg-white"
+              id="btnoriginal"
+              type="file"
+              accept="image/png, .jpeg"
+              onChange={ImagePreview}
+            />
+          </div>
         </CardHeader>
         <CardBody className="justify-items-end">
           <div className="justify-end justify-items-end">
             <Button
-              className="bg-yellow-900 p-3 justify-items-end rounded-none"
+              className="bg-green-700 p-3 justify-items-end rounded-none"
               onClick={HandleSUbumit}
             >
               <Typography variant="h6" color="white">

@@ -97,7 +97,7 @@ export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
           {areasdata.map((task) => (
             <div className="w-[25rem]" key={task.p_id_proyecto}>
               <Timeline>
-                <TimelineItem className="h-28">
+                <TimelineItem className="h-auto shadow-2xl">
                   <TimelineHeader
                     className="relative rounded-none border border-blue-gray-50 bg-light-green-700 py-3 pl-4 pr-8 shadow-lg shadow-blue-gray-900/5"
                     onClick={() => addIDP(task.p_id_proyecto)}
@@ -110,9 +110,14 @@ export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
                       <ClipboardDocumentIcon className="h-5 w-5" />
                     </TimelineIcon>
                     <div className="flex flex-col gap-1">
-                      <Typography variant="h3" color="white">
-                        {task.p_titulo}
-                      </Typography>
+                      <div className="w-full">
+                        <input
+                          className="w-full text-lg bg-light-green-700 font-semibold	text-white "
+                          disabled
+                          value={task.p_titulo}
+                        />
+                      </div>
+
                       <Typography
                         variant="small"
                         color="white"

@@ -41,7 +41,7 @@ export default function Arbol(idarea) {
                 nombrearea: areasdata[j].nombrearea,
               },
             ];
-            y = y + 200;
+            y = y + 120;
           } else {
             posicion1 = [
               ...posicion1,
@@ -73,6 +73,16 @@ export default function Arbol(idarea) {
     "relative rounded-xl border border-blue-gray-50  py-3 pl-4 pr-8 shadow-lg shadow-blue-gray-900/5 bg-yellow-400 text-black  "
   );
 
+  const [styleTituloC, setTC] = useState(
+    "w-full text-lg bg-light-green-900 font-semibold	text-White"
+  );
+  const [styleTituloN, setTN] = useState(
+    "w-full text-lg  bg-white  font-semibold	text-blue-gray-800 "
+  );
+  const [styleTituloM, setTM] = useState(
+    "w-full text-lg bg-yellow-400 font-semibold	text-blue-gray-800 "
+  );
+
   //    createTasks({ title, description });
 
   useEffect(() => {
@@ -102,13 +112,13 @@ export default function Arbol(idarea) {
       overflow-x-scroll   "
     >
       <button onClick={verFlujo}>Cargar Flujo</button>
-      <div className="relative ml-24 w-full h-full">
+      <div className="relative  w-full ">
         {posiciones.map((task) => (
           <div
             className="absolute"
             style={{ left: task.pos_x, top: task.pos_y }}
           >
-            <TimelineItem className="h-28 w-80">
+            <TimelineItem className="h-28 w-96">
               <TimelineConnector className="" />
               <TimelineHeader
                 className={
@@ -121,7 +131,7 @@ export default function Arbol(idarea) {
               >
                 <div className="flex justify-center">
                   <img
-                    className=" h-12 w-20 rounded-full border-4 border-yellow-600 cursor-pointer"
+                    className=" h-16 w-16 rounded-full border-4 border-yellow-600 cursor-pointer"
                     src={
                       "http://localhost:4000/api/area/Areaimagen/" +
                       task.area_id
@@ -130,7 +140,19 @@ export default function Arbol(idarea) {
                   />
                 </div>
                 <div className="flex flex-col gap-1 ">
-                  <Typography variant="h4">{task.nombrearea}</Typography>
+                  <div className="w-full">
+                    <input
+                      className={
+                        task.cabezer
+                          ? styleTituloC
+                          : task.area_id == idarea.idarea
+                          ? styleTituloM
+                          : styleTituloN
+                      }
+                      disabled
+                      value={task.nombrearea}
+                    />
+                  </div>
                   <Typography>
                     {task.cabezer ? "Area Padre" : "Area Hija"}
                   </Typography>
