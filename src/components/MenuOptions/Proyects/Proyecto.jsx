@@ -20,6 +20,7 @@ import { HeartIcon, ShareIcon } from "@heroicons/react/24/solid";
 import UsersAreas from "../Areas/UsersAreas";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 import DocumentosAreas from "./DocumentosAreas";
+import GuiasProyecto from "./GuiasProyecto";
 
 //props {idproyecto, nombrearea, idarea}
 export default function Proyecto({ idproyecto, nombrearea, idarea }) {
@@ -29,7 +30,15 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
   const [openDocuments, setOpenDocuments] = useState(false);
   const handleDocuments = () => {
     setOpenDocuments(!openDocuments);
+    setOpenGuias(false);
     setFondo(openDocuments ? true : false);
+  };
+  //abrir la opcion de guias del proyecto
+  const [openGuias, setOpenGuias] = useState(false);
+  const handleGuias = () => {
+    setOpenDocuments(false);
+    setOpenGuias(!openGuias);
+    setFondo(openGuias ? true : false);
   };
   //abrir el editor de texto
   const [openEditor, SetOpenEditor] = useState(false);
@@ -104,6 +113,12 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                     </ListItem>
                   </List>
                 )}
+                <List onClick={handleGuias}>
+                  <ListItem className="border-b-2 border-black rounded-none">
+                    <ListItemPrefix></ListItemPrefix>
+                    Guias
+                  </ListItem>
+                </List>
                 <List>
                   <ListItem className="border-b-2 border-black rounded-none">
                     <ListItemPrefix></ListItemPrefix>
@@ -127,10 +142,21 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                     Comentarios
                   </ListItem>
                 </List>
+                <List>
+                  <ListItem className="border-b-2 border-black rounded-none">
+                    <ListItemPrefix></ListItemPrefix>
+                    Historial de borradores
+                  </ListItem>
+                </List>
               </div>
               <div className="row-span-2  w-full h-auto col-span-12 ">
                 {openDocuments ? (
                   <DocumentosAreas id={idproyecto} rol={areasdata.p_rol} />
+                ) : (
+                  ""
+                )}
+                {openGuias ? (
+                  <GuiasProyecto id={idproyecto} rol={areasdata.p_rol} />
                 ) : (
                   ""
                 )}

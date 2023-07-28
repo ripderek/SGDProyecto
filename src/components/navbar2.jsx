@@ -246,7 +246,7 @@ export default function Navbar2() {
           <Typography
             as="a"
             href="#"
-            variant="h3"
+            variant="h4"
             color="white"
             className="mr-4 ml-2 cursor-pointer py-1.5"
           >
