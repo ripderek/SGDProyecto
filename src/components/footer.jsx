@@ -11,7 +11,7 @@ export default function Footer() {
           className="w-60"
         />
         <img
-          src="/img/Home/img-ident-corp-ai-00002.png"
+          src={"http://localhost:4000/api/public/Imagen_Empresa"}
           alt="logo-ct"
           className="w-56"
         />

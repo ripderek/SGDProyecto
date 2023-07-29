@@ -1,24 +1,13 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon, ArchiveBoxIcon } from "@heroicons/react/24/solid";
 import {
   Card,
-  CardHeader,
   Input,
   Typography,
   Button,
-  CardBody,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
   Alert,
-  Chip,
-  Avatar,
-  Drawer,
   List,
   ListItem,
   ListItemPrefix,
@@ -26,9 +15,7 @@ import {
   AccordionHeader,
 } from "@material-tailwind/react";
 import axios from "axios";
-import OPArea from "../Areas/OPArea";
-import { useState, useEffect, Fragment } from "react";
-import { FaSearch } from "react-icons/fa";
+import { useState, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 export default function EditUser({ openEditUser, userID }) {
