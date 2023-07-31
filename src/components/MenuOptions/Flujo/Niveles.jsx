@@ -51,16 +51,22 @@ const TABS = [
   },
 ];
 import Crear_Nivel from "./Crear_Nivel";
+import Ver_Niveles from "./Ver_Niveles";
 const TABLE_HEAD = ["Ver Flujo de Niveles", "Descripcion", "Estado", "Editar"];
 export default function Niveles() {
   const [openOP, setOpenOP] = useState(false);
   const handlerOpen = (estado) => {
     setOpenOP(estado);
   };
+  const [openVerNiveles, setVerNiveles] = useState(false);
+  const handlerNiveles = (estado) => {
+    setVerNiveles(estado);
+  };
   return (
     <div>
       <Card className="h-full w-full rounded-none shadow-none">
         {openOP ? <Crear_Nivel handlerOpen={handlerOpen} /> : ""}
+        {openVerNiveles ? <Ver_Niveles handlerNiveles={handlerNiveles} /> : ""}
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
@@ -72,7 +78,10 @@ export default function Niveles() {
               </Typography>
             </div>
             <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-              <Button className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11">
+              <Button
+                className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
+                onClick={() => setVerNiveles(true)}
+              >
                 <EyeIcon className="h-7 w-7" />
                 <p className="mt-1"> Ver Niveles</p>
               </Button>

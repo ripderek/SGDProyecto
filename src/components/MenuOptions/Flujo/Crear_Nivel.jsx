@@ -7,6 +7,7 @@ import {
   DialogBody,
   Input,
   Alert,
+  Checkbox,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -17,7 +18,11 @@ export default function Crear_Nivel({ handlerOpen }) {
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   const [error, setError] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState({
+    p_titulo: "",
+    p_descripcion: "",
+    p_cardinalidad: false,
+  });
   const HandleChange = (e) => {
     setUsers({ ...users, [e.target.name]: e.target.value });
   };
@@ -91,6 +96,22 @@ export default function Crear_Nivel({ handlerOpen }) {
                 label="Descripcion"
                 name="p_descripcion"
                 onChange={HandleChange}
+              />
+              <Checkbox
+                name="p_cardinalidad"
+                onChange={(e) =>
+                  setUsers({ ...users, [e.target.name]: e.target.checked })
+                }
+                label={
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    className="flex items-center font-normal"
+                  >
+                    Cardinalidad Muchos?
+                  </Typography>
+                }
+                containerProps={{ className: "-ml-2.5" }}
               />
             </div>
             <Button
