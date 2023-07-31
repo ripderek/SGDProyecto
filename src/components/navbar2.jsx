@@ -408,7 +408,7 @@ export default function Navbar2() {
           </DialogFooter>
         </Dialog>
       </Fragment>
-      <div className="h-full">
+      <div className="h-full mb-7 border-0 border-x-white">
         {openAdminOptions ? <AdminOptions /> : ""}
         {UserArea ? (
           <AreasAdmin id_area={id_area} nombre_area={nombre_area} isadmin={a} />

@@ -1,21 +1,13 @@
 import { React, Fragment, useState, useEffect } from "react";
 import {
-  Button,
-  Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Avatar,
-  IconButton,
-  Typography,
-  Card,
   List,
   ListItem,
   ListItemPrefix,
 } from "@material-tailwind/react";
-import { HeartIcon, ShareIcon } from "@heroicons/react/24/solid";
 import UsersAreas from "../Areas/UsersAreas";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 
 //prueba para dibujar el arbol
 import Arbol from "../Areas/VerArbol";

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from "react";
+import { Fragment, useState } from "react";
 import {
   Typography,
   List,
@@ -10,6 +10,7 @@ import Users from "../MenuOptions/Users/Users";
 import Areas from "../MenuOptions/Areas/Areas";
 import Empresa_Datos from "../MenuOptions/Empresa/Empresa_Datos";
 import OpCategorias from "./Categorias/OpCategorias";
+import Niveles from "./Flujo/Niveles";
 export default function AdminOptions() {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
@@ -19,6 +20,7 @@ export default function AdminOptions() {
     setOpenAreas(false);
     setOpenEmpresa(false);
     setOpenCategoria(false);
+    setOpenNiveles(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -27,6 +29,7 @@ export default function AdminOptions() {
     setOpenUsers(false);
     setOpenEmpresa(false);
     setOpenCategoria(false);
+    setOpenNiveles(false);
   };
   //estado para abrir la opcion de empresa
   const [openEmpresa, setOpenEmpresa] = useState(false);
@@ -34,6 +37,7 @@ export default function AdminOptions() {
     setOpenAreas(false);
     setOpenUsers(false);
     setOpenEmpresa(!openEmpresa);
+    setOpenNiveles(false);
     setOpenCategoria(false);
   };
   //estado para categoria
@@ -42,7 +46,17 @@ export default function AdminOptions() {
     setOpenAreas(false);
     setOpenUsers(false);
     setOpenEmpresa(false);
+    setOpenNiveles(false);
     setOpenCategoria(!openCategoria);
+  };
+  //Estado para abrir los niveles
+  const [openNiveles, setOpenNiveles] = useState(false);
+  const handleNiveles = () => {
+    setOpenAreas(false);
+    setOpenUsers(false);
+    setOpenEmpresa(false);
+    setOpenCategoria(false);
+    setOpenNiveles(!openNiveles);
   };
   //Retornar interfaz
   return (
@@ -58,7 +72,7 @@ export default function AdminOptions() {
           </Typography>
         </div>
         <div className="grid grid-flow-col">
-          <div className="row-span-2 w-28 h-80 ">
+          <div className="row-span-2 w-28">
             <List>
               <ListItem
                 className="border-b-2 border-black rounded-none"
@@ -92,6 +106,15 @@ export default function AdminOptions() {
             <List>
               <ListItem
                 className="border-b-2 border-black rounded-none"
+                onClick={handleNiveles}
+              >
+                <ListItemPrefix></ListItemPrefix>
+                Niveles Flujo
+              </ListItem>
+            </List>
+            <List>
+              <ListItem
+                className="border-b-2 border-black rounded-none"
                 onClick={handleEmpresa}
               >
                 <ListItemPrefix></ListItemPrefix>
@@ -113,6 +136,7 @@ export default function AdminOptions() {
             {openAreas ? <Areas /> : ""}
             {openEmpresa ? <Empresa_Datos /> : ""}
             {openCategoria ? <OpCategorias /> : ""}
+            {openNiveles ? <Niveles /> : ""}
           </div>
         </div>
       </div>

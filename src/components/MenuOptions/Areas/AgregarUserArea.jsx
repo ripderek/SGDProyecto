@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
+import { UserPlusIcon } from "@heroicons/react/24/solid";
 
 import {
   DialogHeader,
@@ -9,15 +9,12 @@ import {
   IconButton,
   Tooltip,
   Alert,
-  ButtonGroup,
-  Button,
   Input,
 } from "@material-tailwind/react";
 import { Fragment, useState, useEffect, React } from "react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import axios from "axios";
-const TABLE_HEAD = ["Datos", "Identificacion", "Rol", "Agregar"];
+const TABLE_HEAD = ["Datos", "Identificacion", "Agregar"];
 
 export default function AgregarUserArea(id) {
   const [users, setUsers] = useState([]);
@@ -28,14 +25,10 @@ export default function AgregarUserArea(id) {
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   const [user, setUser] = useState([]);
-  //cargar los roles
-  const [roles, setRoles] = useState([]);
-  //estado para almacenar el rol
-  const [rol, setRol] = useState("");
+
   //mensaje de error
   const [error, setError] = useState([]);
   const [open, setOpen] = useState(false);
-  const [color, setColor] = useState("yellow");
   const [idarea, setIdeArea] = useState("");
   const handleOpen = () => {
     setOpen(!open);
@@ -56,16 +49,6 @@ export default function AgregarUserArea(id) {
     setIdeArea(id.id);
     const data = await result.json();
     setUsers(data);
-
-    //cargar los roles para el combobox
-    const roles = await fetch("http://localhost:4000/api/area/roles", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-
-    const rolesuser = await roles.json();
-    setRoles(rolesuser);
   };
   const HandleSUbumit = async (p1) => {
     try {
@@ -74,7 +57,6 @@ export default function AgregarUserArea(id) {
         {
           p_id_user: p1,
           p_id_area: idarea,
-          p_id_rol: rol,
         },
         {
           withCredentials: true,
@@ -198,21 +180,7 @@ export default function AgregarUserArea(id) {
                       {user1.u_identificacion}
                     </Typography>
                   </td>
-                  <td>
-                    <div className="my-4 flex items-center ">
-                      {roles.map((roles) => (
-                        <ButtonGroup size="sm">
-                          <Button
-                            className="rounded-none"
-                            key={roles.r_id}
-                            onClick={() => setRol(roles.r_id)}
-                          >
-                            {roles.r_rol}
-                          </Button>
-                        </ButtonGroup>
-                      ))}
-                    </div>
-                  </td>
+
                   <td
                     className="p-4 border-b border-blue-gray-50"
                     onClick={() => HandleSUbumit(user1.u_id_user)}

@@ -96,14 +96,17 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
                       value={task.a_nombre_area}
                     />
                   </div>
-
                   <div className="w-auto flex ml-2 mb-2">
-                    <Chip
-                      variant="ghost"
-                      size="sm"
-                      value={task.a_rol}
-                      color="green"
-                    />
+                    {task.a_rol === "Administrador Area" ? (
+                      <Chip
+                        variant="ghost"
+                        size="sm"
+                        value={task.a_rol}
+                        color="green"
+                      />
+                    ) : (
+                      ""
+                    )}
                     <Chip
                       variant="ghost"
                       className="ml-4"
@@ -121,7 +124,7 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
                 >
                   <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
                     <p className="text-lg font-semibold items-center text-white">
-                      Ir
+                      Seleccionar
                     </p>
                   </button>
                 </div>

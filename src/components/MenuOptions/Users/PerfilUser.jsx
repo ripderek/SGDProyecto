@@ -22,6 +22,7 @@ export default function PerfilUser({
   isadminarea,
   idarea,
   admin,
+  relacionarea,
 }) {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
@@ -33,6 +34,7 @@ export default function PerfilUser({
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarEstado(false);
+    setOpenCambiarROL(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
@@ -42,7 +44,7 @@ export default function PerfilUser({
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
-
+    setOpenCambiarROL(false);
     setOpenCambiarEstado(false);
   };
   //estado para abrir la opcion de empresa
@@ -53,7 +55,7 @@ export default function PerfilUser({
     setOpenEmpresa(!openEmpresa);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
-
+    setOpenCambiarROL(false);
     setOpenCambiarEstado(false);
   };
   //estado para abrir la opcion de cambiar la contrasena mediante admin
@@ -64,7 +66,7 @@ export default function PerfilUser({
     setOpenEmpresa(false);
     setOpenCambiarEstado(false);
     setOpenCambiarEstadoAPP(false);
-
+    setOpenCambiarROL(false);
     setOpenContraAdmin(!openContraAdmin);
   };
   //estado para cambiar el (estado de un usario dentro de un area)
@@ -75,7 +77,19 @@ export default function PerfilUser({
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
+    setOpenCambiarROL(false);
     setOpenCambiarEstado(!openCambiarEstado);
+  };
+  //estado para cambiar el rol de un usuario dentro de un area (ejemplo si usuario normal cambia a admin y viceversa)
+  const [openCambiarROl, setOpenCambiarROL] = useState(false);
+  const handleCambiarROL = () => {
+    setOpenAreas(false);
+    setOpenUsers(false);
+    setOpenEmpresa(false);
+    setOpenContraAdmin(false);
+    setOpenCambiarEstadoAPP(false);
+    setOpenCambiarEstado(false);
+    setOpenCambiarROL(!openCambiarROl);
   };
   //estado deshabilitar usuario de toda la app
   const [openCambiarEstadoAPP, setOpenCambiarEstadoAPP] = useState(false);
@@ -85,6 +99,8 @@ export default function PerfilUser({
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstado(false);
+    setOpenCambiarROL(false);
+
     setOpenCambiarEstadoAPP(!openCambiarEstadoAPP);
   };
   //Cambiar el estado del usuario en el area
@@ -117,6 +133,26 @@ export default function PerfilUser({
       console.log(error);
     }
   };
+
+  //Submit para cambiar el rol del usuario dentro del area
+  const HandleSUbumitAreaRol = async () => {
+    try {
+      const result = await axios.post(
+        "http://localhost:4000/api/area/CambiarRol",
+        { p_id_relacion: relacionarea },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(result);
+      alert(result.data.message);
+
+      handleCambiarROL();
+    } catch (error) {
+      alert(error.response.data.message);
+      console.log(error);
+    }
+  };
   //Retornar interfaz
   return (
     <Fragment>
@@ -138,6 +174,33 @@ export default function PerfilUser({
               <span>Cancelar</span>
             </Button>
             <Button variant="gradient" color="green" onClick={HandleSUbumit1}>
+              <span>Confirmar</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
+      </Fragment>
+      <Fragment>
+        <Dialog open={openCambiarROl} handler={handleCambiarROL}>
+          <DialogHeader> Cambiar rol de area </DialogHeader>
+          <DialogBody divider>
+            Si este usuario tiene el rol de "usuario normal", entonces cambiará
+            a "administrador de area" como todos los permisos activos, de lo
+            contrario se le quitarán los permisos de administrador de area
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={handleCambiarROL}
+              className="mr-1"
+            >
+              <span>Cancelar</span>
+            </Button>
+            <Button
+              variant="gradient"
+              color="green"
+              onClick={HandleSUbumitAreaRol}
+            >
               <span>Confirmar</span>
             </Button>
           </DialogFooter>
@@ -238,6 +301,19 @@ export default function PerfilUser({
                 >
                   <ListItemPrefix></ListItemPrefix>
                   Expulsar de area (Admin)
+                </ListItem>
+              </List>
+            ) : (
+              ""
+            )}
+            {isadminarea ? (
+              <List>
+                <ListItem
+                  className="border-b-2 border-black rounded-none"
+                  onClick={handleCambiarROL}
+                >
+                  <ListItemPrefix></ListItemPrefix>
+                  Cambiar rol de area
                 </ListItem>
               </List>
             ) : (

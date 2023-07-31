@@ -1,13 +1,9 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
 import {
   CardHeader,
   Input,
   Button,
   CardBody,
   CardFooter,
-  ButtonGroup,
   Typography,
   Card,
   List,
@@ -17,10 +13,9 @@ import {
   AccordionHeader,
   Alert,
 } from "@material-tailwind/react";
-import { Fragment, useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import PerfilUser from "../Users/PerfilUser";
 
 export default function CrearUsuarioArea({ id_user }) {
   const [openAlert, setOpenAlert] = useState(false);
@@ -30,29 +25,12 @@ export default function CrearUsuarioArea({ id_user }) {
   const [file, setFile] = useState(null);
   //img preview
   const [fileP, setFileP] = useState();
-  const [roles, setRoles] = useState([]);
-  const [rol, setRol] = useState("");
-  const [rol1, setRol1] = useState("");
 
   //mensaje de error
   const [error, setError] = useState([]);
   const [tipoidentificacion, setTipoIdentificacion] = useState(
     "Tipo identificacion"
   );
-  useEffect(() => {
-    load();
-  }, []);
-  const load = async () => {
-    //cargar los roles para el combobox
-    const roles = await fetch("http://localhost:4000/api/area/roles", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
-    const rolesuser = await roles.json();
-    setRoles(rolesuser);
-  };
-
   //Dataos del usuario que se va a crear
   const [user, setUser] = useState({
     nombres: "",
@@ -97,7 +75,6 @@ export default function CrearUsuarioArea({ id_user }) {
         hadleAlerterror();
       } else {
         console.log("ddd");
-        console.log(rol);
         const form = new FormData();
         form.set("file", file);
         form.set("nombres", user.nombres);
@@ -108,7 +85,6 @@ export default function CrearUsuarioArea({ id_user }) {
         form.set("celular", user.celular);
         form.set("firma", user.firma);
         form.set("id_area", id_user);
-        form.set("rol", rol);
 
         const result = await axios.post(
           "http://localhost:4000/api/user/crear_usuario_area",
@@ -122,19 +98,13 @@ export default function CrearUsuarioArea({ id_user }) {
         handleOpen();
       }
     } catch (error) {
-      if (error.response.data) {
-        setError(error.response.data);
-        hadleAlerterror();
-      }
+      setError(error.response.data);
+      hadleAlerterror();
     }
   };
   return (
     <div>
-      <Alert
-        color="yellow"
-        onClose={() => setOpenAlert(false)}
-        open={openAlert}
-      >
+      <Alert color="green" onClose={() => setOpenAlert(false)} open={openAlert}>
         Se agrego un nuevo usuario al area
       </Alert>
       <Alert
@@ -261,6 +231,7 @@ export default function CrearUsuarioArea({ id_user }) {
                     size="lg"
                     name="identificacion"
                     variant="standard"
+                    maxLength={13}
                     color="black"
                     placeholder="Numero de identificacion"
                     onChange={HandleChange}
@@ -289,6 +260,7 @@ export default function CrearUsuarioArea({ id_user }) {
                   size="lg"
                   name="celular"
                   variant="standard"
+                  maxLength={10}
                   color="black"
                   placeholder="Numero Celular"
                   onChange={HandleChange}
@@ -304,31 +276,6 @@ export default function CrearUsuarioArea({ id_user }) {
                   required
                 />
               </div>
-              <div className="my-4 flex justify-center">
-                {roles.map((roles) => (
-                  <ButtonGroup size="sm" color="yellow">
-                    <Button
-                      className="rounded-none"
-                      color="cyan"
-                      key={roles.r_id}
-                      onClick={() => (setRol(roles.r_id), setRol1(roles.r_rol))}
-                    >
-                      {roles.r_rol}
-                    </Button>
-                  </ButtonGroup>
-                ))}
-              </div>
-              {rol ? (
-                <Typography
-                  color="black"
-                  className="mr-auto font-normal text-center"
-                >
-                  El usuario tiene el rol de: {rol1}
-                </Typography>
-              ) : (
-                ""
-              )}
-
               <Button
                 className="mt-6 rounded-none"
                 fullWidth

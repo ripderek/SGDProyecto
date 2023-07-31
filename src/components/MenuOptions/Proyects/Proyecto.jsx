@@ -74,7 +74,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
     console.log(result.data);
   };
   return (
-    <div className="bg-white h-auto">
+    <div className="bg-white h-full mb-10">
       <Dialog
         size="xxl"
         open={openEditor}
@@ -93,7 +93,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
           <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
         </div>
       </DialogHeader>
-      <DialogBody divider={true}>
+      <DialogBody className="shadow-none">
         <Fragment>
           <div className="bg-white">
             <div className="grid grid-flow-col">
@@ -145,11 +145,17 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                 <List>
                   <ListItem className="border-b-2 border-black rounded-none">
                     <ListItemPrefix></ListItemPrefix>
+                    Participantes
+                  </ListItem>
+                </List>
+                <List>
+                  <ListItem className="border-b-2 border-black rounded-none">
+                    <ListItemPrefix></ListItemPrefix>
                     Historial de borradores
                   </ListItem>
                 </List>
               </div>
-              <div className="row-span-2  w-full h-auto col-span-12 ">
+              <div className="row-span-2  w-full h-full col-span-12 border-0 border-x-0 border-white">
                 {openDocuments ? (
                   <DocumentosAreas id={idproyecto} rol={areasdata.p_rol} />
                 ) : (
@@ -162,7 +168,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                 )}
                 {fondo ? (
                   <div>
-                    <div className="flex justify-center mt-7">
+                    <div className="flex justify-center mt-7 ">
                       <img
                         className="ml-5 h-80 w-80 rounded-full border-4 border-yellow-600 center opacity-30"
                         src={
