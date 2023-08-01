@@ -16,13 +16,6 @@ import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
 import axios from "axios";
 import { useState, useEffect } from "react";
-const TABLE_HEAD = [
-  "Titulo",
-  "Descripcion",
-  "Acepta varias Area",
-  "Estado",
-  "Editar",
-];
 
 export default function Crear_Flujo({ handlerFlujo }) {
   const [users, setUsers] = useState([]);

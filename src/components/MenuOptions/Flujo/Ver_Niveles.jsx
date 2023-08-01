@@ -51,7 +51,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
             </Typography>
           </Button>
         </DialogHeader>
-        <DialogBody>
+        <DialogBody className="overflow-scroll h-96">
           <table className="mt-4 w-auto table-auto text-left">
             <thead>
               <tr>
