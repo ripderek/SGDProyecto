@@ -108,7 +108,7 @@ export default function Crear_Nivel({ handlerOpen }) {
                     color="gray"
                     className="flex items-center font-normal"
                   >
-                    Cardinalidad Muchos?
+                    ¿Este nivel admite más de un area?
                   </Typography>
                 }
                 containerProps={{ className: "-ml-2.5" }}

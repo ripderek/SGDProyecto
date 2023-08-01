@@ -1,7 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import {
-  UserPlusIcon,
-  PencilIcon,
   PlusIcon,
   EyeIcon,
 } from "@heroicons/react/24/solid";
@@ -15,27 +13,12 @@ import {
   Tabs,
   TabsHeader,
   Tab,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
   Typography,
-  Chip,
-  Avatar,
-  IconButton,
-  Tooltip,
   Card,
-  List,
-  ListItem,
-  ListItemPrefix,
-  Accordion,
-  AccordionHeader,
-  Alert,
 } from "@material-tailwind/react";
-import { Fragment, useState, useEffect } from "react";
-import axios from "axios";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import PerfilUser from "../Users/PerfilUser";
+import {  useState } from "react";
+
+
 const TABS = [
   {
     label: "Todos",
@@ -52,6 +35,7 @@ const TABS = [
 ];
 import Crear_Nivel from "./Crear_Nivel";
 import Ver_Niveles from "./Ver_Niveles";
+import Crear_Flujo from "./Crear_Flujo";
 const TABLE_HEAD = ["Ver Flujo de Niveles", "Descripcion", "Estado", "Editar"];
 export default function Niveles() {
   const [openOP, setOpenOP] = useState(false);
@@ -62,11 +46,17 @@ export default function Niveles() {
   const handlerNiveles = (estado) => {
     setVerNiveles(estado);
   };
+  const [openCrearFlujo, setOpenCrearFlujo] = useState(false);
+  const handlerFlujo = (estado) => {
+    setOpenCrearFlujo(estado);
+  }
   return (
     <div>
       <Card className="h-full w-full rounded-none shadow-none">
         {openOP ? <Crear_Nivel handlerOpen={handlerOpen} /> : ""}
         {openVerNiveles ? <Ver_Niveles handlerNiveles={handlerNiveles} /> : ""}
+        {openCrearFlujo ? <Crear_Flujo handlerFlujo={handlerFlujo} /> : ""}
+
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
@@ -92,7 +82,7 @@ export default function Niveles() {
                 <PlusIcon className="h-7 w-7" />
                 <p className="mt-1"> Crear Nivel</p>
               </Button>
-              <Button className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11">
+              <Button className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11" onClick={()=>setOpenCrearFlujo(true)}>
                 <PlusIcon className="h-7 w-7" />
                 <p className="mt-1"> Crear Flujo</p>
               </Button>
