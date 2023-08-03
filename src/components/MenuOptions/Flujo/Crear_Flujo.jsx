@@ -53,6 +53,7 @@ export default function Crear_Flujo({ handlerFlujo }) {
       lista_niveles.length === 0
         ? 0
         : lista_niveles[lista_niveles.length - 1].nivel_id;
+        
     const newValor = {
       nivel_id: v_id,
       nivel_titulo: v_titulo,

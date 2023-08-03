@@ -8,36 +8,50 @@ import {
   Chip,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-const TABLE_HEAD = [
-  "Titulo",
-  "Descripcion",
-  "Acepta varias Area",
-  "Estado",
-  "Editar",
-];
-import { PencilIcon } from "@heroicons/react/24/solid";
+const TABLE_HEAD = ["Ver Flujo", "Titulo", "Fecha creacion", ""];
+import { EyeIcon } from "@heroicons/react/24/solid";
+import Ver_Flujo from "../Flujo/Ver_Flujo";
 
-export default function Ver_Niveles({ handlerNiveles }) {
+export default function Flujos_Etapas({ handlerNiveles, handlerID }) {
   const [users, setUsers] = useState([]);
+  //handleVerFLujo
+  const [id_tipo_flujo, setIdTipoFlujo] = useState("");
 
+  const [openVerFlujo, setOpenVerFLujo] = useState(false);
+  const handleVerFLujo = (estado) => {
+    setOpenVerFLujo(estado);
+    load();
+  };
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
-    const result = await fetch("http://localhost:4000/api/flujo/Ver_niveles", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const result = await fetch(
+      "http://localhost:4000/api/flujo/Ver_jerarquias_activas",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     const data = await result.json();
     setUsers(data);
+    console.log(data);
   };
   return (
     <div>
       <Dialog size="sm" open={true} className="rounded-none">
+        {openVerFlujo ? (
+          <Ver_Flujo
+            handleVerFLujo={handleVerFLujo}
+            idTipoFlujo={id_tipo_flujo}
+          />
+        ) : (
+          ""
+        )}
         <DialogHeader className="bg-gray-200">
-          Lista de niveles
+          Lista de flujos
           <Button
             color="red"
             variant="text"
@@ -51,7 +65,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
           </Button>
         </DialogHeader>
         <DialogBody className="overflow-scroll h-96">
-          <table className="mt-4 w-auto table-auto text-left">
+          <table className="mx-auto mt-4 w-full table-auto text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -84,48 +98,46 @@ export default function Ver_Niveles({ handlerNiveles }) {
             <tbody>
               {users.map((user) => {
                 return (
-                  <tr key={user.r_id_nivel}>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_titulo}
-                      </Typography>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_descripcion}
-                      </Typography>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_cardiniladad ? "Si" : "No"}
-                      </Typography>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={user.r_estado ? "Habilitado" : "Deshabilitado"}
-                          color={user.r_estado ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
+                  <tr key={user.r_id_tipo}>
                     <td className="p-4 border-b border-blue-gray-50 z-10">
-                      <IconButton variant="text" color="blue-gray">
-                        <PencilIcon className="h-4 w-4" />
+                      <IconButton
+                        variant="text"
+                        color="blue-gray"
+                        onClick={() => (
+                          setOpenVerFLujo(true), setIdTipoFlujo(user.r_id_tipo)
+                        )}
+                      >
+                        <EyeIcon className="h-4 w-4" />
                       </IconButton>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {user.r_titulo_nivel}
+                      </Typography>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {user.r_fecha}
+                      </Typography>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Button
+                        className="rounded-none p-2"
+                        color="yellow"
+                        onClick={() => (
+                          handlerID(user.r_id_tipo), handlerNiveles(false)
+                        )}
+                      >
+                        Seleccionar
+                      </Button>
                     </td>
                   </tr>
                 );

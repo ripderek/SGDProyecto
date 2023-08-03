@@ -3,24 +3,19 @@ import Cookies from "universal-cookie";
 import axios from "axios";
 
 import {
-  Button,
   Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Avatar,
-  IconButton,
   Typography,
-  Card,
   List,
   ListItem,
   ListItemPrefix,
 } from "@material-tailwind/react";
-import { HeartIcon, ShareIcon } from "@heroicons/react/24/solid";
-import UsersAreas from "../Areas/UsersAreas";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
+
 import DocumentosAreas from "./DocumentosAreas";
 import GuiasProyecto from "./GuiasProyecto";
+import CrearFlujoProyecto from "./CrearFlujoProyecto";
 
 //props {idproyecto, nombrearea, idarea}
 export default function Proyecto({ idproyecto, nombrearea, idarea }) {
@@ -31,6 +26,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
   const handleDocuments = () => {
     setOpenDocuments(!openDocuments);
     setOpenGuias(false);
+    setOpenDefinirFlujo(false);
     setFondo(openDocuments ? true : false);
   };
   //abrir la opcion de guias del proyecto
@@ -38,7 +34,16 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
   const handleGuias = () => {
     setOpenDocuments(false);
     setOpenGuias(!openGuias);
+    setOpenDefinirFlujo(false);
     setFondo(openGuias ? true : false);
+  };
+  //abrir la opcion definir flujo
+  const [openDefinirFlujo, setOpenDefinirFlujo] = useState(false);
+  const handlerDefinifir = () => {
+    setOpenDocuments(false);
+    setOpenGuias(false);
+    setOpenDefinirFlujo(!openDefinirFlujo);
+    setFondo(openDefinirFlujo ? true : false);
   };
   //abrir el editor de texto
   const [openEditor, SetOpenEditor] = useState(false);
@@ -126,7 +131,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                   </ListItem>
                 </List>
                 {areasdata.p_rol === "Admin" ? (
-                  <List>
+                  <List onClick={handlerDefinifir}>
                     <ListItem className="border-b-2 border-black rounded-none">
                       <ListItemPrefix></ListItemPrefix>
                       Definir Flujo
@@ -163,6 +168,11 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                 )}
                 {openGuias ? (
                   <GuiasProyecto id={idproyecto} rol={areasdata.p_rol} />
+                ) : (
+                  ""
+                )}
+                {openDefinirFlujo ? (
+                  <CrearFlujoProyecto idproyecto={idproyecto} idarea={idarea} />
                 ) : (
                   ""
                 )}

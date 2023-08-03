@@ -6,25 +6,22 @@ import {
   DialogBody,
   IconButton,
   Chip,
+  Checkbox,
+  DialogFooter,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
-const TABLE_HEAD = [
-  "Titulo",
-  "Descripcion",
-  "Acepta varias Area",
-  "Estado",
-  "Editar",
-];
-import { PencilIcon } from "@heroicons/react/24/solid";
+const TABLE_HEAD = ["Area", "Prefijo", "Tipo", "Accion"];
+import { EyeIcon } from "@heroicons/react/24/solid";
 
-export default function Ver_Niveles({ handlerNiveles }) {
+export default function AreasFlujo({ handlerArea, datos, title, masAreas }) {
   const [users, setUsers] = useState([]);
-
+  //estado para pasar al siguiente nivel
+  const [pasar, setPasar] = useState(false);
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
-    const result = await fetch("http://localhost:4000/api/flujo/Ver_niveles", {
+    const result = await fetch("http://localhost:4000/api/area/Flujo/false", {
       method: "GET",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -32,18 +29,20 @@ export default function Ver_Niveles({ handlerNiveles }) {
 
     const data = await result.json();
     setUsers(data);
+    console.log(data);
   };
   return (
     <div>
+      {" "}
       <Dialog size="sm" open={true} className="rounded-none">
         <DialogHeader className="bg-gray-200">
-          Lista de niveles
+          Lista de Areas para el nivel: {title}
           <Button
             color="red"
             variant="text"
             size="sm"
             className="!absolute top-3 right-3"
-            onClick={() => handlerNiveles(false)}
+            onClick={() => handlerArea(false)}
           >
             <Typography variant="h5" color="blue-gray">
               X
@@ -51,7 +50,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
           </Button>
         </DialogHeader>
         <DialogBody className="overflow-scroll h-96">
-          <table className="mt-4 w-auto table-auto text-left">
+          <table className="mx-auto mt-4 w-full table-auto text-left">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -76,7 +75,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
                 color="blue-gray"
                 className="text-center items-center justify-center"
               >
-                No hay niveles registrados
+                No hay Areas registrados
               </Typography>
             ) : (
               ""
@@ -84,14 +83,14 @@ export default function Ver_Niveles({ handlerNiveles }) {
             <tbody>
               {users.map((user) => {
                 return (
-                  <tr key={user.r_id_nivel}>
+                  <tr key={user.r_id_area}>
                     <td className="p-4 border-b border-blue-gray-50">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.r_titulo}
+                        {user.r_nombre_area}
                       </Typography>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
@@ -100,7 +99,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.r_descripcion}
+                        {user.r_prefijo}
                       </Typography>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
@@ -109,29 +108,50 @@ export default function Ver_Niveles({ handlerNiveles }) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.r_cardiniladad ? "Si" : "No"}
+                        {user.r_cabezera ? "Area Padre" : "Area Hija"}
                       </Typography>
                     </td>
                     <td className="p-4 border-b border-blue-gray-50">
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={user.r_estado ? "Habilitado" : "Deshabilitado"}
-                          color={user.r_estado ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50 z-10">
-                      <IconButton variant="text" color="blue-gray">
-                        <PencilIcon className="h-4 w-4" />
-                      </IconButton>
+                      <Button
+                        className="rounded-none p-2"
+                        color="yellow"
+                        onClick={() => (
+                          datos({
+                            id_area: user.r_id_area,
+                            nombre: user.r_nombre_area,
+                            pase_nivel: pasar,
+                          }),
+                          handlerArea(false)
+                        )}
+                      >
+                        Añadir
+                      </Button>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          <div className="items-end text-end">
+            {masAreas ? (
+              <Checkbox
+                name="p_cardinalidad"
+                onChange={(e) => setPasar(e.target.checked)}
+                label={
+                  <Typography
+                    variant="small"
+                    color="gray"
+                    className="flex items-center font-normal"
+                  >
+                    ¿Ultima area para este nivel?
+                  </Typography>
+                }
+                containerProps={{ className: "-ml-2.5" }}
+              />
+            ) : (
+              ""
+            )}
+          </div>
         </DialogBody>
       </Dialog>
     </div>
