@@ -22,7 +22,7 @@ import AreasFlujo from "./AreasFlujo";
 import axios from "axios";
 
 export default function CrearFlujoProyecto({ idproyecto, idarea }) {
-  const [contador, setcontador] = useState(1);
+  const [contador, setcontador] = useState(0);
 
   useEffect(() => {
     loadw();
@@ -114,15 +114,16 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
           nombre: data.nombre,
         };
         setAreaD([...areaD, newValor]);
+        var i = contador + 1;
+
         //aqui mapear los demas cuadros
         MapearCuadros(
-          newUsers[0].id_nivel,
+          newValor.id_area,
           newUsers[0].id_nivel,
           newValor.nombre,
           newUsers[0].r_titulo_nivel,
-          lista_niveles.length + 1
+          i
         );
-        var i = lista_niveles.length;
         setcontador(i);
       }
     }
@@ -153,7 +154,6 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
       nivel: num,
       esp_x: espacio,
       espacioFlecha: espacioFlecha,
-      nivel: lista_niveles.length === 0 ? 0 : lista_niveles.length - 1,
     };
     setEspacio(espacio + 300);
     setEspacioFlecha(espacioFlecha + 3);
@@ -225,22 +225,24 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
           idproyecto +
           "/" +
           id_tipo,
-        { list_niveles: "lista_niveles" },
+        { list_niveles: lista_niveles },
         {
           withCredentials: true,
         }
       );
       //hadleAlert();
       //setError(result.data);
-      hadleAlert();
-      setError(result.data);
+      //hadleAlert();
+      //setError(result.data);
       console.log(result.data);
+      alert(result.data.message);
     } catch (error) {
       //setError(error.response.data);
       //hadleAlerterror();
-      console.log(error);
-      setError(error.response.data);
-      hadleAlerterror();
+      //console.log(error);
+      //setError(error.response.data);
+      //hadleAlerterror();
+      alert(error.response.data);
     }
   };
   return (
@@ -288,7 +290,10 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
               )}
 
               {final && verGuardar ? (
-                <Button className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-green-500 h-11">
+                <Button
+                  className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-green-500 h-11"
+                  onClick={HandleSUbumit}
+                >
                   <PlusIcon className="h-7 w-7" />
                   <p className="mt-1"> Guardar Flujo</p>
                 </Button>
