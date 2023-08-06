@@ -4,17 +4,9 @@ import {
   Dialog,
   DialogHeader,
   DialogBody,
-  IconButton,
-  Chip,
-  Drawer,
-  DialogFooter,
-  Card,
-  Input,
-  Alert,
 } from "@material-tailwind/react";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
-import axios from "axios";
 import { useState, useEffect } from "react";
 
 export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
