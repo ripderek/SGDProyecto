@@ -236,6 +236,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
       //setError(result.data);
       console.log(result.data);
       alert(result.data.message);
+      setVerGuardar(true);
     } catch (error) {
       //setError(error.response.data);
       //hadleAlerterror();
