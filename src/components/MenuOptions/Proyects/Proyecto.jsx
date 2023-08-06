@@ -1,62 +1,69 @@
-import { React, Fragment, useState, useEffect } from "react";
+import { React, useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import axios from "axios";
-
 import {
-  Dialog,
   DialogHeader,
   DialogBody,
   DialogFooter,
-  Typography,
-  List,
-  ListItem,
-  ListItemPrefix,
+  Tabs,
+  TabsHeader,
+  Tab,
+  TabsBody,
+  TabPanel,
 } from "@material-tailwind/react";
 
 import DocumentosAreas from "./DocumentosAreas";
 import GuiasProyecto from "./GuiasProyecto";
 import CrearFlujoProyecto from "./CrearFlujoProyecto";
-
+import Lottie from "lottie-react";
+import anim_settings from "../../../../public/Anim/proyects_anim.json";
+import VerFlujo_Proyecto from "./VerFlujo_Proyecto";
 //props {idproyecto, nombrearea, idarea}
 export default function Proyecto({ idproyecto, nombrearea, idarea }) {
-  const [fondo, setFondo] = useState(true);
+  const data = [
+    {
+      label: "Documentos",
+      value: "Documentos",
+    },
+    {
+      label: "Editor de Texto",
+      value: "Editor de Texto",
+    },
+    {
+      label: "Guias",
+      value: "Guias",
+    },
+    {
+      label: "Flujo",
+      value: "Flujo",
+    },
+    {
+      label: "Definir Flujo",
+      value: "Definir Flujo",
+    },
+    {
+      label: "Comentarios",
+      value: "Comentarios",
+    },
+    {
+      label: "Participantes",
+      value: "Participantes",
+    },
+    {
+      label: "Historial de borradores",
+      value: "Historial de borradores",
+    },
+    {
+      label: "Configuracion",
+      value: "Configuracion",
+    },
+    {
+      label: "Html",
+      value: "Html",
+    },
+  ];
   const cookies = new Cookies();
-  //abrir la opcion documentos para ver los documentos que se han subido y tambien para subirlos en caso de ser admin
-  const [openDocuments, setOpenDocuments] = useState(false);
-  const handleDocuments = () => {
-    setOpenDocuments(!openDocuments);
-    setOpenGuias(false);
-    setOpenDefinirFlujo(false);
-    setFondo(openDocuments ? true : false);
-  };
-  //abrir la opcion de guias del proyecto
-  const [openGuias, setOpenGuias] = useState(false);
-  const handleGuias = () => {
-    setOpenDocuments(false);
-    setOpenGuias(!openGuias);
-    setOpenDefinirFlujo(false);
-    setFondo(openGuias ? true : false);
-  };
-  //abrir la opcion definir flujo
-  const [openDefinirFlujo, setOpenDefinirFlujo] = useState(false);
-  const handlerDefinifir = () => {
-    setOpenDocuments(false);
-    setOpenGuias(false);
-    setOpenDefinirFlujo(!openDefinirFlujo);
-    setFondo(openDefinirFlujo ? true : false);
-  };
-  //abrir el editor de texto
-  const [openEditor, SetOpenEditor] = useState(false);
-  //cargar los datos del usuario para mostrar las opciones
-  //si es admin puede hacer de todo
-  //si es editor solo puede subir archivos
-  //si es revisor solo puede ver los archivos
-  //las opciones que tienen en comun son: ver flujo, comentarios, y documentos y editor de texto
-  //obtener el dato de si el proyecto permite subir documentos o se usa el editor de texto
   const [areasdata, setAreasData] = useState([]);
-
-  //    setOpenDocument(1);
-
   useEffect(() => {
     load();
   }, []);
@@ -80,121 +87,124 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
   };
   return (
     <div className="bg-white h-full mb-10">
-      <Dialog
-        size="xxl"
-        open={openEditor}
-        handler={() => SetOpenEditor(false)}
-        className="overflow-y-scroll"
-      >
-        <button onClick={() => SetOpenEditor(false)} className="bg-yellow-900">
-          <Typography variant="h2" color="white">
-            Cerrar Editor de texto
-          </Typography>
-        </button>
-        Abrir el editor de texto
-      </Dialog>
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
         </div>
       </DialogHeader>
       <DialogBody className="shadow-none">
-        <Fragment>
-          <div className="bg-white">
-            <div className="grid grid-flow-col">
-              <div className="row-span-2 h-80 ">
-                {areasdata.p_subir ? (
-                  <List onClick={handleDocuments}>
-                    <ListItem className="border-b-2 border-black rounded-none">
-                      <ListItemPrefix></ListItemPrefix>
-                      Documentos
-                    </ListItem>
-                  </List>
-                ) : (
-                  <List onClick={() => SetOpenEditor(true)}>
-                    <ListItem className="border-b-2 border-black rounded-none">
-                      <ListItemPrefix></ListItemPrefix>
-                      Editor de Texto
-                    </ListItem>
-                  </List>
-                )}
-                <List onClick={handleGuias}>
-                  <ListItem className="border-b-2 border-black rounded-none">
-                    <ListItemPrefix></ListItemPrefix>
-                    Guias
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
-                    <ListItemPrefix></ListItemPrefix>
-                    Flujo
-                  </ListItem>
-                </List>
-                {areasdata.p_rol === "Admin" ? (
-                  <List onClick={handlerDefinifir}>
-                    <ListItem className="border-b-2 border-black rounded-none">
-                      <ListItemPrefix></ListItemPrefix>
-                      Definir Flujo
-                    </ListItem>
-                  </List>
-                ) : (
-                  ""
-                )}
-
-                <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
-                    <ListItemPrefix></ListItemPrefix>
-                    Comentarios
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
-                    <ListItemPrefix></ListItemPrefix>
-                    Participantes
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem className="border-b-2 border-black rounded-none">
-                    <ListItemPrefix></ListItemPrefix>
-                    Historial de borradores
-                  </ListItem>
-                </List>
-              </div>
-              <div className="row-span-2  w-full h-full col-span-12 border-0 border-x-0 border-white">
-                {openDocuments ? (
-                  <DocumentosAreas id={idproyecto} rol={areasdata.p_rol} />
-                ) : (
-                  ""
-                )}
-                {openGuias ? (
-                  <GuiasProyecto id={idproyecto} rol={areasdata.p_rol} />
-                ) : (
-                  ""
-                )}
-                {openDefinirFlujo ? (
-                  <CrearFlujoProyecto idproyecto={idproyecto} idarea={idarea} />
-                ) : (
-                  ""
-                )}
-                {fondo ? (
-                  <div>
-                    <div className="flex justify-center mt-7 ">
-                      <img
-                        className="ml-5 h-80 w-80 rounded-full border-4 border-yellow-600 center opacity-30"
-                        src={
-                          "http://localhost:4000/api/area/Areaimagen/" + idarea
-                        }
-                        alt="User image"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  ""
-                )}
-              </div>
-            </div>
-          </div>
-        </Fragment>
+        <Tabs value="Html" orientation="vertical">
+          <TabsHeader className="w-32">
+            {data.map(({ label, value }) => {
+              if (value !== "Html") {
+                if (value == "Documentos") {
+                  if (areasdata.p_subir) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Editor de Texto") {
+                  if (!areasdata.p_subir) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Flujo") {
+                  if (areasdata.p_flujo) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Definir Flujo") {
+                  if (areasdata.p_rol === "Admin" && !areasdata.p_flujo) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Configuracion") {
+                  if (areasdata.p_rol === "Admin") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else {
+                  return (
+                    <Tab key={label} value={value}>
+                      {label}
+                    </Tab>
+                  );
+                }
+              }
+            })}
+          </TabsHeader>
+          <TabsBody>
+            {data.map(({ value }) => {
+              if (value === "Documentos") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <DocumentosAreas id={idproyecto} rol={areasdata.p_rol} />
+                  </TabPanel>
+                );
+              } else if (value === "Editor de Texto") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    Aqui debe de abrir una pequena interfaz que sirve como
+                    intermediario para abrir el editor de texto en otra pestana
+                  </TabPanel>
+                );
+              } else if (value === "Guias") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <GuiasProyecto id={idproyecto} rol={areasdata.p_rol} />
+                  </TabPanel>
+                );
+              } else if (value === "Definir Flujo") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <CrearFlujoProyecto
+                      idproyecto={idproyecto}
+                      idarea={idarea}
+                    />
+                  </TabPanel>
+                );
+              } else if (value === "Definir Flujo") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <CrearFlujoProyecto
+                      idproyecto={idproyecto}
+                      idarea={idarea}
+                    />
+                  </TabPanel>
+                );
+              } else if (value === "Flujo") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <VerFlujo_Proyecto idproyecto={idproyecto} />
+                  </TabPanel>
+                );
+              } else {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <Lottie
+                      animationData={anim_settings}
+                      className="w-2/4 mx-auto"
+                    />
+                  </TabPanel>
+                );
+              }
+            })}
+          </TabsBody>
+        </Tabs>
       </DialogBody>
       <DialogFooter className="justify-between"></DialogFooter>
     </div>
