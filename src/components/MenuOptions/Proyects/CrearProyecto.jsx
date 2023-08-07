@@ -79,7 +79,7 @@ export default function CrearProyecto({ id, openDiv }) {
     e.preventDefault();
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/crear_proyecto",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/crear_proyecto",
         user,
         {
           withCredentials: true,

@@ -39,7 +39,7 @@ export default function AgregarUserArea(id) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/area/users_sin_area/" + id.id,
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/users_sin_area/" + id.id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -53,7 +53,7 @@ export default function AgregarUserArea(id) {
   const HandleSUbumit = async (p1) => {
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/area/usuario_area",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/usuario_area",
         {
           p_id_user: p1,
           p_id_area: idarea,
@@ -126,7 +126,8 @@ export default function AgregarUserArea(id) {
                     <div className="flex items-center gap-3">
                       <Avatar
                         src={
-                          "http://localhost:4000/api/user/foto/" +
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "user/foto/" +
                           user1.u_id_user
                         }
                         alt={user1.u_nombres}

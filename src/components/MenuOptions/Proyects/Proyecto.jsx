@@ -75,7 +75,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
       p_id_proyect: idproyecto,
     };
     const result = await axios.post(
-      "http://localhost:4000/api/proyects/roles_proyecto",
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/roles_proyecto",
       user,
       {
         withCredentials: true,
@@ -197,7 +197,7 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                   <TabPanel key={value} value={value} className="py-0">
                     <Lottie
                       animationData={anim_settings}
-                      className="w-2/4 mx-auto"
+                      className="w-80 md:w-2/5 mx-auto"
                     />
                   </TabPanel>
                 );

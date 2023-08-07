@@ -74,7 +74,7 @@ function Cambiar_foto_empresa({ id_empresa }) {
               className=" h-40 w-40 rounded-full mx-auto "
               src={
                 !fileP
-                  ? "http://localhost:4000/api/public/Imagen_Empresa"
+                  ? process.env.NEXT_PUBLIC_ACCESLINK + "public/Imagen_Empresa"
                   : fileP
               }
               alt="Imagen Empresa"

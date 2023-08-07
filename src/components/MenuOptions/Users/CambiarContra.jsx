@@ -30,7 +30,7 @@ export default function CambiarContra({ id_user }) {
   const HandleSUbumit = async () => {
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/user/Actualizar_Contra",
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/Actualizar_Contra",
         area,
         {
           withCredentials: true,

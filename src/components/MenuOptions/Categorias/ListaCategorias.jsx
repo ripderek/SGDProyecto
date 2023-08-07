@@ -25,7 +25,7 @@ export default function ListaCategorias({
     //Cargar la lista de las areas
 
     const result = await fetch(
-      "http://localhost:4000/api/proyects/categorias_proyecto",
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/categorias_proyecto",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

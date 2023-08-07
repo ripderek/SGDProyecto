@@ -113,8 +113,7 @@ export default function Home() {
                         </TabPanel>
                     </TabsBody>
                 </Tabs>
-                <Recientes />
-                <AllDocuments />
+
                 <Footer />
             </div>
         </div>

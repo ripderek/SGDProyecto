@@ -15,7 +15,6 @@ import {
   ListItemPrefix,
   Dialog,
   DialogHeader,
-  DialogBody,
   DialogFooter,
 } from "@material-tailwind/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -105,7 +104,7 @@ export default function Navbar2() {
   //opcion Admin
   const [openAdminOptions, setOpenAdmin] = useState(false);
   const handleAdmin = () => {
-    setOpenAdmin(!openAdminOptions);
+    setOpenAdmin(true);
     setOpenM(false);
     setUserArea(false);
     setOpPerfil(false);
@@ -122,7 +121,7 @@ export default function Navbar2() {
   const [UserArea, setUserArea] = useState(false);
   const handleArea = () => {
     setA(true);
-    setUserArea(!UserArea);
+    setUserArea(true);
     setOpenAreaADmin(false);
     setOpenM(false);
     setOpenAdmin(false);
@@ -134,7 +133,7 @@ export default function Navbar2() {
   //Estado para abrir la opcion perfil
   const [opPerfil, setOpPerfil] = useState(false);
   const HandleOpenPerfil = () => {
-    setOpPerfil(!opPerfil);
+    setOpPerfil(true);
     setUserArea(false);
     setOpenM(false);
     setOpenAdmin(false);
@@ -165,14 +164,15 @@ export default function Navbar2() {
     load();
   }, []);
   const cookies = new Cookies();
-
   //Funcion para obtener cookies y almacenarlas en estados para los datos del usuario
   const load = async () => {
     try {
       //obtener el id mediante cookies
       setLoading(true);
       const result = await axios.get(
-        "http://localhost:4000/api/user/User/" + cookies.get("id_user"),
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "user/User/" +
+          cookies.get("id_user"),
         {
           withCredentials: true,
         }
@@ -199,7 +199,8 @@ export default function Navbar2() {
       //almacenar datos del usuario con respecto al area para que ingrese a las opciones de usuario administrador de area
       //y para mostrar opciones
       const resultdata = await fetch(
-        "http://localhost:4000/api/area/data_area_user/" +
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "area/data_area_user/" +
           cookies.get("id_user"),
         {
           method: "GET",
@@ -208,7 +209,9 @@ export default function Navbar2() {
         }
       );
       setUserImage(
-        "http://localhost:4000/api/user/foto/" + cookies.get("id_user")
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "user/foto/" +
+          cookies.get("id_user")
       );
       const dataU = await resultdata.json();
       setUserAreaData(dataU);
@@ -335,7 +338,7 @@ export default function Navbar2() {
             />
           </div>
           <div className="mb-2 flex items-center justify-center p-4">
-            <Typography variant="h5" color="blue-gray">
+            <Typography variant="h5" color="blue-gray" className="text-center">
               {dataUser.nombres_user}
             </Typography>
           </div>
@@ -408,7 +411,7 @@ export default function Navbar2() {
           </DialogFooter>
         </Dialog>
       </Fragment>
-      <div className="h-full mb-7 border-0 border-x-white">
+      <div className="mb-7 border-0 border-x-white">
         {openAdminOptions ? <AdminOptions /> : ""}
         {UserArea ? (
           <AreasAdmin id_area={id_area} nombre_area={nombre_area} isadmin={a} />

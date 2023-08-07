@@ -25,7 +25,7 @@ export default function Empresa_Datos() {
   const load = async () => {
     //Cargar la lista de guias
     const result = await fetch(
-      "http://localhost:4000/api/public/Datos_Empresa",
+      process.env.NEXT_PUBLIC_ACCESLINK + "public/Datos_Empresa",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -46,9 +46,6 @@ export default function Empresa_Datos() {
         ""
       )}
       <div className=" rounded-none shadow-none w-full  p-4 border-none mx-auto ">
-        <Typography variant="h5" color="blue-gray">
-          Datos de la empresa
-        </Typography>
         <div className="flex flex-wrap items-center  justify-between gap-y-4 ">
           <div className="mx-auto w-full">
             <input
@@ -60,7 +57,7 @@ export default function Empresa_Datos() {
           <Fragment>
             <img
               className="h-auto w-1/5 mx-auto "
-              src={"http://localhost:4000/api/public/Imagen_Empresa"}
+              src={process.env.NEXT_PUBLIC_ACCESLINK + "public/Imagen_Empresa"}
               alt="User image"
             />
           </Fragment>

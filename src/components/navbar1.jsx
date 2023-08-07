@@ -10,13 +10,14 @@ import {
   Drawer,
   Alert,
 } from "@material-tailwind/react";
-import { UserIcon } from "@heroicons/react/24/solid";
 import { FaSearch } from "react-icons/fa";
 import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import axios from "axios";
 import Cookies from "universal-cookie";
+import Loading from "@/components/loading";
 
 export default function Navbar1() {
+  const [loading, setLoading] = useState(false);
   //Estados para el diseno
   const [open, setOpen] = useState(false);
   const openDrawer = () => setOpen(true);
@@ -39,14 +40,17 @@ export default function Navbar1() {
     cookies.remove("id_user");
     cookies.remove("AD");
   }, []);
+  const [inicio, setincio] = useState(false);
 
   //Evento click para verificar el inicio de sesion y obtener el token y guardalo en una cookie
   const HandleSUbumit = async (e) => {
     e.preventDefault();
 
     try {
+      setLoading(true);
+
       const result = await axios.post(
-        "http://localhost:4000/api/auth/Login",
+        process.env.NEXT_PUBLIC_ACCESLINK + "auth/Login",
         user,
         {
           withCredentials: true,
@@ -66,6 +70,8 @@ export default function Navbar1() {
       console.log(result.data);
       //console.log(user);
       //Router.push("/task/tasklist/");
+      setLoading(true);
+      setincio(true);
     } catch (error) {
       //En caso de haber error en el inicio de sesion abrir el alert
       let errpars = error.response.data.error;
@@ -73,6 +79,7 @@ export default function Navbar1() {
       //Mostrar el error mediante un alert
       seterrorAlert(error.response.data.error);
       setOpenAlert(true);
+      setLoading(false);
     }
   };
   const HandleChange = (e) => {
@@ -130,6 +137,14 @@ export default function Navbar1() {
           className="p-4 "
           placement="right"
         >
+          {loading ? (
+            <div>
+              <Loading />
+            </div>
+          ) : (
+            ""
+          )}
+
           <form onSubmit={HandleSUbumit}>
             <div className="mb-6 flex items-center justify-between mt-6">
               <Typography variant="h3" color="blue-gray">
@@ -171,13 +186,23 @@ export default function Navbar1() {
               }}
             />
             <div className="flex gap-2 justify-center">
-              <Button
-                size="sm"
-                className="bg-light-green-900 w-full rounded-none"
-                type="submit"
-              >
-                Iniciar Sesion
-              </Button>
+              {inicio ? (
+                <Button
+                  size="sm"
+                  className="bg-light-green-900 w-full rounded-none"
+                  disabled
+                >
+                  Iniciar Sesion
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  className="bg-light-green-900 w-full rounded-none"
+                  type="submit"
+                >
+                  Iniciar Sesion
+                </Button>
+              )}
             </div>
             <div className="flex justify-center mt-3">
               <Button

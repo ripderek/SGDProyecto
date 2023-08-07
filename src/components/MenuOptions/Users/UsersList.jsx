@@ -19,7 +19,10 @@ function UsersList({ user }) {
         <td className="p-4 border-b border-blue-gray-50">
           <div className="flex items-center gap-3">
             <Avatar
-              src="http://localhost:4000/api/user/foto/0ffe7d2c-779b-41ac-9186-4ca196edb230"
+              src={
+                process.env.NEXT_PUBLIC_ACCESLINK +
+                "user/foto/0ffe7d2c-779b-41ac-9186-4ca196edb230"
+              }
               alt={user.nombres_user}
               size="sm"
             />

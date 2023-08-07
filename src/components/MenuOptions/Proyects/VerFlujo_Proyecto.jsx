@@ -10,7 +10,9 @@ export default function VerFlujo_Proyecto({ idproyecto }) {
   const load = async () => {
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
-      "http://localhost:4000/api/proyects/ver_flujo_proyecto/" + idproyecto,
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/ver_flujo_proyecto/" +
+        idproyecto,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -32,7 +34,9 @@ export default function VerFlujo_Proyecto({ idproyecto }) {
                 <img
                   className=" h-16 w-16 rounded-full border-4 border-yellow-600 cursor-pointer"
                   src={
-                    "http://localhost:4000/api/area/Areaimagen/" + task.area_id
+                    process.env.NEXT_PUBLIC_ACCESLINK +
+                    "area/Areaimagen/" +
+                    task.area_id
                   }
                   alt="User image"
                 />

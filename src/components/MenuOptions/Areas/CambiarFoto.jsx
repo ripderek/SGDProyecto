@@ -34,7 +34,7 @@ export default function CambiarFoto({ id_user }) {
       form.set("id", id_user);
 
       const result = await axios.post(
-        "http://localhost:4000/api/area/Cambiar_foto_area",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/Cambiar_foto_area",
         form,
         {
           withCredentials: true,
@@ -73,7 +73,9 @@ export default function CambiarFoto({ id_user }) {
               className=" h-40 w-40 rounded-full mx-auto "
               src={
                 !fileP
-                  ? "http://localhost:4000/api/area/Areaimagen/" + id_user
+                  ? process.env.NEXT_PUBLIC_ACCESLINK +
+                    "area/Areaimagen/" +
+                    id_user
                   : fileP
               }
               alt="User image"

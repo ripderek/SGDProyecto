@@ -2,9 +2,6 @@ import { useState, useEffect, Fragment } from "react";
 import Cookies from "universal-cookie";
 import {
   MagnifyingGlassIcon,
-  ArchiveBoxXMarkIcon,
-  BanknotesIcon,
-  BuildingLibraryIcon,
   ClipboardDocumentIcon,
 } from "@heroicons/react/24/outline";
 
@@ -13,31 +10,14 @@ import {
   CardHeader,
   Input,
   Typography,
-  Button,
-  CardBody,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Alert,
-  Chip,
-  Avatar,
-  Drawer,
   Timeline,
   TimelineItem,
-  TimelineConnector,
   TimelineIcon,
   TimelineHeader,
 } from "@material-tailwind/react";
-import {
-  BellIcon,
-  ArchiveBoxIcon,
-  CurrencyDollarIcon,
-} from "@heroicons/react/24/solid";
+
+import Lottie from "lottie-react";
+import anim from "../../../../public/Anim/advertencia_anim.json";
 
 export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
   const [areasdata, setAreasData] = useState([]);
@@ -51,7 +31,7 @@ export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
     //Cargar la lista de las areas
 
     const result = await fetch(
-      "http://localhost:4000/api/proyects/proyectos_areas/" + idarea,
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/proyectos_areas/" + idarea,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -65,16 +45,20 @@ export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
   };
   return (
     <div>
-      <Card className="h-full w-full rounded-none">
+      <Card className="h-full w-full rounded-none shadow-none">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-0 flex  justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
                 Lista de Proyectos
               </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
-                El area {nombrearea} tiene estos proyectos activos
-              </Typography>
+              {areasdata.length === 0 ? (
+                ""
+              ) : (
+                <Typography color="gray" className="mt-1 font-normal">
+                  El area {nombrearea} tiene estos proyectos activos
+                </Typography>
+              )}
             </div>
             <div className="w-full md:w-72 mr-5">
               <Input
@@ -87,9 +71,12 @@ export default function ProyectosAreas({ idarea, nombrearea, addIDP }) {
           </div>
         </CardHeader>
         {areasdata.length === 0 ? (
-          <Typography variant="h5" color="blue-gray" className="mx-auto">
-            Esta area no tiene proyectos
-          </Typography>
+          <div className="mx-auto">
+            <Lottie animationData={anim} className="w-3/4 mx-auto" />
+            <Typography className="text-center">
+              Esta area no tiene proyectos activos
+            </Typography>
+          </div>
         ) : (
           ""
         )}

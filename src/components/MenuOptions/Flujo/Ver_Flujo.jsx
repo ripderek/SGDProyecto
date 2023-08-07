@@ -77,7 +77,7 @@ export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
   const load = async () => {
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
-      "http://localhost:4000/api/flujo/Ver_flujo/" + idTipoFlujo,
+      process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_flujo/" + idTipoFlujo,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

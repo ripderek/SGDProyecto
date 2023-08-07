@@ -27,7 +27,7 @@ export default function Flujos_Etapas({ handlerNiveles, handlerID }) {
   }, []);
   const load = async () => {
     const result = await fetch(
-      "http://localhost:4000/api/flujo/Ver_jerarquias_activas",
+      process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_jerarquias_activas",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

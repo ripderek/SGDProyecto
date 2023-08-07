@@ -4,6 +4,11 @@ import {
   List,
   ListItem,
   ListItemPrefix,
+  Tabs,
+  Tab,
+  TabsHeader,
+  TabsBody,
+  TabPanel,
 } from "@material-tailwind/react";
 //importar opcion de users
 import Users from "../MenuOptions/Users/Users";
@@ -11,7 +16,43 @@ import Areas from "../MenuOptions/Areas/Areas";
 import Empresa_Datos from "../MenuOptions/Empresa/Empresa_Datos";
 import OpCategorias from "./Categorias/OpCategorias";
 import Niveles from "./Flujo/Niveles";
+import Lottie from "lottie-react";
+import anim_settings from "../../../public/Anim/proyects_anim.json";
 export default function AdminOptions() {
+  const data = [
+    {
+      label: "Usuarios",
+      value: "Usuarios",
+    },
+    {
+      label: "Areas",
+      value: "Areas",
+    },
+    {
+      label: "Documentos",
+      value: "Documentos",
+    },
+    {
+      label: "Proyectos",
+      value: "Proyectos",
+    },
+    {
+      label: "Niveles Flujo",
+      value: "Niveles Flujo",
+    },
+    {
+      label: "Empresa",
+      value: "Empresa",
+    },
+    {
+      label: "Categorias",
+      value: "Categorias",
+    },
+    {
+      label: "Html",
+      value: "Html",
+    },
+  ];
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
   const [openUsers, setOpenUsers] = useState(false);
@@ -62,82 +103,67 @@ export default function AdminOptions() {
   return (
     <Fragment>
       <div className="bg-white mb-20">
-        <div className="bg-white">
-          <Typography
-            variant="h4"
-            color="black"
-            className=" Titulo mr-4 ml-2 py-1.5"
-          >
-            Opciones de Administrador General
-          </Typography>
+        <div className="bg-white text-lg font-semibold ml-4">
+          Opciones de Administrador General
         </div>
-        <div className="grid grid-flow-col">
-          <div className="row-span-2 w-28">
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleUsers}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Usuarios
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleAreas}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Areas
-              </ListItem>
-            </List>
-            <List>
-              <ListItem className="border-b-2 border-black rounded-none">
-                <ListItemPrefix></ListItemPrefix>
-                Documentos
-              </ListItem>
-            </List>
-            <List>
-              <ListItem className="border-b-2 border-black rounded-none">
-                <ListItemPrefix></ListItemPrefix>
-                Proyectos
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleNiveles}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Niveles Flujo
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleEmpresa}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Empresa
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleCategoria}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Categorias
-              </ListItem>
-            </List>
-          </div>
-          <div className="row-span-2  w-full h-full col-span-12 bg-white">
-            {openUsers ? <Users /> : ""}
-            {openAreas ? <Areas /> : ""}
-            {openEmpresa ? <Empresa_Datos /> : ""}
-            {openCategoria ? <OpCategorias /> : ""}
-            {openNiveles ? <Niveles /> : ""}
-          </div>
+        <div className="p-4">
+          <Tabs value="Html" orientation="vertical">
+            <TabsHeader className="w-32">
+              {data.map(({ label, value }) => {
+                if (value != "Html") {
+                  return (
+                    <Tab key={label} value={value}>
+                      {label}
+                    </Tab>
+                  );
+                }
+              })}
+            </TabsHeader>
+            <TabsBody>
+              {data.map(({ value }) => {
+                if (value === "Usuarios") {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <Users />
+                    </TabPanel>
+                  );
+                } else if (value === "Areas") {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <Areas />
+                    </TabPanel>
+                  );
+                } else if (value === "Empresa") {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <Empresa_Datos />
+                    </TabPanel>
+                  );
+                } else if (value === "Categorias") {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <OpCategorias />
+                    </TabPanel>
+                  );
+                } else if (value === "Niveles Flujo") {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <Niveles />
+                    </TabPanel>
+                  );
+                } else {
+                  return (
+                    <TabPanel key={value} value={value} className="py-0">
+                      <Lottie
+                        animationData={anim_settings}
+                        className="w-80 md:w-2/5 mx-auto"
+                      />
+                    </TabPanel>
+                  );
+                }
+              })}
+            </TabsBody>
+          </Tabs>
         </div>
       </div>
     </Fragment>

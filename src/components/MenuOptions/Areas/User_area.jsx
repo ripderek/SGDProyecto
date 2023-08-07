@@ -11,7 +11,9 @@ export default function User_area(id_area) {
       //almacenar datos del usuario con respecto al area para que ingrese a las opciones de usuario administrador de area
       //y para mostrar opciones
       const resultdata = await fetch(
-        "http://localhost:4000/api/area/data_area_id/" + id_area.id_area,
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "area/data_area_id/" +
+          id_area.id_area,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },

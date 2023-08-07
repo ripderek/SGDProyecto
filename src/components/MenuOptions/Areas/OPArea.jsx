@@ -106,7 +106,9 @@ export default function OPArea(idArea) {
   const load = async () => {
     try {
       const resultdata = await fetch(
-        "http://localhost:4000/api/area/data_area_id/" + idArea.idArea,
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "area/data_area_id/" +
+          idArea.idArea,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -204,7 +206,8 @@ export default function OPArea(idArea) {
                       <img
                         className="ml-5 h-80 w-80 rounded-full border-4 border-yellow-600 center opacity-30"
                         src={
-                          "http://localhost:4000/api/area/Areaimagen/" +
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "area/Areaimagen/" +
                           idArea.idArea
                         }
                         alt="User image"

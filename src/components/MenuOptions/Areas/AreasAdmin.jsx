@@ -1,31 +1,23 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import axios from "axios";
 
 import {
   Card,
   CardHeader,
-  Input,
   Typography,
-  Button,
-  CardBody,
-  CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  DialogFooter,
-  Alert,
   Chip,
   Avatar,
-  Drawer,
+  CardBody,
 } from "@material-tailwind/react";
+import Lottie from "lottie-react";
+import anim from "../../../../public/Anim/advertencia_anim.json";
+import Loading from "@/components/loading";
 
 export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
@@ -35,9 +27,12 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
   });
   const load = async () => {
     //Cargar la lista de las areas
+    setLoading(true);
 
     const data = await axios.post(
-      "http://localhost:4000/api/area/areas_usuario/" + cookies.get("id_user"),
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "area/areas_usuario/" +
+        cookies.get("id_user"),
       { identi: isadmin },
       {
         withCredentials: true,
@@ -46,92 +41,114 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
     console.log(data.data);
     setAreasData(data.data);
     console.log(areasdata);
+    setLoading(false);
   };
+  if (loading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   return (
     <div>
-      <Card className="h-full w-full rounded-none">
+      <Card className="h-full w-full rounded-none shadow-none">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-0 flex  justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
                 Lista de Areas
               </Typography>
-              <Typography color="gray" className="mt-1 font-normal">
-                Participas en estas areas
-              </Typography>
+              {areasdata.length === 0 ? (
+                ""
+              ) : (
+                <Typography color="gray" className="mt-1 font-normal">
+                  Participas en estas areas
+                </Typography>
+              )}
             </div>
           </div>
         </CardHeader>
-        {areasdata.length === 0 ? (
-          <Typography variant="h5" color="blue-gray" className="mx-auto">
-            No pertence a ningun area
-          </Typography>
-        ) : (
-          ""
-        )}
-        <div className="grid grid-cols-4 gap-3 p-14">
-          {areasdata.map((task) => (
-            <div
-              key={task.a_id_area}
-              task={task}
-              className="bg-blue-gray-50 shadow-2xl"
-            >
-              <div className="bg-zinc-900 text-black shadow-2xl ">
-                <div className="mx-auto">
-                  <div className="text-center">
-                    <Avatar
-                      src={
-                        "http://localhost:4000/api/area/Areaimagen/" +
-                        task.a_id_area
-                      }
-                      alt={task.logoarea}
-                      size="xl"
-                      className="mt-3"
-                    />
-                  </div>
-                  <div className="w-full p-4">
-                    <input
-                      className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
-                      disabled
-                      value={task.a_nombre_area}
-                    />
-                  </div>
-                  <div className="w-auto flex ml-2 mb-2">
-                    {task.a_rol === "Administrador Area" ? (
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={task.a_rol}
-                        color="green"
+        <CardBody className=" mx-auto items-center">
+          {areasdata.length === 0 ? (
+            <div className="mx-auto">
+              <Lottie animationData={anim} className="w-3/4 mx-auto" />
+              <Typography className="text-center">
+                No se encuentra en ninguna area
+              </Typography>
+            </div>
+          ) : (
+            ""
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-20 p-2">
+            {areasdata.map((task) => (
+              <div
+                key={task.a_id_area}
+                task={task}
+                className="bg-blue-gray-50 shadow-2xl"
+              >
+                <div className="bg-zinc-900 text-black shadow-2xl ">
+                  <div className="mx-auto">
+                    <div className="text-center">
+                      <Avatar
+                        src={
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "area/Areaimagen/" +
+                          task.a_id_area
+                        }
+                        alt={task.logoarea}
+                        size="xl"
+                        className="mt-3"
                       />
-                    ) : (
-                      ""
-                    )}
+                    </div>
+                    <div className="w-full p-4">
+                      <input
+                        className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
+                        disabled
+                        value={task.a_nombre_area}
+                      />
+                    </div>
+                    <div className="w-auto flex ml-2 mb-2">
+                      {task.a_rol === "Administrador Area" ? (
+                        <Chip
+                          variant="ghost"
+                          size="sm"
+                          value={task.a_rol}
+                          color="green"
+                        />
+                      ) : (
+                        <Chip
+                          variant="ghost"
+                          size="sm"
+                          value=" ___"
+                          className="bg-blue-gray-50 text-blue-gray-50"
+                        />
+                      )}
+                    </div>
                     <Chip
                       variant="ghost"
-                      className="ml-4"
+                      className="ml-4 w-max mb-1"
                       size="sm"
                       value={task.a_prefijo}
                       color="blue-gray"
                     />
                   </div>
-                </div>
-                <div
-                  className="p-2  bg-green-400"
-                  onClick={() => (
-                    id_area(task.a_id_area), nombre_area(task.a_nombre_area)
-                  )}
-                >
-                  <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
-                    <p className="text-lg font-semibold items-center text-white">
-                      Seleccionar
-                    </p>
-                  </button>
+                  <div
+                    className="p-2  bg-green-400"
+                    onClick={() => (
+                      id_area(task.a_id_area), nombre_area(task.a_nombre_area)
+                    )}
+                  >
+                    <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
+                      <p className="text-lg font-semibold items-center text-white">
+                        Seleccionar
+                      </p>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </CardBody>
       </Card>
     </div>
   );

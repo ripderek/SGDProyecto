@@ -26,7 +26,7 @@ function Editar_Empresa({ id_empresa }) {
     e.preventDefault();
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/empresa/Editar/" + id_empresa,
+        process.env.NEXT_PUBLIC_ACCESLINK + "empresa/Editar/" + id_empresa,
         users,
         {
           withCredentials: true,
@@ -41,7 +41,7 @@ function Editar_Empresa({ id_empresa }) {
   const load = async () => {
     //Cargar la lista de guias
     const result = await fetch(
-      "http://localhost:4000/api/public/Datos_Empresa",
+      process.env.NEXT_PUBLIC_ACCESLINK + "public/Datos_Empresa",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
