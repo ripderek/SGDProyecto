@@ -37,7 +37,7 @@ export default function DocumentosAreas({ id, rol }) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/proyects/documentos_proyectos/" + id,
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/documentos_proyectos/" + id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -68,7 +68,7 @@ export default function DocumentosAreas({ id, rol }) {
       setFile("");
 
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/subir_pdf",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/subir_pdf",
         form,
         {
           withCredentials: true,
@@ -198,7 +198,9 @@ export default function DocumentosAreas({ id, rol }) {
                       color="blue-gray"
                       onClick={() => (
                         setLink(
-                          "http://localhost:4000/api/proyects/pdf/" + user.d_id
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                            "proyects/pdf/" +
+                            user.d_id
                         ),
                         setOpenD(true)
                       )}

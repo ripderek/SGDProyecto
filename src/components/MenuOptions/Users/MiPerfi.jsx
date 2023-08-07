@@ -1,14 +1,8 @@
-import {
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Typography,
-  Card,
-} from "@material-tailwind/react";
+import { CardBody, Typography, Card } from "@material-tailwind/react";
 import { Fragment, useState, useEffect } from "react";
 import EditUser from "../Users/EditUser";
 import EditUserM from "../Users/EditUserM";
-
+import Loading from "@/components/loading";
 const TABLE_HEAD = [
   "Tipo Identificacion",
   "Identificacion",
@@ -26,6 +20,8 @@ export default function MiPerfi({ admin, iduser }) {
   const [classes, setclasses] = useState("p-4 border-b border-blue-gray-50");
   //constante para saber si se va a editar el perfil del usuario
   const [openEdit, setOpenEdit] = useState(false);
+  //estado para cargar
+  const [loading, setLoading] = useState(false);
   //useffect para cargarlo
   useEffect(() => {
     load();
@@ -34,26 +30,38 @@ export default function MiPerfi({ admin, iduser }) {
 
   const load = async () => {
     try {
+      setLoading(true);
+
       const resultdata = await fetch(
-        "http://localhost:4000/api/user/Datos/" + iduser,
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/Datos/" + iduser,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
         }
       );
-      setUserImage("http://localhost:4000/api/user/foto/" + iduser);
+      setUserImage(process.env.NEXT_PUBLIC_ACCESLINK + "user/foto/" + iduser);
       const dataU = await resultdata.json();
       setUserData(dataU);
-    } catch (error) {}
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
   };
   const openEditUser = (respuesta) => {
     setOpenEdit(respuesta);
     if (respuesta) load();
     else load();
   };
+  if (loading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
+
   return (
-    <Card className="">
+    <Card className="w-auto shadow-none rounded-none border-0">
       {openEdit ? (
         admin ? (
           <EditUser openEditUser={openEditUser} userID={iduser} />
@@ -63,32 +71,38 @@ export default function MiPerfi({ admin, iduser }) {
       ) : (
         ""
       )}
-      <CardHeader floated={false} shadow={false} className="rounded-none">
-        <div className="flex  items-center text-center px-7">
-          <div className=" mx-auto ">
-            <Typography variant="h2" color="black">
-              {UserData.u_nombres}
-            </Typography>
-            <Typography variant="h4" color="gray">
-              {UserData.u_correo_institucional}
-            </Typography>
-          </div>
-          <div className="flex px-24">
-            <img
-              className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 "
-              src={userImage}
-              alt="User image"
-            />
+
+      <CardBody className="mx-auto shadow-none rounded-none">
+        <div className=" rounded-none shadow-none w-auto  p-4 border-none mx-auto">
+          <div className="flex flex-wrap items-center  justify-between gap-y-4 ">
+            <div className="mx-auto w-full">
+              <input
+                className=" text-center w-full text-3xl font-semibold	text-blue-gray-800 bg-white"
+                value={UserData.u_nombres}
+                disabled
+              />
+              <input
+                className=" text-center w-full text-3xl font-semibold	text-blue-gray-800 bg-white "
+                value={UserData.u_correo_institucional}
+                disabled
+              />
+            </div>
+
+            <Fragment>
+              <img
+                className="h-auto w-40 mx-auto "
+                src={userImage}
+                alt="User image"
+              />
+            </Fragment>
           </div>
         </div>
-      </CardHeader>
-      <CardBody className="mx-auto">
-        <table className="  text-left ">
-          <thead>
-            <tr>
-              {TABLE_HEAD.map((head) => (
+        <div className="w-max mx-auto">
+          <table className="w-2/4 mx-auto overflow-x-scroll text-left ">
+            <thead>
+              <tr>
                 <th
-                  key={head}
+                  key={2}
                   className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                 >
                   <Typography
@@ -96,82 +110,168 @@ export default function MiPerfi({ admin, iduser }) {
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    {head}
+                    Clave
                   </Typography>
                 </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
+                <th
+                  key={1}
+                  className="border-b border-blue-gray-100 bg-blue-gray-50 p-4"
                 >
-                  {UserData.u_tipo_identificacion}
-                </Typography>
-              </td>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {UserData.u_identificacion}
-                </Typography>
-              </td>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal"
-                >
-                  {UserData.u_correopersonal}
-                </Typography>
-              </td>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-medium"
-                >
-                  {UserData.u_correo_institucional}
-                </Typography>
-              </td>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-medium"
-                >
-                  {UserData.u_numero_celular}
-                </Typography>
-              </td>
-              <td className={classes}>
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-medium"
-                >
-                  {UserData.u_nombre_firma}
-                </Typography>
-              </td>
-              <td className={classes} onClick={() => setOpenEdit(!openEdit)}>
-                <Typography
-                  variant="small"
-                  color="blue"
-                  className="font-medium cursor-pointer"
-                >
-                  Editar
-                </Typography>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70"
+                  >
+                    Valor
+                  </Typography>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Tipo identificacion:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    {UserData.u_tipo_identificacion}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Identificacion:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    {UserData.u_identificacion}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Correo personal:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    {UserData.u_correopersonal}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Correo institucional:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                  >
+                    {UserData.u_correo_institucional}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Numero Celular:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                  >
+                    {UserData.u_numero_celular}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Firma:
+                  </Typography>
+                </td>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-medium"
+                  >
+                    {UserData.u_nombre_firma}
+                  </Typography>
+                </td>
+              </tr>
+              <tr>
+                <td className={classes}>
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal"
+                  >
+                    Accion:
+                  </Typography>
+                </td>
+                <td className={classes} onClick={() => setOpenEdit(!openEdit)}>
+                  <Typography
+                    variant="small"
+                    color="blue"
+                    className="font-medium cursor-pointer"
+                  >
+                    Editar
+                  </Typography>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </CardBody>
-      <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4"></CardFooter>
     </Card>
   );
 }

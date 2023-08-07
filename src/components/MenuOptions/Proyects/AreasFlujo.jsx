@@ -21,11 +21,14 @@ export default function AreasFlujo({ handlerArea, datos, title, masAreas }) {
     load();
   }, []);
   const load = async () => {
-    const result = await fetch("http://localhost:4000/api/area/Flujo/false", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const result = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/Flujo/false",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     const data = await result.json();
     setUsers(data);

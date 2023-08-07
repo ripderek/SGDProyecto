@@ -40,7 +40,7 @@ export default function OpProyectos(id) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/proyects/proyectos_areas/" + id.id,
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/proyectos_areas/" + id.id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

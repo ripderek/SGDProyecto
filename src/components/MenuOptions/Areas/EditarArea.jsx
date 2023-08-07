@@ -28,7 +28,7 @@ export default function EditarArea({ id_user }) {
     try {
       //aqui mandar a editar los datos del area
       const result = await axios.post(
-        "http://localhost:4000/api/area/Editar_datos_area",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/Editar_datos_area",
         area,
         {
           withCredentials: true,

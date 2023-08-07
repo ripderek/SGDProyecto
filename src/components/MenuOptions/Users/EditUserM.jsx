@@ -64,7 +64,7 @@ export default function EditUserM({ openEditUser, userID }) {
   const load = async () => {
     try {
       const resultdata = await fetch(
-        "http://localhost:4000/api/user/Datos/" + userID,
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/Datos/" + userID,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -89,7 +89,7 @@ export default function EditUserM({ openEditUser, userID }) {
       console.log(user);
 
       const result = await axios.post(
-        "http://localhost:4000/api/user/EditarNotAdmin/" + userID,
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/EditarNotAdmin/" + userID,
         user,
         {
           withCredentials: true,

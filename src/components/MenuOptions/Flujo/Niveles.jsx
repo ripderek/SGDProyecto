@@ -73,7 +73,7 @@ export default function Niveles() {
   const load = async () => {
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
-      "http://localhost:4000/api/flujo/Ver_tipos_jerarquias",
+      process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_tipos_jerarquias",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },

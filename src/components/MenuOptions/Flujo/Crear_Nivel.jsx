@@ -31,7 +31,7 @@ export default function Crear_Nivel({ handlerOpen }) {
     e.preventDefault();
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/flujo/CrearNivel",
+        process.env.NEXT_PUBLIC_ACCESLINK + "flujo/CrearNivel",
         users,
         {
           withCredentials: true,

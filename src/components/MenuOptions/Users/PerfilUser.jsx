@@ -9,6 +9,11 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  Tab,
+  TabsBody,
+  Tabs,
+  TabsHeader,
+  TabPanel,
 } from "@material-tailwind/react";
 import axios from "axios";
 
@@ -16,6 +21,8 @@ import MiPerfi from "../Users/MiPerfi";
 import CambiarFoto from "./CambiarFoto";
 import CambiarContra from "./CambiarContra";
 import CambiarContraAdmin from "./CambiarContraAdmin";
+import Lottie from "lottie-react";
+import anim from "../../../../public/Anim/perfil_anim.json";
 export default function PerfilUser({
   iduser,
   isadmin,
@@ -28,35 +35,38 @@ export default function PerfilUser({
   //estado para abrir la opcion de usuarios
   const [openUsers, setOpenUsers] = useState(false);
   const handleUsers = () => {
-    setOpenUsers(!openUsers);
+    setOpenUsers(true);
     setOpenAreas(false);
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarEstado(false);
     setOpenCambiarROL(false);
+    setOpenFondo(false);
   };
   //estado para abrir la opcion de areas
   const [openAreas, setOpenAreas] = useState(false);
   const handleAreas = () => {
-    setOpenAreas(!openAreas);
+    setOpenAreas(true);
     setOpenUsers(false);
     setOpenEmpresa(false);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarROL(false);
     setOpenCambiarEstado(false);
+    setOpenFondo(false);
   };
   //estado para abrir la opcion de empresa
   const [openEmpresa, setOpenEmpresa] = useState(false);
   const handleEmpresa = () => {
     setOpenAreas(false);
     setOpenUsers(false);
-    setOpenEmpresa(!openEmpresa);
+    setOpenEmpresa(true);
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarROL(false);
     setOpenCambiarEstado(false);
+    setOpenFondo(false);
   };
   //estado para abrir la opcion de cambiar la contrasena mediante admin
   const [openContraAdmin, setOpenContraAdmin] = useState(false);
@@ -67,7 +77,8 @@ export default function PerfilUser({
     setOpenCambiarEstado(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarROL(false);
-    setOpenContraAdmin(!openContraAdmin);
+    setOpenContraAdmin(true);
+    setOpenFondo(false);
   };
   //estado para cambiar el (estado de un usario dentro de un area)
   const [openCambiarEstado, setOpenCambiarEstado] = useState(false);
@@ -78,7 +89,8 @@ export default function PerfilUser({
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarROL(false);
-    setOpenCambiarEstado(!openCambiarEstado);
+    setOpenCambiarEstado(true);
+    setOpenFondo(false);
   };
   //estado para cambiar el rol de un usuario dentro de un area (ejemplo si usuario normal cambia a admin y viceversa)
   const [openCambiarROl, setOpenCambiarROL] = useState(false);
@@ -89,7 +101,8 @@ export default function PerfilUser({
     setOpenContraAdmin(false);
     setOpenCambiarEstadoAPP(false);
     setOpenCambiarEstado(false);
-    setOpenCambiarROL(!openCambiarROl);
+    setOpenCambiarROL(true);
+    setOpenFondo(false);
   };
   //estado deshabilitar usuario de toda la app
   const [openCambiarEstadoAPP, setOpenCambiarEstadoAPP] = useState(false);
@@ -100,14 +113,16 @@ export default function PerfilUser({
     setOpenContraAdmin(false);
     setOpenCambiarEstado(false);
     setOpenCambiarROL(false);
-
-    setOpenCambiarEstadoAPP(!openCambiarEstadoAPP);
+    setOpenCambiarEstadoAPP(true);
+    setOpenFondo(false);
   };
+  const [openFondo, setOpenFondo] = useState(true);
+
   //Cambiar el estado del usuario en el area
   const HandleSUbumit = async () => {
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/area/Deshabilitar_usuario_area",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/Deshabilitar_usuario_area",
         { p_id_area: idarea, p_id_user: iduser },
         {
           withCredentials: true,
@@ -122,7 +137,7 @@ export default function PerfilUser({
   const HandleSUbumit1 = async () => {
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/user/Deshabilitar/" + iduser,
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/Deshabilitar/" + iduser,
         {},
         {
           withCredentials: true,
@@ -138,7 +153,7 @@ export default function PerfilUser({
   const HandleSUbumitAreaRol = async () => {
     try {
       const result = await axios.post(
-        "http://localhost:4000/api/area/CambiarRol",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/CambiarRol",
         { p_id_relacion: relacionarea },
         {
           withCredentials: true,
@@ -228,105 +243,87 @@ export default function PerfilUser({
         </Dialog>
       </Fragment>
       <div className="bg-white">
-        <div className="bg-white">
-          <Typography
-            variant="h4"
-            color="black"
-            className=" Titulo mr-4 ml-2 py-1.5"
-          >
-            Opciones del Perfil
-          </Typography>
-        </div>
-        <div className="grid grid-flow-col">
-          <div className="row-span-2 w-48 h-80 ">
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleUsers}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Mi perfil
-              </ListItem>
-            </List>
-
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleAreas}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Cambiar foto
-              </ListItem>
-            </List>
-            <List>
-              <ListItem
-                className="border-b-2 border-black rounded-none"
-                onClick={handleEmpresa}
-              >
-                <ListItemPrefix></ListItemPrefix>
-                Cambiar Contraseña
-              </ListItem>
-            </List>
+        <Tabs orientation="vertical" className="p-3">
+          <TabsHeader className="w-32">
+            <Tab onClick={handleUsers} key={"Mi perfil"} value={"Mi perfil"}>
+              Mi perfil
+            </Tab>
+            <Tab
+              onClick={handleAreas}
+              key={"Cambiar foto"}
+              value={"Cambiar foto"}
+            >
+              Cambiar foto
+            </Tab>
+            <Tab
+              onClick={handleEmpresa}
+              key={"Cambiar Contraseña"}
+              value={"Cambiar Contraseña"}
+            >
+              Cambiar Contraseña
+            </Tab>
             {isadmin || isadminarea ? (
-              <List>
-                <ListItem
-                  className="border-b-2 border-black rounded-none"
-                  onClick={handleContraAdmin}
-                >
-                  <ListItemPrefix></ListItemPrefix>
-                  Cambiar Contraseña (Admin)
-                </ListItem>
-              </List>
+              <Tab
+                onClick={handleContraAdmin}
+                key={"Cambiar Contraseña (Admin)"}
+                value={"Cambiar Contraseña (Admin)"}
+              >
+                Cambiar Contraseña (Admin)
+              </Tab>
             ) : (
               ""
             )}
             {isadmin ? (
-              <List>
-                <ListItem
-                  className="border-b-2 border-black rounded-none"
-                  onClick={handleCambiarEstadoAPP}
-                >
-                  <ListItemPrefix></ListItemPrefix>
-                  Cambiar Estado
-                </ListItem>
-              </List>
+              <Tab
+                onClick={handleCambiarEstadoAPP}
+                key={"Cambiar Estado"}
+                value={"Cambiar Estado"}
+              >
+                Cambiar Estado
+              </Tab>
             ) : (
               ""
             )}
             {isadminarea ? (
-              <List>
-                <ListItem
-                  className="border-b-2 border-black rounded-none"
-                  onClick={handleCambiarEstado}
-                >
-                  <ListItemPrefix></ListItemPrefix>
-                  Expulsar de area (Admin)
-                </ListItem>
-              </List>
+              <Tab
+                onClick={handleCambiarEstado}
+                key={"Expulsar de area"}
+                value={"Expulsar de area"}
+              >
+                Expulsar de area
+              </Tab>
             ) : (
               ""
             )}
             {isadminarea ? (
-              <List>
-                <ListItem
-                  className="border-b-2 border-black rounded-none"
-                  onClick={handleCambiarROL}
-                >
-                  <ListItemPrefix></ListItemPrefix>
-                  Cambiar rol de area
-                </ListItem>
-              </List>
+              <Tab
+                onClick={handleCambiarROL}
+                key={"Cambiar rol de area"}
+                value={"Cambiar rol de area"}
+              >
+                Cambiar rol de area
+              </Tab>
             ) : (
               ""
             )}
-          </div>
-          <div className="row-span-2  w-full h-full col-span-12 bg-white">
+          </TabsHeader>
+          <TabsBody className="overflow-x-auto">
             {openUsers ? <MiPerfi iduser={iduser} admin={admin} /> : ""}
             {openAreas ? <CambiarFoto id_user={iduser} /> : ""}
             {openEmpresa ? <CambiarContra id_user={iduser} /> : ""}
             {openContraAdmin ? <CambiarContraAdmin id_user={iduser} /> : ""}
-          </div>
-        </div>
+            {openFondo ? (
+              <div className="mx-auto">
+                <Lottie
+                  animationData={anim}
+                  className="w-80 md:w-2/5 mx-auto"
+                />
+              </div>
+            ) : (
+              ""
+            )}
+          </TabsBody>
+        </Tabs>
       </div>
     </Fragment>
   );

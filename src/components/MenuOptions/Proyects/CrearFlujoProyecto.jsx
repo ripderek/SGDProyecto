@@ -33,7 +33,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
     console.log("aqio cargar");
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
-      "http://localhost:4000/api/area/Data/" + idarea,
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/Data/" + idarea,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -164,7 +164,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
 
   const load = async (valor) => {
     const result = await fetch(
-      "http://localhost:4000/api/flujo/Ver_niveles_detalles/" + valor,
+      process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_niveles_detalles/" + valor,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -221,7 +221,8 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
     try {
       console.log("aqui van los archivos");
       const result = await axios.post(
-        "http://localhost:4000/api/flujo/Crear_FLujo/" +
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "flujo/Crear_FLujo/" +
           idproyecto +
           "/" +
           id_tipo,

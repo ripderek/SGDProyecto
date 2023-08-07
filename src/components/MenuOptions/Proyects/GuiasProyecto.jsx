@@ -49,7 +49,7 @@ export default function GuiasProyecto({ id, rol }) {
   const load = async () => {
     //Cargar la lista de guias
     const result = await fetch(
-      "http://localhost:4000/api/proyects/guias/" + id,
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/guias/" + id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -84,7 +84,7 @@ export default function GuiasProyecto({ id, rol }) {
       setFile("");
 
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/upload_guia",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/upload_guia",
         form,
         {
           withCredentials: true,
@@ -108,21 +108,10 @@ export default function GuiasProyecto({ id, rol }) {
   //funcion para descargar la guia
   const DescargarGuia = async (archvi, guia) => {
     console.log(guiaDown);
-    /*
-    const result = await axios.post(
-      "http://localhost:4000/api/proyects/ver_guia",
-      guiaDown,
-      {
-        withCredentials: true,
-      }
-    );
-    console.log(result);
-    fileDownload(result.data);
-      */
 
     axios({
       method: "post",
-      url: "http://localhost:4000/api/proyects/ver_guia/",
+      url: process.env.NEXT_PUBLIC_ACCESLINK + "proyects/ver_guia/",
       data: { link: guia },
       responseType: "blob",
       withCredentials: true,

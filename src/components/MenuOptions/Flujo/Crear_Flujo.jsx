@@ -53,7 +53,7 @@ export default function Crear_Flujo({ handlerFlujo }) {
       lista_niveles.length === 0
         ? 0
         : lista_niveles[lista_niveles.length - 1].nivel_id;
-        
+
     const newValor = {
       nivel_id: v_id,
       nivel_titulo: v_titulo,
@@ -73,7 +73,7 @@ export default function Crear_Flujo({ handlerFlujo }) {
   const load = async () => {
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
-      "http://localhost:4000/api/flujo/Ver_niveles_activos",
+      process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_niveles_activos",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -89,7 +89,9 @@ export default function Crear_Flujo({ handlerFlujo }) {
     try {
       console.log("aqui van los archivos");
       const result = await axios.post(
-        "http://localhost:4000/api/flujo/Crear_Jerarquias_Niveles/" + titulo,
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "flujo/Crear_Jerarquias_Niveles/" +
+          titulo,
         { list_niveles: lista_niveles },
         {
           withCredentials: true,

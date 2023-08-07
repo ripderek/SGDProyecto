@@ -33,7 +33,7 @@ export default function UsersAreas(id) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      "http://localhost:4000/api/area/user_area/" + id.id,
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/user_area/" + id.id,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -133,7 +133,9 @@ export default function UsersAreas(id) {
                   <div className="flex items-center gap-3">
                     <Avatar
                       src={
-                        "http://localhost:4000/api/user/foto/" + user.u_id_user
+                        process.env.NEXT_PUBLIC_ACCESLINK +
+                        "user/foto/" +
+                        user.u_id_user
                       }
                       alt={user.u_nombres}
                       size="sm"

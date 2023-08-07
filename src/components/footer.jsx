@@ -4,16 +4,16 @@ import { Typography } from "@material-tailwind/react";
 export default function Footer() {
   return (
     <footer className="w-full bg-black p-8 text-white border-t-8 border-t-yellow-700">
-      <div className="flex flex-row flex-wrap items-center justify-center gap-y-6 gap-x-12 bg-black text-center md:justify-between">
+      <div className="flex flex-row flex-wrap items-center justify-center gap-y-2 gap-x-2 bg-black text-center md:justify-between">
         <img
           src="/img/Home/Extintor_Logo1.png"
           alt="logo-ct"
-          className="w-60"
+          className="w-28 mx-auto"
         />
         <img
-          src={"http://localhost:4000/api/public/Imagen_Empresa"}
+          src={process.env.NEXT_PUBLIC_ACCESLINK + "public/Imagen_Empresa"}
           alt="logo-ct"
-          className="w-56"
+          className="w-28 mx-auto"
         />
         <ul className="flex flex-wrap items-center gap-y-2 gap-x-8">
           <li>

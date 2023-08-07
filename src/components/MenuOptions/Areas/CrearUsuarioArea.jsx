@@ -87,7 +87,7 @@ export default function CrearUsuarioArea({ id_user }) {
         form.set("id_area", id_user);
 
         const result = await axios.post(
-          "http://localhost:4000/api/user/crear_usuario_area",
+          process.env.NEXT_PUBLIC_ACCESLINK + "user/crear_usuario_area",
           form,
           {
             withCredentials: true,

@@ -50,7 +50,7 @@ export default function CreateUser() {
       console.log(user);
 
       const result = await axios.post(
-        "http://localhost:4000/api/user/crear_usuario",
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/crear_usuario",
         user,
         {
           withCredentials: true,

@@ -74,11 +74,14 @@ export default function Areas() {
   const load = async () => {
     //Cargar la lista de las areas
 
-    const result = await fetch("http://localhost:4000/api/area/all_area", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const result = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/all_area",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     const data = await result.json();
     setAreasData(data);
@@ -119,7 +122,7 @@ export default function Areas() {
       form.set("area_padre", areaPadre);
 
       const result = await axios.post(
-        "http://localhost:4000/api/area/crear_area",
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/crear_area",
         form,
         {
           withCredentials: true,
@@ -228,7 +231,8 @@ export default function Areas() {
                         <div className="text-center">
                           <Avatar
                             src={
-                              "http://localhost:4000/api/area/Areaimagen/" +
+                              process.env.NEXT_PUBLIC_ACCESLINK +
+                              "area/Areaimagen/" +
                               task.area_id
                             }
                             alt={task.logoarea}
@@ -246,7 +250,7 @@ export default function Areas() {
                             setAreaPadreN(task.nombrearea)
                           )}
                         >
-                          Seleccionar
+                          Seleccionar 2
                         </Button>
                       </CardFooter>
                     </Card>
@@ -397,7 +401,8 @@ export default function Areas() {
                     <div className="text-center">
                       <Avatar
                         src={
-                          "http://localhost:4000/api/area/Areaimagen/" +
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "area/Areaimagen/" +
                           task.area_id
                         }
                         alt={task.logoarea}

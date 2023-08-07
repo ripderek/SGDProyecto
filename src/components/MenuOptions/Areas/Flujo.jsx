@@ -33,7 +33,7 @@ export default function Flujo(idarea) {
     //Cargar la lista de las areas
 
     const result = await fetch(
-      "http://localhost:4000/api/area/Jerarquias/" + idarea.idarea,
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/Jerarquias/" + idarea.idarea,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -64,7 +64,9 @@ export default function Flujo(idarea) {
                 <img
                   className=" h-12 w-20 rounded-full border-4 border-yellow-600 cursor-pointer"
                   src={
-                    "http://localhost:4000/api/area/Areaimagen/" + task.area_id
+                    process.env.NEXT_PUBLIC_ACCESLINK +
+                    "area/Areaimagen/" +
+                    task.area_id
                   }
                   alt="User image"
                 />

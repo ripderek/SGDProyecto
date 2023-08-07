@@ -74,18 +74,14 @@ export default function Users() {
   }, []);
 
   const load = async () => {
-    //Cargar la lista de usuarios
-
-    /*
-    const result = await axios.get("http://localhost:4000/api/user/Userdata", {
-      withCredentials: true,
-    });
-    */
-    const result = await fetch("http://localhost:4000/api/user/Userdata", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-    });
+    const result = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdata",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
 
     const data = await result.json();
     setUsers(data);
@@ -149,7 +145,7 @@ export default function Users() {
         form.set("celular", user.celular);
         form.set("firma", user.firma);
         const result = await axios.post(
-          "http://localhost:4000/api/user/crear_usuario",
+          process.env.NEXT_PUBLIC_ACCESLINK + "user/crear_usuario",
           form,
           {
             withCredentials: true,
@@ -456,7 +452,9 @@ export default function Users() {
                       <div className="flex items-center gap-3">
                         <Avatar
                           src={
-                            "http://localhost:4000/api/user/foto/" + user.userid
+                            process.env.NEXT_PUBLIC_ACCESLINK +
+                            "user/foto/" +
+                            user.userid
                           }
                           alt={user.nombres_user}
                           size="sm"

@@ -92,7 +92,7 @@ export default function OpCategorias() {
   }, []);
   const load = async () => {
     const result = await fetch(
-      "http://localhost:4000/api/proyects/list_categorias",
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/list_categorias",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -114,7 +114,7 @@ export default function OpCategorias() {
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
 
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/crear_categoria",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/crear_categoria",
         user,
         {
           withCredentials: true,
@@ -137,7 +137,7 @@ export default function OpCategorias() {
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
 
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/estado/" + editCat,
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/estado/" + editCat,
         {},
         {
           withCredentials: true,
@@ -161,7 +161,7 @@ export default function OpCategorias() {
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
       console.log(editCat);
       const result = await axios.post(
-        "http://localhost:4000/api/proyects/editar_categoria",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/editar_categoria",
         {
           p_nombres: nombreEdit,
           p_prefijo: preEdit,
