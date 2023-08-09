@@ -1,9 +1,5 @@
 import { Fragment, useState } from "react";
 import {
-  Typography,
-  List,
-  ListItem,
-  ListItemPrefix,
   Tabs,
   Tab,
   TabsHeader,

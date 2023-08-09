@@ -1,23 +1,23 @@
-import { React, Fragment, useState, useEffect } from "react";
-import {
-  MagnifyingGlassIcon,
-  ArrowUpCircleIcon,
-} from "@heroicons/react/24/outline";
-import { UserPlusIcon, PencilIcon, EyeIcon } from "@heroicons/react/24/solid";
+import { React, useState, useEffect } from "react";
+import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
+import { PencilIcon, EyeIcon } from "@heroicons/react/24/solid";
 import Verpdf from "./Verpdf";
 import {
   Button,
   Dialog,
   Typography,
-  Avatar,
   IconButton,
   Tooltip,
   Alert,
+  Input,
+  DialogHeader,
+  Card,
+  CardHeader,
+  CardBody,
 } from "@material-tailwind/react";
 import axios from "axios";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
 const TABLE_HEAD = ["", "Archivo", "Fecha", ""];
-import AgregarUserArea from "../Areas/AgregarUserArea";
+
 export default function DocumentosAreas({ id, rol }) {
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
@@ -57,7 +57,7 @@ export default function DocumentosAreas({ id, rol }) {
   //abrir el pdf
   const [link, setLink] = useState("");
   const [openD, setOpenD] = useState(false);
-
+  const [descripcion, setDescripcion] = useState("");
   const HandleSUbumit = async (e) => {
     e.preventDefault();
     try {
@@ -65,6 +65,7 @@ export default function DocumentosAreas({ id, rol }) {
 
       form.set("file", file);
       form.set("id", id);
+      form.set("descripcion", descripcion);
       setFile("");
 
       const result = await axios.post(
@@ -94,56 +95,92 @@ export default function DocumentosAreas({ id, rol }) {
           handler={() => setOpenD(false)}
           className="overflow-y-scroll"
         >
-          <button onClick={() => setOpenD(false)} className="bg-yellow-900">
-            <Typography variant="h2" color="white">
-              Cerrar Documento
-            </Typography>
-          </button>
-          <Verpdf link={link}></Verpdf>
+          <DialogHeader className="bg-light-green-900 text-white">
+            Documento Actual
+            <Button
+              color="red"
+              variant="text"
+              size="md"
+              className="!absolute top-3 right-3"
+              onClick={() => setOpenD(false)}
+            >
+              <Typography variant="h5" color="white">
+                X
+              </Typography>
+            </Button>
+          </DialogHeader>
+
+          <Verpdf link={link} id={id} admin={rol}></Verpdf>
         </Dialog>
 
         {openUser ? (
           <Dialog
-            size="xl"
+            size="sm"
             open={openUser}
             handler={handlerOpenUsers}
-            className="overflow-y-scroll rounded-none h-4/5"
+            className=" rounded-none"
           >
-            <button
-              className="bg-green-900 w-full"
-              onClick={() => (handlerOpenUsers(), load())}
-            >
-              <Typography variant="h2" color="white">
-                Cerrar
-              </Typography>
-            </button>
-            <Alert
-              color="green"
-              onClose={() => setOpenAlert(false)}
-              open={openAlert}
-            >
-              Se subio el documento
-            </Alert>
-            <Alert
-              color="red"
-              onClose={() => setOpenAlerterror(false)}
-              open={openAlerterror}
-            >
-              {error.message}
-            </Alert>
+            <DialogHeader>
+              Subir Documento
+              <Button
+                color="red"
+                variant="text"
+                size="md"
+                className="!absolute top-3 right-3"
+                onClick={() => (handlerOpenUsers(), load())}
+              >
+                <Typography variant="h5" color="blue-gray">
+                  X
+                </Typography>
+              </Button>
+            </DialogHeader>
 
             <form className=" sm:w-full" onSubmit={HandleSUbumit}>
-              <div className="mb-4 flex flex-col gap-6">
-                <input type="file" accept=".pdf" onChange={ImagePreview} />
-                <Button
-                  className="mt-6 rounded-none"
-                  fullWidth
+              <Card className="w-full  mx-auto bg-blue-gray-100 rounded-none shadow-2xl">
+                <Alert
                   color="green"
-                  type="submit"
+                  onClose={() => setOpenAlert(false)}
+                  open={openAlert}
                 >
-                  Subir
-                </Button>
-              </div>
+                  Se subio el documento
+                </Alert>
+                <Alert
+                  color="red"
+                  onClose={() => setOpenAlerterror(false)}
+                  open={openAlerterror}
+                >
+                  {error.message}
+                </Alert>
+                <CardHeader
+                  color="white"
+                  floated={false}
+                  shadow={false}
+                  className="m-0 grid place-items-center rounded-none py-8 px-4 text-center"
+                >
+                  <div className="mb-4 w-full">
+                    <Input
+                      variant="outlined"
+                      color="black"
+                      label="Descripcion del documento"
+                      name="contra_nueva"
+                      onChange={(e) => setDescripcion(e.target.value)}
+                    />
+                  </div>
+                  <input type="file" accept=".pdf" onChange={ImagePreview} />
+                </CardHeader>
+                <CardBody className="text-right">
+                  <div>
+                    <Button
+                      className="bg-green-700 p-3 justify-items-end rounded-none"
+                      type="submit"
+                    >
+                      <Typography variant="h6" color="white">
+                        Aceptar
+                      </Typography>
+                    </Button>
+                  </div>
+                </CardBody>
+              </Card>
             </form>
           </Dialog>
         ) : (
@@ -217,7 +254,7 @@ export default function DocumentosAreas({ id, rol }) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.d_url}
+                        {user.d_descripcion}
                       </Typography>
                     </div>
                   </div>
