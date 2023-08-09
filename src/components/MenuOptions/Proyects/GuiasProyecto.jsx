@@ -1,24 +1,12 @@
-import { React, Fragment, useState, useEffect } from "react";
-import {
-  MagnifyingGlassIcon,
-  ArrowUpCircleIcon,
-} from "@heroicons/react/24/outline";
-import {
-  UserPlusIcon,
-  PencilIcon,
-  EyeIcon,
-  ArrowDownIcon,
-} from "@heroicons/react/24/solid";
-import Verpdf from "./Verpdf";
+import { React, useState, useEffect } from "react";
+import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
+import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import {
   Button,
   Dialog,
   DialogHeader,
-  DialogBody,
-  DialogFooter,
   Typography,
   IconButton,
-  Tooltip,
   Alert,
   Card,
   CardHeader,
@@ -67,8 +55,6 @@ export default function GuiasProyecto({ id, rol }) {
   //mensaje de error
   const [error, setError] = useState([]);
   //abrir el pdf
-  const [link, setLink] = useState("");
-  const [openD, setOpenD] = useState(false);
 
   //connstante para almacenar la descripcion
   const [descripcion, setDescripcion] = useState("");

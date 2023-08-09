@@ -18,8 +18,15 @@ import CrearFlujoProyecto from "./CrearFlujoProyecto";
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/proyects_anim.json";
 import VerFlujo_Proyecto from "./VerFlujo_Proyecto";
+import BorradoresProyecto from "./BorradoresProyecto";
 //props {idproyecto, nombrearea, idarea}
-export default function Proyecto({ idproyecto, nombrearea, idarea }) {
+export default function Proyecto({
+  idproyecto,
+  nombrearea,
+  idarea,
+  adminDELAREA,
+  tipop,
+}) {
   const data = [
     {
       label: "Documentos",
@@ -56,6 +63,10 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
     {
       label: "Configuracion",
       value: "Configuracion",
+    },
+    {
+      label: "Historial",
+      value: "Historial",
     },
     {
       label: "Html",
@@ -190,6 +201,12 @@ export default function Proyecto({ idproyecto, nombrearea, idarea }) {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
                     <VerFlujo_Proyecto idproyecto={idproyecto} />
+                  </TabPanel>
+                );
+              } else if (value === "Historial de borradores") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <BorradoresProyecto id={idproyecto} />
                   </TabPanel>
                 );
               } else {

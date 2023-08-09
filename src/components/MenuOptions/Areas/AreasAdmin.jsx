@@ -14,7 +14,7 @@ import Lottie from "lottie-react";
 import anim from "../../../../public/Anim/advertencia_anim.json";
 import Loading from "@/components/loading";
 
-export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
+export default function AreasAdmin({ id_area, nombre_area, isadmin, rolarea }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
   const [loading, setLoading] = useState(false);
@@ -135,7 +135,11 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin }) {
                   <div
                     className="p-2  bg-green-400"
                     onClick={() => (
-                      id_area(task.a_id_area), nombre_area(task.a_nombre_area)
+                      id_area(task.a_id_area),
+                      nombre_area(task.a_nombre_area),
+                      rolarea(
+                        task.a_rol === "Administrador Area" ? true : false
+                      )
                     )}
                   >
                     <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">

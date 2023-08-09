@@ -46,6 +46,8 @@ import ProyectosAreas from "./MenuOptions/Proyects/ProyectosAreas";
 //importar la opcion para ver el proyecto
 import Proyecto from "./MenuOptions/Proyects/Proyecto";
 import { comment } from "postcss";
+import RevisarP from "./MenuOptions/Proyects/RevisarP";
+import Publicacion from "./MenuOptions/Proyects/Publicacion";
 
 export default function Navbar2() {
   //Estados para el diseno del layout
@@ -95,10 +97,24 @@ export default function Navbar2() {
       setOpenAreaADmin(false);
     }
   };
+
+  //funcion para tomar el tipo de proyecto
+  //-->1:Elaboracion
+  //-->2:Revision
+  //-->3:Publicacion
+  //tipo_proyecto
+  const [tipop, setTipop] = useState(0);
+  const tipo_proyecto = (value) => {
+    setTipop(value);
+  };
   //guardar el nombre del area seleccionada
   const [Areaname, setAreaName] = useState("");
   const nombre_area = (n) => {
     setAreaName(n);
+  };
+  const [adminArea, setAdminArea] = useState("");
+  const rolarea = (n) => {
+    setAdminArea(n);
   };
   //Estados para abrir las opciones del menu
   //opcion Admin
@@ -414,7 +430,12 @@ export default function Navbar2() {
       <div className="mb-7 border-0 border-x-white">
         {openAdminOptions ? <AdminOptions /> : ""}
         {UserArea ? (
-          <AreasAdmin id_area={id_area} nombre_area={nombre_area} isadmin={a} />
+          <AreasAdmin
+            id_area={id_area}
+            nombre_area={nombre_area}
+            isadmin={a}
+            rolarea={rolarea}
+          />
         ) : (
           ""
         )}
@@ -428,16 +449,30 @@ export default function Navbar2() {
         )}
         {OpenAreaADmin ? <OPArea idArea={idA} /> : ""}
         {opProyects1 ? (
-          <ProyectosAreas idarea={idA} nombrearea={Areaname} addIDP={addIDP} />
+          <ProyectosAreas
+            idarea={idA}
+            nombrearea={Areaname}
+            addIDP={addIDP}
+            adminA={adminArea}
+            tipo_proyecto={tipo_proyecto}
+          />
         ) : (
           ""
         )}
         {abrirProyecto ? (
-          <Proyecto
-            idproyecto={idProyecto}
-            nombrearea={Areaname}
-            idarea={idA}
-          />
+          tipop === 2 ? (
+            <RevisarP />
+          ) : tipop === 3 ? (
+            <Publicacion />
+          ) : (
+            <Proyecto
+              idproyecto={idProyecto}
+              nombrearea={Areaname}
+              idarea={idA}
+              adminDELAREA={adminArea}
+              tipop={tipop}
+            />
+          )
         ) : (
           ""
         )}
