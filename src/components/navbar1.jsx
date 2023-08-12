@@ -16,6 +16,14 @@ import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import axios from "axios";
 import Cookies from "universal-cookie";
 
+//-------------NUEVO-------------------------------------------------
+import { GoogleLogin } from '@react-oauth/google';
+//import { GoogleOAuthProvider } from '@react-oauth/google';
+import jwt_decode from "jwt-decode";
+import { useGoogleLogin } from '@react-oauth/google';
+
+//-------------NUEVO-------------------------------------------------
+
 export default function Navbar1() {
   //Estados para el diseno
   const [open, setOpen] = useState(false);
@@ -75,6 +83,73 @@ export default function Navbar1() {
       setOpenAlert(true);
     }
   };
+
+  //--------------------------------NUEVO-------------------------
+  //Envento clik para iniciar con google}
+
+  const login = useGoogleLogin({
+    onSuccess: async respose => {
+      try {
+        const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: {
+            "Authorization": `Bearer ${respose.access_token}`
+          }
+        })
+
+        console.log(res.data);
+
+        //Aqui va para sacar el toke
+
+        const email = res.data.email;
+        console.log(email);
+
+        GoogleLogin(email);
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  });
+
+
+  const GoogleLogin  = async (email) => {
+    try {
+      console.log(email);
+      const result = await axios.post(
+        "http://localhost:4000/api/authgoogle/LoginG",{email},
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("asdas",result);
+
+      //Recibir los datos y almacenarlos en cookies
+      const cookies = new Cookies();
+      //Cookie para el token
+      cookies.set("myTokenName", result.data.token, { path: "/" }); //enviar cokiee y almacenarla
+      //Cookie para el id del usuario
+      cookies.set("id_user", result.data.id, { path: "/" });
+      //Cookie bool para saber si el usuario es Admin General
+      cookies.set("AD", result.data.AD, { path: "/" });
+      //Redirigir al Dashboard para consumir las cookies
+      Router.push("/Dashboard");
+
+      console.log(result.data);
+      //console.log(user);
+      //Router.push("/task/tasklist/");
+    } catch (error) {
+      //En caso de haber error en el inicio de sesion abrir el alert
+      let errpars = error.response.data.error;
+      console.log(errpars);
+      //Mostrar el error mediante un alert
+      seterrorAlert(error.response.data.error);
+      setOpenAlert(true);
+    }
+  }
+
+
+  //--------------------------------NUEVO-------------------------
+
   const HandleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
     console.log(e.target.name, e.target.value);
@@ -197,8 +272,16 @@ export default function Navbar1() {
                   alt="User image"
                 />
               </div>
-              <div className="flex flex-col gap-1 p-4 font-semibold">
-                Continuar con Google
+              <div className="flex justify-center mt-3">
+                <Button
+                  size="sm"
+                  onClick={login} // Llama a la función handleGoogleLogin
+                  variant="text"
+                  color="green"
+                  className="w-full rounded-none"
+                >
+                  Continuar con Google
+                </Button>
               </div>
             </div>
           </form>
