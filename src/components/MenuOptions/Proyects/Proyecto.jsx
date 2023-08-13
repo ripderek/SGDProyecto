@@ -1,4 +1,5 @@
 import { React, useState, useEffect } from "react";
+import Router from "next/router";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import {
@@ -10,6 +11,7 @@ import {
   Tab,
   TabsBody,
   TabPanel,
+  Button
 } from "@material-tailwind/react";
 
 import DocumentosAreas from "./DocumentosAreas";
@@ -171,7 +173,10 @@ export default function Proyecto({
                   <TabPanel key={value} value={value} className="py-0">
                     Aqui debe de abrir una pequena interfaz que sirve como
                     intermediario para abrir el editor de texto en otra pestana
+                    <Button onClick={()=>(Router.push("/Editor/Editor"))}>Abrir Editor</Button>
                   </TabPanel>
+
+                  
                 );
               } else if (value === "Guias") {
                 return (
