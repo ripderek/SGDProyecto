@@ -11,7 +11,9 @@ import {
   Tab,
   TabsBody,
   TabPanel,
-  Button
+  Button,
+  Dialog,
+  Typography
 } from "@material-tailwind/react";
 
 import DocumentosAreas from "./DocumentosAreas";
@@ -21,6 +23,7 @@ import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/proyects_anim.json";
 import VerFlujo_Proyecto from "./VerFlujo_Proyecto";
 import BorradoresProyecto from "./BorradoresProyecto";
+import Editor from "./EditorTexto";
 //props {idproyecto, nombrearea, idarea}
 export default function Proyecto({
   idproyecto,
@@ -77,6 +80,20 @@ export default function Proyecto({
   ];
   const cookies = new Cookies();
   const [areasdata, setAreasData] = useState([]);
+  const [openD, setOpenD] = useState(false);
+
+const [dataUser, setDataUser] = useState({
+    correo_institucional_user: "",
+    correo_personal_user: "",
+    estado_user: "",
+    identi: "",
+    isadmin_user: "",
+    nombre_firma_user: "",
+    nombres_user: "",
+    numero_celular_user: "",
+    tip_iden: "",
+    url_foto_user: "",
+  });
   useEffect(() => {
     load();
   }, []);
@@ -97,9 +114,64 @@ export default function Proyecto({
 
     setAreasData(result.data);
     console.log(result.data);
+    try {
+      //obtener el id mediante cookies
+      const result = await axios.get(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "user/User/" +
+          cookies.get("id_user"),
+        {
+          withCredentials: true,
+        }
+      );
+      //console.log(result.data.rows[0]);
+      console.log("");
+      console.log("Result data");
+      //console.log(result.data);
+      const data = result.data;
+      setDataUser({
+        correo_institucional_user: data.correo_institucional_user,
+        correo_personal_user: data.correo_personal_user,
+        estado_user: data.estado_user,
+        identi: data.identi,
+        isadmin_user: data.isadmin_user,
+        nombre_firma_user: data.nombre_firma_user,
+        nombres_user: data.nombres_user,
+        numero_celular_user: data.numero_celular_user,
+        tip_iden: data.tip_iden,
+        url_foto_user: data.url_foto_user,
+      });
+      console.log(dataUser);
+    } catch (error) {
+      //Mostrar algun error por consola
+      console.log(error);
+      //setLoading(false);
+    }
   };
   return (
     <div className="bg-white h-full mb-10">
+      <Dialog
+          size="xxl"
+          open={openD}
+          handler={() => setOpenD(false)}
+          className="overflow-y-scroll"
+        >
+          <DialogHeader className="bg-light-green-900 text-white">
+            Editor de Texto
+            <Button
+              color="red"
+              variant="text"
+              size="md"
+              className="!absolute top-3 right-3"
+              onClick={() => setOpenD(false)}
+            >
+              <Typography variant="h5" color="white">
+                X
+              </Typography>
+            </Button>
+          </DialogHeader>
+          <Editor id_proyecto={idproyecto} nombre={dataUser.nombres_user} />
+     </Dialog>
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
@@ -173,7 +245,7 @@ export default function Proyecto({
                   <TabPanel key={value} value={value} className="py-0">
                     Aqui debe de abrir una pequena interfaz que sirve como
                     intermediario para abrir el editor de texto en otra pestana
-                    <Button onClick={()=>(Router.push("/Editor/Editor"))}>Abrir Editor</Button>
+                    <Button onClick={()=>setOpenD(true)}>Abrir Editor</Button>
                   </TabPanel>
 
                   
