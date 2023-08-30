@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
-import { Box } from "@mui/material";
+import { Box,Button  } from "@mui/material";
 import { io } from "socket.io-client";
 import Delta from "quill-delta";
+import jsPDF from "jspdf";
+
 
 const Component = styled.div`
   background: #f5f5f5;
@@ -91,9 +93,36 @@ export default function Editor({ id_proyecto, nombre }) {
 
   const handleQuillChange = (content, delta, source, editor) => {
     if (source === "user" && socket) {
-      socket.emit("send-changes", { id_proyecto, delta });
+      socket.emit("send-changes", { id_proyecto,delta,content });
     }
     setEditorContent(editor.getContents());
+  };
+  const handleGeneratePDF = () => {
+    const pdf = new jsPDF({
+      orientation: "portrait",
+      unit: "mm",
+      format: "a4", // Tamaño A4
+    });
+    const title = "Contenido del Editor";
+
+    // Obtener el ancho del PDF
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+
+    // Obtener el ancho del título
+    const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+
+    // Calcular la posición horizontal centrada
+    const centerX = (pdfWidth - titleWidth) / 2;
+
+    // Colocar el título centrado
+    pdf.text(title, centerX, 10);
+
+    // Convertir el contenido del editor a texto y agregarlo al PDF
+    const editorText = editorContent.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
+    pdf.text(editorText, 10, 20);
+
+    // Descargar el PDF
+    pdf.save("editor_content.pdf");
   };
 
   useEffect(() => {
@@ -102,6 +131,7 @@ export default function Editor({ id_proyecto, nombre }) {
     socket.on("receive-changes", (delta) => {
       setEditorDelta(new Delta(delta));
     });
+    
 
     socket.on("typing", ({ id_proyecto: proyecto, nombre: user }) => {
       if (proyecto === id_proyecto && user !== nombre) {
@@ -112,7 +142,6 @@ export default function Editor({ id_proyecto, nombre }) {
         }, 5000); // Cambia este valor según tus necesidades
       }
     });
-
     return () => {
       socket.off("receive-changes");
       socket.off("typing");
@@ -120,9 +149,10 @@ export default function Editor({ id_proyecto, nombre }) {
   }, [socket, id_proyecto, nombre]);
 
   useEffect(() => {
-    if (editorDelta.ops.length === 0) return;
-
-    setEditorContent((prevContent) => prevContent.compose(editorDelta));
+    if (!editorContent || !editorDelta.ops.length) return;
+  
+    const updatedContent = new Delta(editorContent).compose(new Delta(editorDelta));
+    setEditorContent(updatedContent); // Actualizar el contenido del editor con los cambios aplicados
   }, [editorDelta]);
 
   useEffect(() => {
@@ -132,6 +162,7 @@ export default function Editor({ id_proyecto, nombre }) {
       });
     }
   }, [socket]);
+  
 
   return (
     <Component>
@@ -149,6 +180,9 @@ export default function Editor({ id_proyecto, nombre }) {
                   onChange={handleQuillChange}
                   onFocus={handleTyping}
                 />
+                 <Button onClick={handleGeneratePDF} variant="contained" color="primary">
+                  Generar PDF
+                </Button>
               </div>
               <div className="notes">
                 <textarea
