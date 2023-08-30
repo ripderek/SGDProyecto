@@ -15,6 +15,7 @@ import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import axios from "axios";
 import Cookies from "universal-cookie";
 import Loading from "@/components/loading";
+import EmailPopup from '../components/MenuOptions/Users/RecuperarCuenta';
 
 //-------------NUEVO-------------------------------------------------
 import { GoogleLogin } from '@react-oauth/google';
@@ -91,9 +92,8 @@ export default function Navbar1() {
     }
   };
 
-  //--------------------------------NUEVO-------------------------
-  //Envento clik para iniciar con google}
 
+  //Envento clik para iniciar con google
   const login = useGoogleLogin({
     onSuccess: async respose => {
       try {
@@ -105,11 +105,11 @@ export default function Navbar1() {
 
         console.log(res.data);
 
-        //Aqui va para sacar el toke
-
+        //Aqui va para sacar el token ty sacar el mail del token que te regresa google
         const email = res.data.email;
         console.log(email);
 
+        //Llama al metodo pasandole el mail
         GoogleLogin(email);
 
       } catch (error) {
@@ -119,16 +119,16 @@ export default function Navbar1() {
   });
 
 
-  const GoogleLogin  = async (email) => {
+  const GoogleLogin = async (email) => {
     try {
       console.log(email);
       const result = await axios.post(
-        "http://localhost:4000/api/authgoogle/LoginG",{email},
+        "http://localhost:4000/api/authgoogle/LoginG", { email },
         {
           withCredentials: true,
         }
       );
-      console.log("asdas",result);
+      console.log("asdas", result);
 
       //Recibir los datos y almacenarlos en cookies
       const cookies = new Cookies();
@@ -154,8 +154,45 @@ export default function Navbar1() {
     }
   }
 
+  //Nuevo----------------------------------------
 
-  //--------------------------------NUEVO-------------------------
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  // Cerrar o abrir la ventana emergente
+  const handleTogglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
+
+  const handleRecuContra = async (email) => {
+    try {
+      // Lógica para enviar el correo al backend
+      console.log(email);
+
+      const result = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK + "public/Recuperar_cuenta",
+        { correo: email },
+        {
+          withCredentials: true,
+        }
+      );
+
+      
+      seterrorAlert(result.data.message);
+      setOpenAlert(true);
+      
+
+      // Cerrar la ventana emergente después de enviar el correo
+      handleTogglePopup();
+    } catch (error) {
+      // Manejar el error
+      let errpars = error.response?.data?.error || 'Error desconocido';
+      console.log(errpars);
+      seterrorAlert(errpars);
+      setOpenAlert(true);
+    }
+  };
+
+  //Nuevo----------------------------------------
 
   const HandleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
@@ -279,16 +316,35 @@ export default function Navbar1() {
                 </Button>
               )}
             </div>
-            <div className="flex justify-center mt-3">
+            {/*<div className="flex justify-center mt-3">
               <Button
                 size="sm"
                 variant="text"
                 color="green"
                 className="w-full rounded-none"
+                onClick={handleOpenPopup} // llamar al metodo para que abra la ventana donde recuperar la contra
               >
                 Recuperar cuenta
               </Button>
+              </div>*/}
+
+            <div className="tu-componente">
+              <div className="flex justify-center mt-3">
+                <Button
+                  size="sm"
+                  variant="text"
+                  color="green"
+                  className="w-full rounded-none"
+                  onClick={handleTogglePopup}
+                >
+                  {isPopupOpen ? 'Cancelar' : 'Recuperar cuenta'}
+                </Button>
+              </div>
+              {isPopupOpen && (
+                <EmailPopup onClose={handleTogglePopup} onSend={handleRecuContra} />
+              )}
             </div>
+
             <div className="h-auto bg-gray-300  border-4 border-yellow-200  shadow-2xl flex mt-4 cursor-pointer">
               <div className="flex p-4">
                 <img
