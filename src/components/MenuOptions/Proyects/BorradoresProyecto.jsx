@@ -10,6 +10,7 @@ import {
 } from "@material-tailwind/react";
 const TABLE_HEAD = ["", "Archivo", "Fecha"];
 import VerBorradorPDF from "./VerBorradorPDF";
+
 export default function BorradoresProyecto({ id }) {
   const [users, setUsers] = useState([]);
   const [link, setLink] = useState("");

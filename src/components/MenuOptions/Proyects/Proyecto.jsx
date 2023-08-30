@@ -1,5 +1,4 @@
 import { React, useState, useEffect } from "react";
-import Router from "next/router";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import {
@@ -13,7 +12,7 @@ import {
   TabPanel,
   Button,
   Dialog,
-  Typography
+  Typography,
 } from "@material-tailwind/react";
 
 import DocumentosAreas from "./DocumentosAreas";
@@ -23,7 +22,13 @@ import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/proyects_anim.json";
 import VerFlujo_Proyecto from "./VerFlujo_Proyecto";
 import BorradoresProyecto from "./BorradoresProyecto";
+import NivelesProyecto from "./NivelesProyecto";
+import SubirNivel from "./SubirNivel";
+import ConfigurarProyecto from "./ConfigurarProyecto";
 import Editor from "./EditorTexto";
+import Loading from "@/components/loading";
+import Historial from "./Historial";
+import Participantes from "./Participantes";
 //props {idproyecto, nombrearea, idarea}
 export default function Proyecto({
   idproyecto,
@@ -54,6 +59,14 @@ export default function Proyecto({
       value: "Definir Flujo",
     },
     {
+      label: "Revisiones",
+      value: "Revisiones",
+    },
+    {
+      label: "Subir Nivel",
+      value: "Subir Nivel",
+    },
+    {
       label: "Comentarios",
       value: "Comentarios",
     },
@@ -81,8 +94,9 @@ export default function Proyecto({
   const cookies = new Cookies();
   const [areasdata, setAreasData] = useState([]);
   const [openD, setOpenD] = useState(false);
-
-const [dataUser, setDataUser] = useState({
+  const [users2, setUsers2] = useState([]);
+  const [proyectoEdit, setProyectoEdit] = useState(true);
+  const [dataUser, setDataUser] = useState({
     correo_institucional_user: "",
     correo_personal_user: "",
     estado_user: "",
@@ -147,31 +161,51 @@ const [dataUser, setDataUser] = useState({
       console.log(error);
       //setLoading(false);
     }
+    //obtener los niveles del proyecto
+    const result2 = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/estados_niveles/" +
+        idproyecto,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
+    const data2 = await result2.json();
+    setUsers2(data2);
+    //si el proyecto tiene mas de 1 estado nivel no se debe permitir entrar a su configuracion ni dejar subir documentos nuevos.
+    setProyectoEdit(data2.length >= 2 ? false : true);
+  };
+  const Recargar = (valor) => {
+    if (valor) {
+      load();
+    }
   };
   return (
     <div className="bg-white h-full mb-10">
       <Dialog
-          size="xxl"
-          open={openD}
-          handler={() => setOpenD(false)}
-          className="overflow-y-scroll"
-        >
-          <DialogHeader className="bg-light-green-900 text-white">
-            Editor de Texto
-            <Button
-              color="red"
-              variant="text"
-              size="md"
-              className="!absolute top-3 right-3"
-              onClick={() => setOpenD(false)}
-            >
-              <Typography variant="h5" color="white">
-                X
-              </Typography>
-            </Button>
-          </DialogHeader>
-          <Editor id_proyecto={idproyecto} nombre={dataUser.nombres_user} />
-     </Dialog>
+        size="xxl"
+        open={openD}
+        handler={() => setOpenD(false)}
+        className="overflow-y-scroll"
+      >
+        <DialogHeader className="bg-light-green-900 text-white">
+          Editor de Texto
+          <Button
+            color="red"
+            variant="text"
+            size="md"
+            className="!absolute top-3 right-3"
+            onClick={() => setOpenD(false)}
+          >
+            <Typography variant="h5" color="white">
+              X
+            </Typography>
+          </Button>
+        </DialogHeader>
+        <Editor id_proyecto={idproyecto} nombre={dataUser.nombres_user} />
+      </Dialog>
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
@@ -214,8 +248,25 @@ const [dataUser, setDataUser] = useState({
                       </Tab>
                     );
                   }
+                } else if (value === "Subir Nivel") {
+                  if (areasdata.p_rol === "Admin" && users2.length === 1)
+                    if (users2[0].r_estado) {
+                      return (
+                        <Tab key={label} value={value}>
+                          {label}
+                        </Tab>
+                      );
+                    }
+                } else if (value == "Revisiones") {
+                  if (areasdata.p_flujo) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
                 } else if (value == "Configuracion") {
-                  if (areasdata.p_rol === "Admin") {
+                  if (areasdata.p_rol === "Admin" && proyectoEdit) {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -237,7 +288,11 @@ const [dataUser, setDataUser] = useState({
               if (value === "Documentos") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    <DocumentosAreas id={idproyecto} rol={areasdata.p_rol} />
+                    <DocumentosAreas
+                      id={idproyecto}
+                      rol={areasdata.p_rol}
+                      editproyecto={users2.length >= 2 ? false : true}
+                    />
                   </TabPanel>
                 );
               } else if (value === "Editor de Texto") {
@@ -245,15 +300,23 @@ const [dataUser, setDataUser] = useState({
                   <TabPanel key={value} value={value} className="py-0">
                     Aqui debe de abrir una pequena interfaz que sirve como
                     intermediario para abrir el editor de texto en otra pestana
-                    <Button onClick={()=>setOpenD(true)}>Abrir Editor</Button>
+                    <Button onClick={() => setOpenD(true)}>Abrir Editor</Button>
                   </TabPanel>
-
-                  
                 );
               } else if (value === "Guias") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    <GuiasProyecto id={idproyecto} rol={areasdata.p_rol} />
+                    <GuiasProyecto
+                      id={idproyecto}
+                      rol={areasdata.p_rol}
+                      editproyecto={users2.length >= 2 ? false : true}
+                    />
+                  </TabPanel>
+                );
+              } else if (value === "Revisiones") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <NivelesProyecto id={idproyecto} />
                   </TabPanel>
                 );
               } else if (value === "Definir Flujo") {
@@ -262,16 +325,23 @@ const [dataUser, setDataUser] = useState({
                     <CrearFlujoProyecto
                       idproyecto={idproyecto}
                       idarea={idarea}
+                      Recargar={Recargar}
                     />
                   </TabPanel>
                 );
-              } else if (value === "Definir Flujo") {
+              } else if (value === "Configuracion") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    <CrearFlujoProyecto
-                      idproyecto={idproyecto}
-                      idarea={idarea}
+                    <ConfigurarProyecto
+                      eliminarFlujo={areasdata.p_flujo ? true : false}
+                      id_proyecto={idproyecto}
                     />
+                  </TabPanel>
+                );
+              } else if (value === "Subir Nivel") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <SubirNivel id_proyect={idproyecto} />
                   </TabPanel>
                 );
               } else if (value === "Flujo") {
@@ -284,6 +354,22 @@ const [dataUser, setDataUser] = useState({
                 return (
                   <TabPanel key={value} value={value} className="py-0">
                     <BorradoresProyecto id={idproyecto} />
+                  </TabPanel>
+                );
+              } else if (value === "Historial") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <Historial id={idproyecto} />
+                  </TabPanel>
+                );
+              } else if (value === "Participantes") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    <Participantes
+                      idproyecto={idproyecto}
+                      idarea={idarea}
+                      agregarRevisores={true}
+                    />
                   </TabPanel>
                 );
               } else {

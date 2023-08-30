@@ -1,9 +1,5 @@
 import { Fragment, useState } from "react";
 import {
-  Typography,
-  List,
-  ListItem,
-  ListItemPrefix,
   Button,
   Dialog,
   DialogHeader,
@@ -13,7 +9,6 @@ import {
   TabsBody,
   Tabs,
   TabsHeader,
-  TabPanel,
 } from "@material-tailwind/react";
 import axios from "axios";
 
