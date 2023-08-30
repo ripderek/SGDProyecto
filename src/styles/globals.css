@@ -50,7 +50,7 @@ body {
 .container .ql-editor {
   width: 60%;
   background: #FFF;
-  box-shadow: 0 0 5px 0 rgba(0,0,0,0.5);
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.781);
   margin: 10px auto 10px auto !important;
   min-height: 800px;
   max-height: 600px; /* Ajusta esta altura según tus necesidades */
