@@ -19,7 +19,8 @@ import {
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/verification_anim.json";
 import Participantes from "./Participantes";
-
+import ListDocumentosExtras from "./ListDocumentosExtras";
+import LisDocumentosContraportadas from "./LisDocumentosContraportadas";
 const data = [
   {
     label: "Documento",
@@ -34,12 +35,8 @@ const data = [
     value: "Participantes",
   },
   {
-    label: "Flujo",
-    value: "Flujo",
-  },
-  {
-    label: "Accion",
-    value: "Accion",
+    label: "Añadir contraportada",
+    value: "Añadir contraportada",
   },
   {
     label: "Añadir documentos",
@@ -260,22 +257,16 @@ export default function Publicacion({ idproyecto, idarea }) {
                     />
                   </TabPanel>
                 );
-              } else if (value === "Flujo") {
+              } else if (value === "Añadir documentos") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    Flujo
+                    <ListDocumentosExtras idProyecto={idproyecto} />
                   </TabPanel>
                 );
-              } else if (value === "Accion") {
+              } else if (value === "Añadir contraportada") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    Accion
-                  </TabPanel>
-                );
-              } else if (value === "Añadir documentos              ") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    Añadir documentos
+                    <LisDocumentosContraportadas idProyecto={idproyecto} />
                   </TabPanel>
                 );
               } else {
