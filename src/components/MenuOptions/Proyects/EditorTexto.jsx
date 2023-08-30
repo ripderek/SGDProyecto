@@ -6,6 +6,8 @@ import { Box,Button  } from "@mui/material";
 import { io } from "socket.io-client";
 import Delta from "quill-delta";
 import jsPDF from "jspdf";
+import { renderToString } from 'react-dom/server';
+
 
 
 const Component = styled.div`
@@ -42,17 +44,27 @@ export default function Editor({ id_proyecto, nombre }) {
   const [userCount, setUserCount] = useState(0);
   const [noteContent, setNoteContent] = useState("");
   const [receivedNotes, setReceivedNotes] = useState([]);
+  const [initialContent, setInitialContent] = useState(new Delta());
+
 
   useEffect(() => {
     const socketServer = io("http://localhost:9000");
     setSocket(socketServer);
 
-    socketServer.emit("join-room", id_proyecto);
+    socketServer.on("connect", async () => {
+      socketServer.emit("join-room", id_proyecto);
+    });
+    socketServer.on("document-content", (content) => {
+      console.log(content); 
+      // Establecer el contenido en el estado editorContent para mostrarlo en el editor
+      setEditorContent(content);
+  
+      // Resto del código...
+    });
 
     socketServer.on("user-count", (count) => {
       setUserCount(count);
     });
-
     return () => {
       socketServer.disconnect();
       setUserCount(0);
@@ -83,46 +95,46 @@ export default function Editor({ id_proyecto, nombre }) {
       setNoteContent('');
     }
   };
-
-
   const handleTyping = () => {
     if (socket) {
       socket.emit("typing", { id_proyecto, nombre });
     }
   };
+  const handleGeneratePDF = () => {
+    if (editorContent && editorContent.ops) {
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4",
+        });
+        const title = "Contenido del Editor";
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
+        const centerX = (pdfWidth - titleWidth) / 2;
+
+        pdf.setFontSize(16);
+        pdf.text(title, centerX, 10);
+
+        if (editorContent.ops.length > 0) {
+            const editorText = editorContent.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
+            pdf.setFontSize(12);
+            pdf.text(editorText, 10, 20);
+        } else {
+            console.warn("Editor content is empty.");
+        }
+
+        pdf.save("editor_content.pdf");
+    } else {
+        console.error("Editor content is missing or in an invalid format.");
+    }
+};
 
   const handleQuillChange = (content, delta, source, editor) => {
     if (source === "user" && socket) {
       socket.emit("send-changes", { id_proyecto,delta,content });
     }
     setEditorContent(editor.getContents());
-  };
-  const handleGeneratePDF = () => {
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4", // Tamaño A4
-    });
-    const title = "Contenido del Editor";
-
-    // Obtener el ancho del PDF
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-
-    // Obtener el ancho del título
-    const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
-
-    // Calcular la posición horizontal centrada
-    const centerX = (pdfWidth - titleWidth) / 2;
-
-    // Colocar el título centrado
-    pdf.text(title, centerX, 10);
-
-    // Convertir el contenido del editor a texto y agregarlo al PDF
-    const editorText = editorContent.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
-    pdf.text(editorText, 10, 20);
-
-    // Descargar el PDF
-    pdf.save("editor_content.pdf");
   };
 
   useEffect(() => {
@@ -142,6 +154,7 @@ export default function Editor({ id_proyecto, nombre }) {
         }, 5000); // Cambia este valor según tus necesidades
       }
     });
+
     return () => {
       socket.off("receive-changes");
       socket.off("typing");
