@@ -172,11 +172,20 @@ export default function Users() {
           handler={handleOpenArea}
           className="overflow-y-scroll"
         >
-          <button onClick={handleOpenArea} className="bg-yellow-900">
-            <Typography variant="h2" color="white">
-              Cerrar opciones de usuario
-            </Typography>
-          </button>
+          <DialogHeader className="bg-light-green-900 text-white">
+            Editar usuario
+            <Button
+              color="red"
+              variant="text"
+              size="md"
+              className="!absolute top-3 right-3"
+              onClick={handleOpenArea}
+            >
+              <Typography variant="h5" color="white">
+                X
+              </Typography>
+            </Button>
+          </DialogHeader>
           <PerfilUser iduser={userID} isadmin={true} admin={true} />
         </Dialog>
       ) : (

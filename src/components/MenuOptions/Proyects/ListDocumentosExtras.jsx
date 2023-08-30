@@ -1,29 +1,43 @@
 import { React, useState, useEffect } from "react";
-import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
-import Verpdf from "./Verpdf";
 import {
-  Button,
   Dialog,
   Typography,
   IconButton,
   Tooltip,
+  DialogHeader,
+  Button,
+  Chip,
+  Card,
   Alert,
   Input,
-  DialogHeader,
-  Card,
   CardHeader,
   CardBody,
 } from "@material-tailwind/react";
-import axios from "axios";
-const TABLE_HEAD = ["Ver archivo", "Archivo", "Fecha"];
+import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import Loading from "@/components/loading";
+import axios from "axios";
 
-export default function DocumentosAreas({ id, rol, editproyecto }) {
+const TABLE_HEAD = ["", "Archivo", "Fecha", "Estado"];
+import VerBorradorPDF from "./VerBorradorPDF";
+
+export default function ListDocumentosExtras({ idProyecto }) {
   const [users, setUsers] = useState([]);
+  const [link, setLink] = useState("");
+  const [openD, setOpenD] = useState(false);
   const [openUser, setOpenUsers] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const handlerOpenUsers = () => setOpenUsers(!openUser);
+  const [openAlert, setOpenAlert] = useState(false);
+  const hadleAlert = () => setOpenAlert(!openAlert);
+  const [openAlerterror, setOpenAlerterror] = useState(false);
+  const hadleAlerterror = () => setOpenAlerterror(!openAlert);
+  //mensaje de error
+  const [error, setError] = useState([]);
+  //abrir el pdf
+  const [descripcion, setDescripcion] = useState("");
+
   //para enviar la foto de perfil
   const [file, setFile] = useState(null);
   const ImagePreview = (e) => {
@@ -37,10 +51,11 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
     load();
   }, []);
   const load = async () => {
-    setLoading(true);
     //Cargar la lista de usuarios
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/documentos_proyectos/" + id,
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/DocumentosExtras/" +
+        idProyecto,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -50,18 +65,7 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
 
     const data = await result.json();
     setUsers(data);
-    setLoading(false);
   };
-  const [openAlert, setOpenAlert] = useState(false);
-  const hadleAlert = () => setOpenAlert(!openAlert);
-  const [openAlerterror, setOpenAlerterror] = useState(false);
-  const hadleAlerterror = () => setOpenAlerterror(!openAlert);
-  //mensaje de error
-  const [error, setError] = useState([]);
-  //abrir el pdf
-  const [link, setLink] = useState("");
-  const [openD, setOpenD] = useState(false);
-  const [descripcion, setDescripcion] = useState("");
 
   const HandleSUbumit = async (e) => {
     setLoading(true);
@@ -70,12 +74,12 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
       const form = new FormData();
 
       form.set("file", file);
-      form.set("id", id);
+      form.set("id", idProyecto);
       form.set("descripcion", descripcion);
       setFile("");
 
       const result = await axios.post(
-        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/subir_pdf",
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/subir_pdf_extra",
         form,
         {
           withCredentials: true,
@@ -109,8 +113,8 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
           handler={() => setOpenD(false)}
           className="overflow-y-scroll"
         >
-          <DialogHeader className="bg-light-green-900 text-white">
-            Documento Actual
+          <DialogHeader className="bg-green-700 text-white">
+            Documentos subidos
             <Button
               color="red"
               variant="text"
@@ -123,10 +127,8 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
               </Typography>
             </Button>
           </DialogHeader>
-
-          <Verpdf link={link} id={id} admin={rol}></Verpdf>
+          <VerBorradorPDF link={link} />
         </Dialog>
-
         {openUser ? (
           <Dialog
             size="sm"
@@ -200,17 +202,13 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
         ) : (
           ""
         )}
-        {editproyecto === true ? (
-          <Button
-            className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
-            onClick={handlerOpenUsers}
-          >
-            <ArrowUpCircleIcon className="h-7 w-7" />
-            <p className="mt-1"> Subir Documento</p>
-          </Button>
-        ) : (
-          ""
-        )}
+        <Button
+          className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
+          onClick={handlerOpenUsers}
+        >
+          <ArrowUpCircleIcon className="h-7 w-7" />
+          <p className="mt-1"> Subir Documento</p>
+        </Button>
       </div>
       <table className="mt-4 w-full min-w-max table-auto text-left">
         <thead>
@@ -250,8 +248,8 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
                       onClick={() => (
                         setLink(
                           process.env.NEXT_PUBLIC_ACCESLINK +
-                            "proyects/pdf/" +
-                            user.d_id
+                            "proyects/VerpdfUrl/" +
+                            user.r_id_documento_extra
                         ),
                         setOpenD(true)
                       )}
@@ -268,7 +266,7 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.d_descripcion}
+                        {user.r_descripcion}
                       </Typography>
                     </div>
                   </div>
@@ -280,8 +278,15 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.d_fecha}
+                    {user.r_fecha_creacion}
                   </Typography>
+                </td>
+                <td className="p-4 border-b border-blue-gray-50">
+                  <Chip
+                    color={user.r_estado ? "blue" : "red"}
+                    value={user.r_estado ? "Habilitado" : "Deshabilitado"}
+                    className="w-max"
+                  />
                 </td>
               </tr>
             );

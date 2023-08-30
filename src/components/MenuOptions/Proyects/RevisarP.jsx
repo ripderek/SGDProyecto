@@ -13,10 +13,13 @@ import {
   Card,
   CardBody,
   Button,
+  Dialog,
+  Input,
 } from "@material-tailwind/react";
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/verification_anim.json";
-import VerPdfRevision from "./VerPdfRevision";
+import ListDocumentosExtras from "./ListDocumentosExtras";
+import Participantes from "./Participantes";
 
 const data = [
   {
@@ -36,10 +39,6 @@ const data = [
     value: "Flujo",
   },
   {
-    label: "Accion",
-    value: "Accion",
-  },
-  {
     label: "Añadir documentos",
     value: "Añadir documentos",
   },
@@ -48,10 +47,15 @@ const data = [
     value: "Html",
   },
 ];
-export default function RevisarP({ idproyecto }) {
+export default function RevisarP({ idproyecto, idarea }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
   const [id, setID] = useState(0);
+  const [descripcion, setDescripcoin] = useState("");
+  //para abrir la alerta de rechazar el documento
+  const [openRechazar, setOpenRechazar] = useState(false);
+  const handleOpen = () => setOpenRechazar(!openRechazar);
+
   useEffect(() => {
     load();
   }, []);
@@ -89,8 +93,7 @@ export default function RevisarP({ idproyecto }) {
 
     //setLink(process.env.NEXT_PUBLIC_ACCESLINK + "proyects/pdf/" + users.d_id);
   };
-  const AceptarDoc = async (e) => {
-    e.preventDefault();
+  const AceptarDoc = async () => {
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "proyects/SubirLevel/" + idproyecto,
@@ -106,8 +109,75 @@ export default function RevisarP({ idproyecto }) {
       console.log(error);
     }
   };
+  //funcion para rechazar el level
+  const Rechazar = async () => {
+    console.log("Rechazar el documento");
+    try {
+      const result = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/Rechazar/" + idproyecto,
+        { descripcionp: descripcion },
+        {
+          withCredentials: true,
+        }
+      );
+      handleOpen();
+      alert("Se rechazo el documento el documento");
+
+      //console.log(result);
+    } catch (error) {
+      alert("Error");
+      console.log(error);
+    }
+  };
+  const CombinarPDF = async () => {
+    try {
+      const result = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "proyects/Combinar_pdfs/" +
+          idproyecto,
+        { descripcionp: descripcion },
+        {
+          withCredentials: true,
+        }
+      );
+      handleOpen();
+      alert("Se combino los pdf");
+
+      //console.log(result);
+    } catch (error) {
+      alert("Error");
+      console.log(error);
+    }
+  };
   return (
     <div className="bg-white h-full mb-10">
+      <Dialog open={openRechazar} handler={handleOpen}>
+        <DialogHeader>Rechazar documento</DialogHeader>
+        <DialogBody divider>
+          Si rechaza el documento volverá al nivel de elaboración.
+          <div className="w-full p-4">
+            <Input
+              label="Descripcion"
+              value={descripcion}
+              onChange={(e) => setDescripcoin(e.target.value)}
+              required
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={handleOpen}
+            className="mr-1"
+          >
+            <span>Cancelar</span>
+          </Button>
+          <Button variant="gradient" color="green" onClick={Rechazar}>
+            <span>Aceptar</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
@@ -144,6 +214,7 @@ export default function RevisarP({ idproyecto }) {
                           <Button
                             className="mb-8 rounded-none p-4 ml-6"
                             color="red"
+                            onClick={handleOpen}
                           >
                             Rechazar documento
                           </Button>
@@ -152,7 +223,7 @@ export default function RevisarP({ idproyecto }) {
                         <iframe
                           src={
                             process.env.NEXT_PUBLIC_ACCESLINK +
-                            "proyects/pdf/" +
+                            "proyects/pdf2/" +
                             id
                           }
                           height="100%"
@@ -172,7 +243,11 @@ export default function RevisarP({ idproyecto }) {
               } else if (value === "Participantes") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    Participantes
+                    <Participantes
+                      idproyecto={idproyecto}
+                      idarea={idarea}
+                      agregarRevisores={false}
+                    />
                   </TabPanel>
                 );
               } else if (value === "Flujo") {
@@ -187,10 +262,10 @@ export default function RevisarP({ idproyecto }) {
                     Accion
                   </TabPanel>
                 );
-              } else if (value === "Añadir documentos              ") {
+              } else if (value === "Añadir documentos") {
                 return (
                   <TabPanel key={value} value={value} className="py-0">
-                    Añadir documentos
+                    <ListDocumentosExtras idProyecto={idproyecto} />
                   </TabPanel>
                 );
               } else {

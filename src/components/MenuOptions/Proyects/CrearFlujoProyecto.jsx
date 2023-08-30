@@ -1,28 +1,23 @@
-import { PlusIcon, EyeIcon, CheckIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, CheckIcon } from "@heroicons/react/24/solid";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 
 import {
   CardHeader,
-  Input,
   Button,
   CardBody,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Typography,
   Card,
-  IconButton,
-  Chip,
-  Drawer,
 } from "@material-tailwind/react";
 import { useState, useEffect } from "react";
 import Flujos_Etapas from "./Flujos_Etapas";
 import AreasFlujo from "./AreasFlujo";
 import axios from "axios";
+import Loading from "@/components/loading";
 
-export default function CrearFlujoProyecto({ idproyecto, idarea }) {
+export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
   const [contador, setcontador] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     loadw();
@@ -30,6 +25,8 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
   const [users2, setUsers2] = useState([]);
 
   const loadw = async () => {
+    setLoading(true);
+
     console.log("aqio cargar");
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
@@ -44,6 +41,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
     const data = await result.json();
     setUsers2(data);
     console.log(data);
+    setLoading(false);
   };
   const [openVerNiveles, setVerNiveles] = useState(false);
   const handlerNiveles = (estado) => {
@@ -62,10 +60,11 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
   //estado para retornar el objeto que me devuelve areasFlujo
   const [areaD, setAreaD] = useState([]);
   const datos = (data) => {
+    setLoading(true);
+
     console.log("datos retornados");
     console.log(data);
-    var id_nivel_enviar = "";
-    var titulo_enviar = "";
+    console.log(users);
     //primero hay que preguntar si el id area que se esta ingresando no esta ya en el flujo
     //si ya esta en el flujo enviar una alerta
     var verifciar = true;
@@ -76,18 +75,16 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
       }
     }
     if (!final) {
+      const newUsers = users.filter((user) => user.r_num !== 1);
+      //setUsers(newUsers);
       if (verifciar && users.length !== 0) {
-        //eliminar el primer elemento que seria "Elaboracion"
-        handleRemoveItem(1);
-        //eliminar elemento elaboracion
-        const newUsers = users.filter((user) => user.r_num !== 1);
-
+        console.log("NIVELES");
+        console.log(newUsers);
+        console.log(users);
         //validar si el nivel actualidad permite cardinalidad y el dato que se recibe sobre el pase de nivel es true entonces eliminar el nivel actual
-
         // si es un nivel con cardinalidad no hay que eliminar
         if (newUsers[0].r_cardinalidad_nivel) {
           setTitulNivel(newUsers[0].r_titulo_nivel);
-
           //si el nivel permite varias areas y ya se ingreso una se debe permitir ver el checbox para poder ir a otro nivel;
           if (!masAreas && newUsers[0].r_cardinalidad_nivel) {
             setMasAreas(true);
@@ -97,18 +94,34 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
             setTitulNivel(
               newUsers.length > 1 ? newUsers[1].r_titulo_nivel : ""
             );
+            const newUsers2 = newUsers.filter(
+              (user) => user.r_num !== newUsers[0].r_num
+            );
+            setUsers(newUsers2);
+            setfinal(newUsers2.length === 0 ? true : false);
 
-            handleRemoveItem(newUsers[0].r_num);
+            console.log("Con cardinalidad");
+            console.log(newUsers);
+            console.log(users);
           }
         }
         //es un nivel sin cardinalidad por lo tanto solo es un area que se registra
         else {
           setMasAreas(false);
           setTitulNivel(newUsers.length > 1 ? newUsers[1].r_titulo_nivel : "");
-          handleRemoveItem(newUsers[0].r_num);
+          //handleRemoveItem(newUsers[0].r_num);
+
+          const newUsers2 = newUsers.filter(
+            (user) => user.r_num !== newUsers[0].r_num
+          );
+          setUsers(newUsers2);
+
+          console.log("Sin cardinialidad");
+          console.log(newUsers);
+          console.log(users);
+          setfinal(newUsers2.length === 0 ? true : false);
         }
         //else es xq el nivel solo permite un area y tambien hay que eliminar el nivel actual para poder pasar al siguiente
-
         const newValor = {
           id_area: data.id_area,
           nombre: data.nombre,
@@ -125,6 +138,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
           i
         );
         setcontador(i);
+        setLoading(false);
       }
     }
   };
@@ -137,15 +151,20 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
   const [espacioFlecha, setEspacioFlecha] = useState(250);
   const [verbotonSeleccionar, setVerbotonSeleccionar] = useState(true);
   const handlerID = (valor) => {
+    setLoading(true);
+
     setIdTipo(valor);
     setVerbotonAnadir(true);
     setVerbotonSeleccionar(false);
     //aqui enviar a cargar en un json el flujo de ese tipo de jerarquia
     load(valor);
+    setLoading(false);
   };
   //Funcion para mapear donde van a ir los cuadritos
   const [lista_niveles, setLista_niveles] = useState([]);
   const MapearCuadros = (id, ni, nombre, tipoNIv, num) => {
+    setLoading(true);
+
     const newValor = {
       id_area_f: id,
       id_nivel_f: ni,
@@ -158,11 +177,14 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
     setEspacio(espacio + 300);
     setEspacioFlecha(espacioFlecha + 3);
     setLista_niveles([...lista_niveles, newValor]);
+    setLoading(false);
   };
   //funcion que cargue el contenido de un flujo segun el id del tipo
   const [users, setUsers] = useState([]);
 
   const load = async (valor) => {
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_niveles_detalles/" + valor,
       {
@@ -186,38 +208,18 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
     );
     //por defecto se manda a eliminar el primer item que seria Elaboracion que tiene numero 1
     //handleRemoveItem(1);
+    setLoading(false);
   };
   const [final, setfinal] = useState(false);
   //funcion para remover un item de la lista de las jerarquias
-  const handleRemoveItem = (id_item) => {
-    const newUsers = users.filter((user) => user.r_num !== id_item);
-    setUsers(newUsers);
 
-    var fi = newUsers.length !== 0 ? newUsers[0].r_num : "";
-    const newUsers2 = newUsers.filter((user) => user.r_num !== fi);
-    console.log("DEBUG");
-    console.log(newUsers);
-    console.log(newUsers.length);
-    setfinal(newUsers.length === 0 ? true : false);
-  };
-  const [id_item, setIdItem] = useState(0);
-  //funcion debug
-  const debug = () => {
-    //HandleSUbumit();
-    console.log(lista_niveles);
-    //console.log(users);
-    //console.log(users);
-    //console.log("tomar el primer r_num actual para almacenarlo");
-    //console.log(users[0].r_num);
-    //setIdItem(users[0].r_num);
-  };
-  //estado para ver el boton guardar flujo
   const [verGuardar, setVerGuardar] = useState(false);
   //estado retornado de AreasFlujo para pasar al siguiente nivel
   //estado para abrir el drawer para seleccionar las areas
-  const [OpenDrawer, setOpenDrawer] = useState(false);
   //Enviar los datos
   const HandleSUbumit = async () => {
+    setLoading(true);
+
     try {
       console.log("aqui van los archivos");
       const result = await axios.post(
@@ -231,22 +233,33 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
           withCredentials: true,
         }
       );
-      //hadleAlert();
-      //setError(result.data);
-      //hadleAlert();
-      //setError(result.data);
       console.log(result.data);
       alert(result.data.message);
       setVerGuardar(true);
+      Recargar(true);
     } catch (error) {
-      //setError(error.response.data);
-      //hadleAlerterror();
-      //console.log(error);
-      //setError(error.response.data);
-      //hadleAlerterror();
       alert(error.response.data);
+      setLoading(false);
     }
+    setLoading(false);
   };
+  const btnEliminar = () => {
+    setLoading(true);
+    setLista_niveles([]), setcontador(0), setEspacio(0);
+    setVerbotonAnadir(false);
+    setVerbotonSeleccionar(true);
+    setUsers([]);
+    setVerGuardar(false);
+    setMasAreas(false);
+    setfinal(false);
+    setLoading(false);
+  };
+  if (loading)
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   return (
     <div>
       <Card className="h-full w-full rounded-none shadow-none">
@@ -347,8 +360,13 @@ export default function CrearFlujoProyecto({ idproyecto, idarea }) {
           </div>
         </CardBody>
         <CardFooter>
-          <div onClick={debug}>
-            <Button>Json Jerarquia</Button>
+          <div>
+            <Button
+              className="bg-red-500 rounded-none ml-5"
+              onClick={btnEliminar}
+            >
+              Eliminar jerarquia
+            </Button>
           </div>
         </CardFooter>
       </Card>

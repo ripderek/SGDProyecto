@@ -19,21 +19,10 @@ export default function Verpdf({ link, id, admin }) {
       label: "Documento",
       value: "Documento",
     },
-    {
-      label: "Comentarios",
-      value: "Comentarios",
-    },
+
     {
       label: "Niveles",
       value: "Niveles",
-    },
-    {
-      label: "Revisiones",
-      value: "Revisiones",
-    },
-    {
-      label: "Firmas",
-      value: "Firmas",
     },
     {
       label: "Subir Nivel",
@@ -84,74 +73,12 @@ export default function Verpdf({ link, id, admin }) {
       <DialogBody divider={true}>
         <Fragment>
           <div className="bg-white">
-            <Tabs value="Html" orientation="vertical">
-              <TabsHeader className="w-32">
-                {data.map(({ label, value }) => {
-                  if (value != "Html") {
-                    if (value === "Niveles") {
-                      if (users.length != 0)
-                        return (
-                          <Tab key={label} value={value}>
-                            {label}
-                          </Tab>
-                        );
-                    } else if (value === "Subir Nivel") {
-                      if (admin === "Admin" && users2.length === 1)
-                        if (users2[0].r_estado) {
-                          return (
-                            <Tab key={label} value={value}>
-                              {label}
-                            </Tab>
-                          );
-                        }
-                    } else {
-                      return (
-                        <Tab key={label} value={value}>
-                          {label}
-                        </Tab>
-                      );
-                    }
-                  }
-                })}
-              </TabsHeader>
-              <TabsBody>
-                {data.map(({ value }) => {
-                  if (value === "Documento") {
-                    return (
-                      <TabPanel key={value} value={value} className="py-0">
-                        <iframe
-                          src={link}
-                          height="100%"
-                          width="100%"
-                          className="h-screen"
-                        />
-                      </TabPanel>
-                    );
-                  } else if (value === "Niveles") {
-                    return (
-                      <TabPanel key={value} value={value} className="py-0">
-                        <NivelesProyecto id={id} />
-                      </TabPanel>
-                    );
-                  } else if (value === "Subir Nivel") {
-                    return (
-                      <TabPanel key={value} value={value} className="py-0">
-                        <SubirNivel id_proyect={id} />
-                      </TabPanel>
-                    );
-                  } else {
-                    return (
-                      <TabPanel key={value} value={value} className="py-0">
-                        <Lottie
-                          animationData={anim_settings}
-                          className="w-80 md:w-2/5 mx-auto"
-                        />
-                      </TabPanel>
-                    );
-                  }
-                })}
-              </TabsBody>
-            </Tabs>
+            <iframe
+              src={link}
+              height="100%"
+              width="100%"
+              className="h-screen"
+            />
           </div>
         </Fragment>
       </DialogBody>

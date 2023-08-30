@@ -1,24 +1,25 @@
 import { React, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
+import { UserPlusIcon, UserMinusIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
 import {
   Button,
   Dialog,
   Typography,
   Avatar,
-  IconButton,
   Tooltip,
   Input,
+  DialogHeader,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", "Editar"];
-import AgregarUserArea from "../Areas/AgregarUserArea";
-import PerfilUser from "../Users/PerfilUser";
-export default function UsersAreas(id) {
+const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", ""];
+import Participantessinproyectos from "./Participantessinproyectos";
+export default function Participantes({
+  idproyecto,
+  idarea,
+  agregarRevisores,
+}) {
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
-  const [userID, setUserID] = useState();
-  const [ID_relacion, setIDRealcion] = useState();
 
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
@@ -26,13 +27,19 @@ export default function UsersAreas(id) {
   const handleOpenArea = () => {
     setOpenArea(!openArea), load();
   };
+  //const para almacenar el rol que se quiere anadir, ya sea revisor o editor
+  const [TipoRol, setTipoRol] = useState(0);
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "area/user_area/" + id.id,
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/participantes_proyecto/" +
+        idarea +
+        "/" +
+        idproyecto,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -43,30 +50,27 @@ export default function UsersAreas(id) {
     const data = await result.json();
     setUsers(data);
   };
+  //funcion para expulsar a un usuario del proyecto
+  const expulsarUsuario = async (id_rel) => {
+    try {
+      const result = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "proyects/expulsar_usuario_proyecto",
+        { p_proyecto_id: idproyecto, p_id_relacion: id_rel },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(result);
+      load();
+      //console.log(result);
+    } catch (error) {
+      alert("error:" + error);
+    }
+  };
   return (
     <div>
-      {openArea ? (
-        <Dialog
-          size="xxl"
-          open={openArea}
-          handler={handleOpenArea}
-          className="overflow-y-scroll"
-        >
-          <button onClick={handleOpenArea} className="bg-yellow-900">
-            <Typography variant="h2" color="white">
-              Cerrar opciones de usuario
-            </Typography>
-          </button>
-          <PerfilUser
-            iduser={userID}
-            isadminarea={true}
-            idarea={id.id}
-            relacionarea={ID_relacion}
-          />
-        </Dialog>
-      ) : (
-        ""
-      )}
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none">
         {openUser ? (
           <Dialog
@@ -75,16 +79,25 @@ export default function UsersAreas(id) {
             handler={handlerOpenUsers}
             className="overflow-y-scroll rounded-none h-4/5"
           >
-            <button
-              className="bg-green-900 w-full"
-              onClick={() => (handlerOpenUsers(), load())}
-            >
-              <Typography variant="h2" color="white">
-                Cerrar
-              </Typography>
-            </button>
-
-            <AgregarUserArea id={id.id} key={id} />
+            <DialogHeader className="bg-light-green-900 text-white">
+              Usuarios del area
+              <Button
+                color="red"
+                variant="text"
+                size="md"
+                className="!absolute top-3 right-3"
+                onClick={() => (handlerOpenUsers(), load())}
+              >
+                <Typography variant="h5" color="white">
+                  X
+                </Typography>
+              </Button>
+            </DialogHeader>
+            <Participantessinproyectos
+              idproyecto={idproyecto}
+              idarea={idarea}
+              tipoRol={TipoRol}
+            />
           </Dialog>
         ) : (
           ""
@@ -97,12 +110,23 @@ export default function UsersAreas(id) {
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
           />
         </div>
+        {agregarRevisores ? (
+          <Button
+            className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
+            onClick={() => (handlerOpenUsers(), setTipoRol(3))}
+          >
+            <UserPlusIcon className="h-7 w-7" />
+            <p className="mt-1"> Agregar editores</p>
+          </Button>
+        ) : (
+          ""
+        )}
         <Button
           className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
-          onClick={handlerOpenUsers}
+          onClick={() => (handlerOpenUsers(), setTipoRol(2))}
         >
           <UserPlusIcon className="h-7 w-7" />
-          <p className="mt-1"> Agregar Usuario</p>
+          <p className="mt-1"> Agregar revisores</p>
         </Button>
       </div>
       <table className="mt-4 w-full min-w-max table-auto text-left">
@@ -134,9 +158,9 @@ export default function UsersAreas(id) {
                       src={
                         process.env.NEXT_PUBLIC_ACCESLINK +
                         "user/foto/" +
-                        user.u_id_user
+                        user.r_id_user
                       }
-                      alt={user.u_nombres}
+                      alt={user.r_nombres}
                       size="sm"
                     />
                     <div className="flex flex-col">
@@ -145,35 +169,29 @@ export default function UsersAreas(id) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.u_nombres}
+                        {user.r_nombres}
                       </Typography>
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal opacity-70"
                       >
-                        {user.u_correo}
+                        {user.r_correo_personal}
                       </Typography>
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal opacity-70"
                       >
-                        {user.u_correo2}
+                        {user.r_correo_institucional}
                       </Typography>
+
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal opacity-70"
                       >
-                        {user.u_id_user}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_nombrefirma}
+                        {user.r_nombre_firma}
                       </Typography>
                     </div>
                   </div>
@@ -185,7 +203,7 @@ export default function UsersAreas(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_identificacion}
+                    {user.r_identificacion}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-50">
@@ -194,7 +212,7 @@ export default function UsersAreas(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_celular}
+                    {user.r_numero_celular}
                   </Typography>
                 </td>
                 <td className="p-4 border-b border-blue-gray-50">
@@ -203,25 +221,24 @@ export default function UsersAreas(id) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.u_rol}
+                    {user.r_rol}
                   </Typography>
                 </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Tooltip content="Editar Usuario">
-                    <IconButton
-                      variant="text"
-                      color="blue-gray"
-                      onClick={() => (
-                        handleOpenArea(),
-                        setUserID(user.u_id_user),
-                        setIDRealcion(user.u_relacion)
-                      )}
-                    >
-                      <PencilIcon className="h-4 w-4" />
-                    </IconButton>
-                  </Tooltip>
-                </td>
+                {user.r_rol !== "Admin" ? (
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Tooltip content="Expulsar usuario del proyecto">
+                      <Button
+                        className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-light-green-800 h-11"
+                        onClick={() => expulsarUsuario(user.r_id_realcion)}
+                      >
+                        <UserMinusIcon className="h-7 w-7" />
+                        <p className="mt-1"> Expulsar</p>
+                      </Button>
+                    </Tooltip>
+                  </td>
+                ) : (
+                  ""
+                )}
               </tr>
             );
           })}

@@ -18,7 +18,7 @@ import fileDownload from "js-file-download";
 
 const TABLE_HEAD = ["Archivo", "Fecha", "Tipo", "Descargar"];
 
-export default function GuiasProyecto({ id, rol }) {
+export default function GuiasProyecto({ id, rol, editproyecto }) {
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
@@ -186,9 +186,7 @@ export default function GuiasProyecto({ id, rol }) {
         ) : (
           ""
         )}
-        {rol === "Revisor" ? (
-          ""
-        ) : (
+        {editproyecto ? (
           <Button
             className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
             onClick={handlerOpenUsers}
@@ -196,6 +194,8 @@ export default function GuiasProyecto({ id, rol }) {
             <ArrowUpCircleIcon className="h-7 w-7" />
             <p className="mt-1"> Subir Guia</p>
           </Button>
+        ) : (
+          ""
         )}
       </div>
       <table className="mt-4 w-full min-w-max table-auto text-left">

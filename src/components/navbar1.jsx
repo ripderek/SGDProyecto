@@ -15,13 +15,13 @@ import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import axios from "axios";
 import Cookies from "universal-cookie";
 import Loading from "@/components/loading";
-import EmailPopup from '../components/MenuOptions/Users/RecuperarCuenta';
+import EmailPopup from "../components/MenuOptions/Users/RecuperarCuenta";
 
 //-------------NUEVO-------------------------------------------------
-import { GoogleLogin } from '@react-oauth/google';
+import { GoogleLogin } from "@react-oauth/google";
 //import { GoogleOAuthProvider } from '@react-oauth/google';
 import jwt_decode from "jwt-decode";
-import { useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from "@react-oauth/google";
 
 //-------------NUEVO-------------------------------------------------
 
@@ -92,16 +92,18 @@ export default function Navbar1() {
     }
   };
 
-
   //Envento clik para iniciar con google
   const login = useGoogleLogin({
-    onSuccess: async respose => {
+    onSuccess: async (respose) => {
       try {
-        const res = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: {
-            "Authorization": `Bearer ${respose.access_token}`
+        const res = await axios.get(
+          "https://www.googleapis.com/oauth2/v3/userinfo",
+          {
+            headers: {
+              Authorization: `Bearer ${respose.access_token}`,
+            },
           }
-        })
+        );
 
         console.log(res.data);
 
@@ -111,19 +113,18 @@ export default function Navbar1() {
 
         //Llama al metodo pasandole el mail
         GoogleLogin(email);
-
       } catch (error) {
         console.log(error);
       }
-    }
+    },
   });
-
 
   const GoogleLogin = async (email) => {
     try {
       console.log(email);
       const result = await axios.post(
-        "http://localhost:4000/api/authgoogle/LoginG", { email },
+        "http://localhost:4000/api/authgoogle/LoginG",
+        { email },
         {
           withCredentials: true,
         }
@@ -152,7 +153,7 @@ export default function Navbar1() {
       seterrorAlert(error.response.data.error);
       setOpenAlert(true);
     }
-  }
+  };
 
   //Nuevo----------------------------------------
 
@@ -176,17 +177,16 @@ export default function Navbar1() {
         }
       );
 
-      
       seterrorAlert(result.data.message);
       setOpenAlert(true);
-      
 
       // Cerrar la ventana emergente después de enviar el correo
       handleTogglePopup();
     } catch (error) {
       // Manejar el error
-      let errpars = error.response?.data?.error || 'Error desconocido';
+      let errpars = error.response?.data?.error || "Error desconocido";
       console.log(errpars);
+      console.log(error);
       seterrorAlert(errpars);
       setOpenAlert(true);
     }
@@ -337,11 +337,14 @@ export default function Navbar1() {
                   className="w-full rounded-none"
                   onClick={handleTogglePopup}
                 >
-                  {isPopupOpen ? 'Cancelar' : 'Recuperar cuenta'}
+                  {isPopupOpen ? "Cancelar" : "Recuperar cuenta"}
                 </Button>
               </div>
               {isPopupOpen && (
-                <EmailPopup onClose={handleTogglePopup} onSend={handleRecuContra} />
+                <EmailPopup
+                  onClose={handleTogglePopup}
+                  onSend={handleRecuContra}
+                />
               )}
             </div>
 

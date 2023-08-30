@@ -44,7 +44,7 @@ export default function SubirNivel0({ id_proyect }) {
       );
 
       console.log(result);
-
+      alert("Se subio de nivel");
       //console.log(result);
     } catch (error) {
       alert("error:" + error);

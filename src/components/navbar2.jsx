@@ -461,9 +461,9 @@ export default function Navbar2() {
         )}
         {abrirProyecto ? (
           tipop === 2 ? (
-            <RevisarP idproyecto={idProyecto} />
+            <RevisarP idproyecto={idProyecto} idarea={idA} />
           ) : tipop === 3 ? (
-            <Publicacion idproyecto={idProyecto} />
+            <Publicacion idproyecto={idProyecto} idarea={idA} />
           ) : (
             <Proyecto
               idproyecto={idProyecto}
