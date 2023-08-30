@@ -98,8 +98,8 @@ export default function CrearUsuarioArea({ id_user }) {
         handleOpen();
       }
     } catch (error) {
-      setError(error.response.data);
-      hadleAlerterror();
+      setError(error.response.data); // esto genera un erro falso, no tiene valor data
+      hadleAlerterror(); 
     }
   };
   return (
