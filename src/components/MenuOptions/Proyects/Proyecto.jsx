@@ -216,23 +216,7 @@ export default function Proyecto({
           <TabsHeader className="w-32">
             {data.map(({ label, value }) => {
               if (value !== "Html") {
-                if (value == "Documentos") {
-                  if (areasdata.p_subir) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Editor de Texto") {
-                  if (!areasdata.p_subir) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Flujo") {
+                if (value == "Flujo") {
                   if (areasdata.p_flujo) {
                     return (
                       <Tab key={label} value={value}>

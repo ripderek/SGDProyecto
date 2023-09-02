@@ -25,6 +25,7 @@ import {
   PresentationChartBarIcon,
   CogIcon,
   Square2StackIcon,
+  DocumentCheckIcon,
 } from "@heroicons/react/24/solid";
 import axios from "axios";
 import OPArea from "../components/MenuOptions/Areas/OPArea";
@@ -372,6 +373,14 @@ export default function Navbar2() {
                 <PresentationChartBarIcon className="h-5 w-5" />
               </ListItemPrefix>
               Proyectos
+            </ListItem>
+            <ListItem
+              onClick={() => (handleArea(), setOpenProyects(true), setA(false))}
+            >
+              <ListItemPrefix>
+                <DocumentCheckIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Publicaciones
             </ListItem>
             <ListItem onClick={HandleOpenPerfil}>
               <ListItemPrefix>
