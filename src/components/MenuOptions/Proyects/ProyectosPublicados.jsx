@@ -36,13 +36,7 @@ const TABS = [
 ];
 const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo"];
 
-export default function ProyectosAreas({
-  idarea,
-  nombrearea,
-  addIDP,
-  adminA,
-  tipo_proyecto,
-}) {
+export default function ProyectosPublicados() {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
 
@@ -78,7 +72,7 @@ export default function ProyectosAreas({
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Lista de Proyectos skere
+                Lista de Proyectos
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
                 El area {nombrearea} tiene estos proyectos activos
