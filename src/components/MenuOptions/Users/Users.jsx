@@ -52,6 +52,9 @@ export default function Users() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
   const [users, setUsers] = useState([]);
+
+  const [TotalPag, setTotalPag] = useState([]);
+
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
@@ -73,15 +76,31 @@ export default function Users() {
     load();
   }, []);
 
+  const pag = 1;
+
   const load = async () => {
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdata",
+      process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdata/" + pag,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       }
     );
+
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdatapag",
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
+
+    const data2 = await response.json();
+    const totalPag = data2.totalPaginas;
+    console.log(totalPag);
+    setTotalPag(totalPag);
 
     const data = await result.json();
     setUsers(data);
@@ -163,6 +182,95 @@ export default function Users() {
       hadleAlerterror();
     }
   };
+
+  //PAGINACION de USUARIOS
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const buttonsPerPage = 5; // Número de botones a mostrar por página
+
+  const totalPages = TotalPag;
+
+  const handlePageChange = async (newPage) => {
+    setCurrentPage(newPage);
+    // llamada a la API para cargar los usuarios de la nueva página
+    console.log(newPage);
+    const pag = newPage;
+    const result = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdata/" + pag,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
+
+    const data = await result.json();
+    setUsers(data);
+  };
+
+  const generatePaginationButtons = () => {
+    const buttons = [];
+    const numButtons = Math.ceil(totalPages / buttonsPerPage);
+
+    // Calcula el grupo de botones actual
+    const currentGroup = Math.ceil(currentPage / buttonsPerPage);
+
+    // Calcula el rango de botones a mostrar en el grupo actual
+    const startButton = (currentGroup - 1) * buttonsPerPage + 1;
+    const endButton = Math.min(currentGroup * buttonsPerPage, totalPages);
+
+    // Botón "Inicio"
+    buttons.push(
+      <Button variant="outlined" color="blue-gray" size="sm"
+        key="start"
+        onClick={() => handlePageChange(1)}
+        className={1 === currentPage ? 'active' : ''}
+      >
+        Inicio
+      </Button>
+    );
+
+    // Botones numerados
+    for (let i = startButton; i <= endButton; i++) {
+      buttons.push(
+        <Button variant="outlined" color="blue-gray" size="sm"
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={i === currentPage ? 'active' : ''}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    if (currentGroup < numButtons) {
+      buttons.push(
+        <Button variant="outlined" color="blue-gray" size="sm"
+          key="next"
+          onClick={() => handlePageChange(endButton + 1)}
+        >
+          {endButton + 1}
+        </Button>
+      );
+    }
+
+    // Botón "Fin"
+    if (totalPages > 0) {
+      buttons.push(
+        <Button variant="outlined" color="blue-gray" size="sm"
+          key="end"
+          onClick={() => handlePageChange(totalPages)}
+          className={totalPages === currentPage ? 'active' : ''}
+        >
+          Fin
+        </Button>
+      );
+    }
+
+    return buttons;
+  };
+
+
   return (
     <Fragment>
       {openArea ? (
@@ -266,9 +374,8 @@ export default function Users() {
                         icon={
                           <ChevronDownIcon
                             strokeWidth={2.5}
-                            className={`mx-auto h-4 w-4 transition-transform ${
-                              open === 1 ? "rotate-180" : ""
-                            }`}
+                            className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""
+                              }`}
                           />
                         }
                       >
@@ -553,15 +660,11 @@ export default function Users() {
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">
-            Pagina 1 de 10
           </Typography>
+          <div className="pagination-buttons">
+            {generatePaginationButtons()}
+          </div>
           <div className="flex gap-2">
-            <Button variant="outlined" color="blue-gray" size="sm">
-              Anterior
-            </Button>
-            <Button variant="outlined" color="blue-gray" size="sm">
-              Siguiente
-            </Button>
           </div>
         </CardFooter>
       </Card>
