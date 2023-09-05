@@ -34,7 +34,7 @@ const TABS = [
     value: "Publicacion",
   },
 ];
-const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo"];
+const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo", "Código"];
 
 export default function ProyectosAreas({
   idarea,
@@ -78,7 +78,7 @@ export default function ProyectosAreas({
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Lista de Proyectos skere
+                Lista de Proyectos
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
                 El area {nombrearea} tiene estos proyectos activos
@@ -132,6 +132,8 @@ export default function ProyectosAreas({
                     p_categoria,
                     p_titulo_nivel,
                     p_tipo_nivel,
+                    p_reforma,
+                    p_codigo,
                   },
                   index
                 ) => {
@@ -173,6 +175,17 @@ export default function ProyectosAreas({
                             </Typography>
                           </div>
                         </div>
+                        {p_reforma ? (
+                          <Chip
+                            size="sm"
+                            variant="ghost"
+                            value="Reforma"
+                            color="yellow"
+                            className="w-max"
+                          />
+                        ) : (
+                          ""
+                        )}
                       </td>
                       <td className={classes}>
                         <div className="flex flex-col">
@@ -198,6 +211,16 @@ export default function ProyectosAreas({
                                 ? "yellow"
                                 : "cyan"
                             }
+                          />
+                        </div>
+                      </td>
+                      <td className={classes}>
+                        <div className="w-max">
+                          <Chip
+                            size="sm"
+                            variant="ghost"
+                            value={p_codigo}
+                            color={"cyan"}
                           />
                         </div>
                       </td>

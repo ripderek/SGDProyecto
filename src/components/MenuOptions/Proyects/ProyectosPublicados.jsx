@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
+import { EyeIcon } from "@heroicons/react/24/solid";
+import CrearReforma from "./CrearReforma";
 import {
   Card,
   CardHeader,
@@ -10,10 +11,12 @@ import {
   Button,
   CardBody,
   CardFooter,
-  Tabs,
-  TabsHeader,
-  Tab,
   Chip,
+  IconButton,
+  Tooltip,
+  Dialog,
+  DialogHeader,
+  DialogBody,
 } from "@material-tailwind/react";
 
 const TABS = [
@@ -34,61 +37,93 @@ const TABS = [
     value: "Publicacion",
   },
 ];
-const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo"];
+const TABLE_HEAD = [
+  "",
+  "Proyecto",
+  "Categoria",
+  "Codigo",
+  "Fecha publicación",
+  "Version",
+  "Ver",
+  "",
+];
 
 export default function ProyectosPublicados() {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
-
+  //constante para abrir el dialog para poder hacerle reforma a un proyecto xdxd lgante lkl
+  const [OpenDialog, setOpenDialog] = useState(false);
+  //constante para llevar el id del proyecto seleccionado
+  const [id_proyecto, setIDProyecto] = useState(0);
+  //consta para llevar el nombre del proyecto para no andar consultandolo xd
+  const [tituloProyecto, setTituloProyecto] = useState("");
+  const handlerDialog = () => {
+    setOpenDialog(false);
+  };
   useEffect(() => {
     load();
   }, []);
 
   const load = async () => {
-    //Cargar la lista de las areas
-    //aqui tengo que enviar un parametro que indique que el usuario que solicita cargar la lista de los proyectos es administrador del area por ende deben de cargar los proyectos que vienen de areas inferiores para su revision o publicacion
-
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK +
-        "proyects/proyectos_areas/" +
-        idarea +
-        "/" +
-        adminA,
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/proyectos_publicados",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       }
     );
-
     const data = await result.json();
     setAreasData(data);
     console.log(areasdata);
   };
+  const accion = (valor) => {
+    setOpenDialog(valor);
+    load();
+  };
   return (
     <div>
+      <Dialog
+        size="sm"
+        open={OpenDialog}
+        handler={handlerDialog}
+        className=" rounded-none"
+      >
+        <DialogHeader>
+          Reformar proyecto
+          <Button
+            color="red"
+            variant="text"
+            size="md"
+            className="!absolute top-3 right-3"
+            onClick={() => setOpenDialog(false)}
+          >
+            <Typography variant="h5" color="blue-gray">
+              X
+            </Typography>
+          </Button>
+        </DialogHeader>
+        <DialogBody>
+          <CrearReforma
+            id_proyecto={id_proyecto}
+            titulo_proyecto={tituloProyecto}
+            accion={accion}
+          />
+        </DialogBody>
+      </Dialog>
       <Card className="h-full w-full p-7 rounded-none shadow-none">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>
               <Typography variant="h5" color="blue-gray">
-                Lista de Proyectos
+                Lista de publicaciones
               </Typography>
               <Typography color="gray" className="mt-1 font-normal">
-                El area {nombrearea} tiene estos proyectos activos
+                Proyectos para reformas
               </Typography>
             </div>
           </div>
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
             <div className="w-full md:w-72">
               <Input
                 label="Buscar"
@@ -121,11 +156,14 @@ export default function ProyectosPublicados() {
               {areasdata.map(
                 (
                   {
-                    p_id_proyecto,
-                    p_titulo,
-                    p_categoria,
-                    p_titulo_nivel,
-                    p_tipo_nivel,
+                    r_id_proyecto,
+                    r_titulo_proyecto,
+                    r_nombre_area,
+                    r_nombre_categoria,
+                    r_codigo,
+                    r_fecha_publicacion,
+                    r_version,
+                    r_publicado,
                   },
                   index
                 ) => {
@@ -135,13 +173,7 @@ export default function ProyectosPublicados() {
                     : "p-4 border-b border-blue-gray-50";
 
                   return (
-                    <tr
-                      key={p_id_proyecto}
-                      onClick={() => (
-                        addIDP(p_id_proyecto), tipo_proyecto(p_tipo_nivel)
-                      )}
-                      className="cursor-pointer"
-                    >
+                    <tr key={r_id_proyecto}>
                       <td className={classes}>
                         <div className="flex items-center gap-3">
                           <div className="flex flex-col">
@@ -163,7 +195,14 @@ export default function ProyectosPublicados() {
                               color="blue-gray"
                               className="font-normal"
                             >
-                              {p_titulo}
+                              {r_titulo_proyecto}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {r_nombre_area}
                             </Typography>
                           </div>
                         </div>
@@ -175,26 +214,66 @@ export default function ProyectosPublicados() {
                             color="blue-gray"
                             className="font-normal"
                           >
-                            {p_categoria}
+                            {r_nombre_categoria}
                           </Typography>
                         </div>
                       </td>
                       <td className={classes}>
                         <div className="w-max">
                           <Chip
-                            size="sm"
                             variant="ghost"
-                            value={p_titulo_nivel}
-                            color={
-                              p_tipo_nivel === 1
-                                ? "green"
-                                : p_tipo_nivel === 2
-                                ? "yellow"
-                                : "cyan"
-                            }
+                            size="sm"
+                            value={r_codigo}
+                            color={"green"}
                           />
                         </div>
                       </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_fecha_publicacion}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_version}
+                        </Typography>
+                      </td>
+                      <td className={classes}>
+                        <Tooltip content="Ver proyecto">
+                          <IconButton variant="text">
+                            <EyeIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                      {r_publicado ? (
+                        <td className={classes}>
+                          <Tooltip content="Reformar proyecto">
+                            <Button
+                              color="yellow"
+                              variant="gradient"
+                              size="md"
+                              className="ml-5 rounded-none"
+                              onClick={() => {
+                                setOpenDialog(true),
+                                  setIDProyecto(r_id_proyecto),
+                                  setTituloProyecto(r_titulo_proyecto);
+                              }}
+                            >
+                              Reformar
+                            </Button>
+                          </Tooltip>
+                        </td>
+                      ) : (
+                        ""
+                      )}
                     </tr>
                   );
                 }
