@@ -49,6 +49,7 @@ import Proyecto from "./MenuOptions/Proyects/Proyecto";
 import { comment } from "postcss";
 import RevisarP from "./MenuOptions/Proyects/RevisarP";
 import Publicacion from "./MenuOptions/Proyects/Publicacion";
+import ProyectosPublicados from "./MenuOptions/Proyects/ProyectosPublicados";
 
 export default function Navbar2() {
   //Estados para el diseno del layout
@@ -96,6 +97,7 @@ export default function Navbar2() {
       setOpenProyects1(false);
       setUserArea(false);
       setOpenAreaADmin(false);
+      setOpProyectosPublicados(false);
     }
   };
 
@@ -129,6 +131,7 @@ export default function Navbar2() {
     setOpenProyects(false);
     setOpenProyects1(false);
     setAbrirProyecto(false);
+    setOpProyectosPublicados(false);
   };
   //Estado para abrir la opcion de proyectos
   const [opProyects, setOpenProyects] = useState(false);
@@ -146,11 +149,26 @@ export default function Navbar2() {
     setOpenProyects(false);
     setOpenProyects1(false);
     setAbrirProyecto(false);
+    setOpProyectosPublicados(false);
   };
   //Estado para abrir la opcion perfil
   const [opPerfil, setOpPerfil] = useState(false);
   const HandleOpenPerfil = () => {
     setOpPerfil(true);
+    setUserArea(false);
+    setOpenM(false);
+    setOpenAdmin(false);
+    setOpenAreaADmin(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
+    setOpProyectosPublicados(false);
+  };
+  //Estado para abrir la opcion de proyectos publicados para hacer reformas
+  const [opProyectosPublicados, setOpProyectosPublicados] = useState(false);
+  const HandlePublicaciones = () => {
+    setOpProyectosPublicados(true);
+    setOpPerfil(false);
     setUserArea(false);
     setOpenM(false);
     setOpenAdmin(false);
@@ -247,7 +265,7 @@ export default function Navbar2() {
     cookies.remove("id_user");
     cookies.remove("AD");
     //Redireccionar al home
-    Router.push("/home/");
+    Router.push("/");
   };
   //SI el estado esta cargando devolver un spinner load
   if (loading) return "Cargando UI";
@@ -374,9 +392,7 @@ export default function Navbar2() {
               </ListItemPrefix>
               Proyectos
             </ListItem>
-            <ListItem
-              onClick={() => (handleArea(), setOpenProyects(true), setA(false))}
-            >
+            <ListItem onClick={HandlePublicaciones}>
               <ListItemPrefix>
                 <DocumentCheckIcon className="h-5 w-5" />
               </ListItemPrefix>
@@ -485,6 +501,7 @@ export default function Navbar2() {
         ) : (
           ""
         )}
+        {opProyectosPublicados ? <ProyectosPublicados /> : ""}
       </div>
     </Fragment>
   );
