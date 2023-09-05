@@ -48,13 +48,15 @@ body {
 }
 
 .container .ql-editor {
-  width: 60%;
   background: #FFF;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.781);
   margin: 10px auto 10px auto !important;
-  min-height: 800px;
-  max-height: 600px; /* Ajusta esta altura según tus necesidades */
-  overflow-y: auto;
+  width: 210mm; /* Ancho de una hoja A4 */
+  height: 353mm; /* Alto de una hoja A4 */
+  max-width: 210mm; /* Establecer el ancho máximo igual al ancho */
+  max-height: 353mm;
+  overflow: hidden;
+  padding: 60px;
 }
 
 .ql-toolbar.ql-snow{

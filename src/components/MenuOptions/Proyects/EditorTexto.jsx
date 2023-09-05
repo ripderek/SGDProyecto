@@ -6,6 +6,8 @@ import { Box,Button  } from "@mui/material";
 import { io } from "socket.io-client";
 import Delta from "quill-delta";
 import jsPDF from "jspdf";
+import axios from "axios";
+
 import { renderToString } from 'react-dom/server';
 
 
@@ -45,6 +47,7 @@ export default function Editor({ id_proyecto, nombre }) {
   const [noteContent, setNoteContent] = useState("");
   const [receivedNotes, setReceivedNotes] = useState([]);
   const [initialContent, setInitialContent] = useState(new Delta());
+  const [generatingPDF, setGeneratingPDF] = useState(false);
 
 
   useEffect(() => {
@@ -100,35 +103,105 @@ export default function Editor({ id_proyecto, nombre }) {
       socket.emit("typing", { id_proyecto, nombre });
     }
   };
-  const handleGeneratePDF = () => {
-    if (editorContent && editorContent.ops) {
-        const pdf = new jsPDF({
-            orientation: "portrait",
-            unit: "mm",
-            format: "a4",
-        });
-        const title = "Contenido del Editor";
+const handleGeneratePDF = () => {
+  // Si ya se está generando un PDF, no hacer nada
+  if (generatingPDF) {
+    return;
+  }
 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const titleWidth = pdf.getStringUnitWidth(title) * pdf.internal.getFontSize() / pdf.internal.scaleFactor;
-        const centerX = (pdfWidth - titleWidth) / 2;
+  setGeneratingPDF(true);
 
-        pdf.setFontSize(16);
-        pdf.text(title, centerX, 10);
+  if (!editorContent || !editorContent.ops) {
+    console.error("editorContent no está definido o no tiene ops");
+    setGeneratingPDF(false);
+    return;
+  }
 
-        if (editorContent.ops.length > 0) {
-            const editorText = editorContent.ops.map(op => (typeof op.insert === 'string' ? op.insert : '')).join('');
-            pdf.setFontSize(12);
-            pdf.text(editorText, 10, 20);
-        } else {
-            console.warn("Editor content is empty.");
-        }
+  // Función para justificar un grupo de líneas
+  function justificarLineas(lineas, longitudMaxima) {
+    const espaciosTotales =
+      longitudMaxima -
+      lineas.reduce((longitud, linea) => longitud + linea.length, 0);
+    const espacioPromedio = espaciosTotales / (lineas.length - 1);
 
-        pdf.save("editor_content.pdf");
-    } else {
-        console.error("Editor content is missing or in an invalid format.");
-    }
+    return lineas.map((linea, index) => {
+      if (index === lineas.length - 1) {
+        // Última línea, no se necesita espacio adicional
+        return linea;
+      } else {
+        const espacioExtra =
+          linea.length < longitudMaxima
+            ? " ".repeat(Math.abs(Math.ceil(espacioPromedio * (index + 1))))
+            : "                                       ";
+        return linea + espacioExtra;
+      }
+    });
+  }
+
+  const editorContentText = editorContent.ops
+    .map((op) => (typeof op.insert === "string" ? op.insert : ""))
+    .join("");
+
+  // Crear el documento PDF con jsPDF
+  const { jsPDF } = require("jspdf");
+  const pdf = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "A4",
+  });
+
+  const margin = 15;
+  const pageWidth = pdf.internal.pageSize.getWidth() - 2 * margin + 1;
+  const pageHeight = pdf.internal.pageSize.getHeight() - 2 * margin;
+
+  const fontSize = 10;
+  pdf.setFontSize(fontSize);
+
+  // Justificar el texto y agregarlo al PDF
+  const lineas = editorContentText.split("\n");
+  const textoJustificado = justificarLineas(lineas, lineas[0].length);
+
+  // Agregar espacio en blanco al principio del PDF
+  const espacioEnBlanco = "\n\n\n\n\n"; // 5 líneas en blanco
+  pdf.text(margin, margin, espacioEnBlanco);
+
+  // Agregar el texto justificado después del espacio en blanco
+  pdf.text(margin, margin + 4 * fontSize, textoJustificado.join("\n"), {
+    maxWidth: pageWidth,
+    align: "justify",
+  });
+
+  const UrlDocumento = "Nombre" + Date.now() + ".pdf";
+  pdf.save(UrlDocumento);
+
+  // Después de generar el PDF, habilitar el botón nuevamente después de un tiempo (opcional)
+  setTimeout(() => {
+    setGeneratingPDF(false);
+  }, 5000); // Cambia este valor según tus necesidades
 };
+
+
+  //fucion para enviar el pdf y crearlo en la API
+  
+  const HandleSUbumit = async (arrayB) => {
+
+    try {
+      const result = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/Convertir_pdf",
+        {id_proyecto:id_proyecto,array_buffer:arrayB},
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log(result);
+        alert("Se envio el PDF");
+      //console.log(result);
+    } catch (error) {
+      console.log(error);
+      alert("Error");
+    }
+  };
 
   const handleQuillChange = (content, delta, source, editor) => {
     if (source === "user" && socket) {
@@ -193,7 +266,7 @@ export default function Editor({ id_proyecto, nombre }) {
                   onChange={handleQuillChange}
                   onFocus={handleTyping}
                 />
-                 <Button onClick={handleGeneratePDF} variant="contained" color="primary">
+                 <Button onClick={handleGeneratePDF} variant="contained" color="primary" disabled={generatingPDF}>
                   Generar PDF
                 </Button>
               </div>
