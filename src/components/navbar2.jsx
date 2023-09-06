@@ -51,6 +51,8 @@ import RevisarP from "./MenuOptions/Proyects/RevisarP";
 import Publicacion from "./MenuOptions/Proyects/Publicacion";
 import ProyectosPublicados from "./MenuOptions/Proyects/ProyectosPublicados";
 
+import VersionesProyectosPublicados from "./MenuOptions/Proyects/VersionesProyectosPublicados";
+
 export default function Navbar2() {
   //Estados para el diseno del layout
   const [open, setOpen] = useState(false);
@@ -76,15 +78,18 @@ export default function Navbar2() {
         setOpenProyects1(true);
         setUserArea(false);
         setAbrirProyecto(false);
+        setOpVersionesProyectosPublicados(false);
       } else {
         setOpenAreaADmin(true);
         setUserArea(false);
         setAbrirProyecto(false);
+        setOpVersionesProyectosPublicados(false);
       }
     } else {
       setOpenAreaADmin(false);
       setOpenProyects1(false);
       setAbrirProyecto(false);
+      setOpVersionesProyectosPublicados(false);
     }
   };
   const [idProyecto, setIdProyecto] = useState("");
@@ -98,6 +103,28 @@ export default function Navbar2() {
       setUserArea(false);
       setOpenAreaADmin(false);
       setOpProyectosPublicados(false);
+      setOpVersionesProyectosPublicados(false);
+    }
+  };
+
+
+  const [idProyectoVersio, setIdProyectoVersio] = useState("");
+  const [abrirVerProyectoPu,setOpVersionesProyectosPublicados] = useState(false);
+  //guardar el nombre del proyecto seleccionado
+  const [Proyectname, setProyectaname] = useState("");
+
+  //Funcion para abrir el versiones proyectospublicados
+  const addIDPPV = (id,nombre_proyect) => {
+    //guardar el id del proyecto y preguntar si existe el id para abrir las opciones del proyectospublicados
+    if (id) {
+      setIdProyectoVersio(id);
+      setProyectaname(nombre_proyect);
+      setAbrirProyecto(false);
+      setOpenProyects1(false);
+      setUserArea(false);
+      setOpenAreaADmin(false);
+      setOpProyectosPublicados(false);
+      setOpVersionesProyectosPublicados(true);
     }
   };
 
@@ -132,6 +159,7 @@ export default function Navbar2() {
     setOpenProyects1(false);
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
+    setOpVersionesProyectosPublicados(false);
   };
   //Estado para abrir la opcion de proyectos
   const [opProyects, setOpenProyects] = useState(false);
@@ -150,6 +178,7 @@ export default function Navbar2() {
     setOpenProyects1(false);
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
+    setOpVersionesProyectosPublicados(false);
   };
   //Estado para abrir la opcion perfil
   const [opPerfil, setOpPerfil] = useState(false);
@@ -163,6 +192,7 @@ export default function Navbar2() {
     setOpenProyects1(false);
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
+    setOpVersionesProyectosPublicados(false);
   };
   //Estado para abrir la opcion de proyectos publicados para hacer reformas
   const [opProyectosPublicados, setOpProyectosPublicados] = useState(false);
@@ -176,6 +206,7 @@ export default function Navbar2() {
     setOpenProyects(false);
     setOpenProyects1(false);
     setAbrirProyecto(false);
+    setOpVersionesProyectosPublicados(false);
   };
 
   //Estado para almacenar la data del usuario
@@ -206,8 +237,8 @@ export default function Navbar2() {
       setLoading(true);
       const result = await axios.get(
         process.env.NEXT_PUBLIC_ACCESLINK +
-          "user/User/" +
-          cookies.get("id_user"),
+        "user/User/" +
+        cookies.get("id_user"),
         {
           withCredentials: true,
         }
@@ -235,8 +266,8 @@ export default function Navbar2() {
       //y para mostrar opciones
       const resultdata = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK +
-          "area/data_area_user/" +
-          cookies.get("id_user"),
+        "area/data_area_user/" +
+        cookies.get("id_user"),
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -245,8 +276,8 @@ export default function Navbar2() {
       );
       setUserImage(
         process.env.NEXT_PUBLIC_ACCESLINK +
-          "user/foto/" +
-          cookies.get("id_user")
+        "user/foto/" +
+        cookies.get("id_user")
       );
       const dataU = await resultdata.json();
       setUserAreaData(dataU);
@@ -501,7 +532,21 @@ export default function Navbar2() {
         ) : (
           ""
         )}
-        {opProyectosPublicados ? <ProyectosPublicados /> : ""}
+        {opProyectosPublicados ? (
+          <ProyectosPublicados
+            addIDPPV={addIDPPV}
+          />
+        ) : (
+          ""
+        )}
+        {abrirVerProyectoPu ? (
+            <VersionesProyectosPublicados
+              idproyecto={idProyectoVersio}
+              nombreproyecto={Proyectname}
+            />
+        ) : (
+          ""
+        )}
       </div>
     </Fragment>
   );
