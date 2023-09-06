@@ -52,11 +52,21 @@ body {
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.781);
   margin: 10px auto 10px auto !important;
   width: 210mm; /* Ancho de una hoja A4 */
-  height: 353mm; /* Alto de una hoja A4 */
+  height: 250mm; /* Alto de una hoja A4 */
   max-width: 210mm; /* Establecer el ancho máximo igual al ancho */
-  max-height: 353mm;
-  overflow: hidden;
+  max-height: 250mm;
+  overflow-y: auto;
   padding: 60px;
+  position: relative; /* Agrega posición relativa para que las líneas se posicionen correctamente */
+}
+
+.container .ql-editor::before {
+  content: "";
+  position: absolute;
+  top: 201mm; /* Altura deseada de la línea */
+  left: 0;
+  right: 0;
+  border-top: 1px solid #000; /* Estilo de la línea (puedes personalizarlo) */
 }
 
 .ql-toolbar.ql-snow{

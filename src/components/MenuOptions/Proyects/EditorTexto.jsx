@@ -7,8 +7,8 @@ import { io } from "socket.io-client";
 import Delta from "quill-delta";
 import jsPDF from "jspdf";
 import axios from "axios";
-
-import { renderToString } from 'react-dom/server';
+const pdfMake = require("pdfmake/build/pdfmake");
+const vfsFonts = require("pdfmake/build/vfs_fonts");
 
 
 
@@ -48,6 +48,9 @@ export default function Editor({ id_proyecto, nombre }) {
   const [receivedNotes, setReceivedNotes] = useState([]);
   const [initialContent, setInitialContent] = useState(new Delta());
   const [generatingPDF, setGeneratingPDF] = useState(false);
+  const [editorHeight, setEditorHeight] = useState(0);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageHeight, setPageHeight] = useState(0);
 
 
   useEffect(() => {
@@ -103,8 +106,13 @@ export default function Editor({ id_proyecto, nombre }) {
       socket.emit("typing", { id_proyecto, nombre });
     }
   };
+  const addNewPage = () => {
+    setPageNumber(pageNumber + 1);
+    setPageHeight(0);
+  };
+  
+// ... (código anterior)
 const handleGeneratePDF = () => {
-  // Si ya se está generando un PDF, no hacer nada
   if (generatingPDF) {
     return;
   }
@@ -117,68 +125,66 @@ const handleGeneratePDF = () => {
     return;
   }
 
-  // Función para justificar un grupo de líneas
-  function justificarLineas(lineas, longitudMaxima) {
-    const espaciosTotales =
-      longitudMaxima -
-      lineas.reduce((longitud, linea) => longitud + linea.length, 0);
-    const espacioPromedio = espaciosTotales / (lineas.length - 1);
+  const { vfs } = vfsFonts.pdfMake;
+  pdfMake.vfs = vfs;
 
-    return lineas.map((linea, index) => {
-      if (index === lineas.length - 1) {
-        // Última línea, no se necesita espacio adicional
-        return linea;
-      } else {
-        const espacioExtra =
-          linea.length < longitudMaxima
-            ? " ".repeat(Math.abs(Math.ceil(espacioPromedio * (index + 1))))
-            : "                                       ";
-        return linea + espacioExtra;
-      }
-    });
+  const content = [];
+
+  editorContent.ops.forEach((op) => {
+    if (op.insert && op.insert.image) {
+      // Si es una imagen, agrega un bloque de imagen
+      const imageDefinition = {
+        image: op.insert.image,
+        width: op.insert.width, // El tamaño debe coincidir con el registrado en el editor
+        height: op.insert.height, // El tamaño debe coincidir con el registrado en el editor
+        margin: [0, 10], // Ajusta el margen según sea necesario
+      };
+      content.push(imageDefinition);
+    } else if (typeof op.insert === "string") {
+      // Si es texto, agrega un bloque de texto
+      content.push({
+        text: op.insert,
+        fontSize: 10, // Puedes ajustar el tamaño de fuente según sea necesario
+        // Agrega más propiedades de estilo según sea necesario, como 'bold', 'italic', etc.
+      });
+    }
+  });
+
+  const sections = [];
+
+  // Divide el contenido en secciones, cada una con un espacio en blanco al principio
+  const itemsPerPage = 45; // Estimación de líneas por página
+  for (let i = 0; i < content.length; i += itemsPerPage) {
+    const sectionContent = content.slice(i, i + itemsPerPage);
+    // Agrega un espacio en blanco al principio de la sección
+    sectionContent.unshift({ text: "\n\n\n\n\n\n\n\n" });
+    sections.push(sectionContent);
   }
 
-  const editorContentText = editorContent.ops
-    .map((op) => (typeof op.insert === "string" ? op.insert : ""))
-    .join("");
+  const docDefinition = {
+    content: sections,
+    pageSize: "A4",
+    pageMargins: [40, 40, 40, 40], // Márgenes de 15 en todas las direcciones
+    defaultStyle: {
+      fontSize: 10,
+    },
+  };
 
-  // Crear el documento PDF con jsPDF
-  const { jsPDF } = require("jspdf");
-  const pdf = new jsPDF({
-    orientation: "portrait",
-    unit: "mm",
-    format: "A4",
+  const pdfDocument = pdfMake.createPdf(docDefinition);
+
+  pdfDocument.getDataUrl((dataUrl) => {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = "Nombre" + Date.now() + ".pdf";
+    link.click();
+
+    setTimeout(() => {
+      setGeneratingPDF(false);
+    }, 5000);
   });
-
-  const margin = 15;
-  const pageWidth = pdf.internal.pageSize.getWidth() - 2 * margin + 1;
-  const pageHeight = pdf.internal.pageSize.getHeight() - 2 * margin;
-
-  const fontSize = 10;
-  pdf.setFontSize(fontSize);
-
-  // Justificar el texto y agregarlo al PDF
-  const lineas = editorContentText.split("\n");
-  const textoJustificado = justificarLineas(lineas, lineas[0].length);
-
-  // Agregar espacio en blanco al principio del PDF
-  const espacioEnBlanco = "\n\n\n\n\n"; // 5 líneas en blanco
-  pdf.text(margin, margin, espacioEnBlanco);
-
-  // Agregar el texto justificado después del espacio en blanco
-  pdf.text(margin, margin + 4 * fontSize, textoJustificado.join("\n"), {
-    maxWidth: pageWidth,
-    align: "justify",
-  });
-
-  const UrlDocumento = "Nombre" + Date.now() + ".pdf";
-  pdf.save(UrlDocumento);
-
-  // Después de generar el PDF, habilitar el botón nuevamente después de un tiempo (opcional)
-  setTimeout(() => {
-    setGeneratingPDF(false);
-  }, 5000); // Cambia este valor según tus necesidades
 };
+
+
 
 
   //fucion para enviar el pdf y crearlo en la API
@@ -203,12 +209,26 @@ const handleGeneratePDF = () => {
     }
   };
 
+  
   const handleQuillChange = (content, delta, source, editor) => {
     if (source === "user" && socket) {
-      socket.emit("send-changes", { id_proyecto,delta,content });
+      socket.emit("send-changes", { id_proyecto, delta, content });
     }
     setEditorContent(editor.getContents());
+  
+    const editorElement = document.querySelector(".ql-editor");
+    if (editorElement) {
+      const height = editorElement.scrollHeight;
+      setEditorHeight(height);
+  
+      // Si se inserta una línea horizontal, agrega una nueva página
+      const hrElements = editorElement.querySelectorAll("hr");
+      if (hrElements.length > 0) {
+        addNewPage();
+      }
+    }
   };
+  
 
   useEffect(() => {
     if (socket === null) return;
