@@ -3,6 +3,7 @@ import Cookies from "universal-cookie";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import CrearReforma from "./CrearReforma";
+import VerVersionesPro from "./VersionesProyectosPublicados";
 import {
   Card,
   CardHeader,
@@ -48,7 +49,9 @@ const TABLE_HEAD = [
   "",
 ];
 
-export default function ProyectosPublicados() {
+export default function ProyectosPublicados({
+  addIDPPV
+}) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
   //constante para abrir el dialog para poder hacerle reforma a un proyecto xdxd lgante lkl
@@ -57,6 +60,7 @@ export default function ProyectosPublicados() {
   const [id_proyecto, setIDProyecto] = useState(0);
   //consta para llevar el nombre del proyecto para no andar consultandolo xd
   const [tituloProyecto, setTituloProyecto] = useState("");
+
   const handlerDialog = () => {
     setOpenDialog(false);
   };
@@ -248,7 +252,11 @@ export default function ProyectosPublicados() {
                       </td>
                       <td className={classes}>
                         <Tooltip content="Ver proyecto">
-                          <IconButton variant="text">
+                          <IconButton variant="text"
+                            onClick={() => (
+                              addIDPPV(r_id_proyecto,r_titulo_proyecto)
+                            )}
+                            >
                             <EyeIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>
