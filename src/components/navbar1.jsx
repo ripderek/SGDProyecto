@@ -9,14 +9,20 @@ import {
   CardBody,
   Drawer,
   Alert,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
 } from "@material-tailwind/react";
 import { FaSearch } from "react-icons/fa";
-import Router from "next/router"; //Rutas para redireccionar a otra pagina
+import Router from "next/router";
 import axios from "axios";
 import Cookies from "universal-cookie";
 import Loading from "@/components/loading";
 import EmailPopup from "../components/MenuOptions/Users/RecuperarCuenta";
-
+import Lottie from "lottie-react";
+import anim from "../../public/Anim/login_anim.json";
+import anim_error from "../../public/Anim/error_anim.json";
 //-------------NUEVO-------------------------------------------------
 import { GoogleLogin } from "@react-oauth/google";
 //import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -79,7 +85,6 @@ export default function Navbar1() {
       console.log(result.data);
       //console.log(user);
       //Router.push("/task/tasklist/");
-      setLoading(true);
       setincio(true);
     } catch (error) {
       //En caso de haber error en el inicio de sesion abrir el alert
@@ -95,6 +100,7 @@ export default function Navbar1() {
   //Envento clik para iniciar con google
   const login = useGoogleLogin({
     onSuccess: async (respose) => {
+      setLoading(true);
       try {
         const res = await axios.get(
           "https://www.googleapis.com/oauth2/v3/userinfo",
@@ -106,21 +112,22 @@ export default function Navbar1() {
         );
 
         console.log(res.data);
-
         //Aqui va para sacar el token ty sacar el mail del token que te regresa google
         const email = res.data.email;
         console.log(email);
-
+        setLoading(false);
         //Llama al metodo pasandole el mail
         GoogleLogin(email);
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     },
   });
 
   const GoogleLogin = async (email) => {
     try {
+      setLoading(true);
       console.log(email);
       const result = await axios.post(
         "http://localhost:4000/api/authgoogle/LoginG",
@@ -146,6 +153,7 @@ export default function Navbar1() {
       //console.log(user);
       //Router.push("/task/tasklist/");
     } catch (error) {
+      setLoading(false);
       //En caso de haber error en el inicio de sesion abrir el alert
       let errpars = error.response.data.error;
       console.log(errpars);
@@ -238,15 +246,32 @@ export default function Navbar1() {
               className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
             >
               <p className="mt-1">Iniciar Sesion</p>
-            </Button>{" "}
+            </Button>
           </Fragment>
         </div>
       </Navbar>
+      <Dialog open={openAlert} handler={() => setOpenAlert(false)} size="sm">
+        <DialogBody>
+          <div className="mx-auto text-center font-semibold text-black text-xl">
+            {errorAlert}
+            <Lottie animationData={anim_error} className="w-40 mx-auto" />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={() => setOpenAlert(false)}
+          >
+            <span>Aceptar</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
       <Fragment>
         <Drawer
           open={open}
           onClose={closeDrawer}
-          className="p-4 "
+          className="p-4 overflow-x-scroll"
           placement="right"
         >
           {loading ? (
@@ -258,22 +283,17 @@ export default function Navbar1() {
           )}
 
           <form onSubmit={HandleSUbumit}>
-            <div className="mb-6 flex items-center justify-between mt-6">
+            <div className="mb-6 flex items-center justify-between mt-2">
               <Typography variant="h3" color="blue-gray">
                 Iniciar Sesion
               </Typography>
             </div>
             <div className="flex justify-center mb-4">
-              <img
-                className="h-2/5 w-2/5 rounded-full "
-                src="/img/Home/1487716857-user_81635.png"
-                alt="User image"
-              />
+              <div className="mx-auto">
+                <Lottie animationData={anim} className="w-40 mx-auto" />
+              </div>
             </div>
 
-            <Typography color="gray" className="mb-8 pr-4 font-normal">
-              Por favor ingrese sus credenciales:
-            </Typography>
             <Input
               onChange={HandleChange}
               name="correo"
@@ -281,6 +301,7 @@ export default function Navbar1() {
               variant="standard"
               placeholder="Correo"
               color="black"
+              required
               containerProps={{
                 className: "min-w-[30px]",
               }}
@@ -293,6 +314,7 @@ export default function Navbar1() {
               placeholder="Contraseña"
               color="black"
               type="password"
+              required
               containerProps={{
                 className: "min-w-[30px] mt-4 mb-6 ",
               }}
@@ -301,7 +323,7 @@ export default function Navbar1() {
               {inicio ? (
                 <Button
                   size="sm"
-                  className="bg-light-green-900 w-full rounded-none"
+                  className="bg-green-700 w-full rounded-none p-3"
                   disabled
                 >
                   Iniciar Sesion
@@ -309,32 +331,35 @@ export default function Navbar1() {
               ) : (
                 <Button
                   size="sm"
-                  className="bg-light-green-900 w-full rounded-none"
+                  className="bg-green-700 w-full rounded-none font-bold text-lg capitalize"
                   type="submit"
                 >
                   Iniciar Sesion
                 </Button>
               )}
             </div>
-            {/*<div className="flex justify-center mt-3">
-              <Button
-                size="sm"
-                variant="text"
-                color="green"
-                className="w-full rounded-none"
-                onClick={handleOpenPopup} // llamar al metodo para que abra la ventana donde recuperar la contra
-              >
-                Recuperar cuenta
-              </Button>
-              </div>*/}
-
+            <div
+              className="h-auto bg-gray-300  shadow-2xl flex mt-4 cursor-pointer"
+              onClick={login}
+            >
+              <div className="flex p-2 mr-3 ml-3">
+                <img
+                  className=" h-7 w-7 rounded-full "
+                  src="/img/Home/Google.png"
+                  alt="User image"
+                />
+              </div>
+              <div className="flex justify-center mt-3 font-bold">
+                Continuar con Google
+              </div>
+            </div>
             <div className="tu-componente">
               <div className="flex justify-center mt-3">
                 <Button
                   size="sm"
                   variant="text"
                   color="green"
-                  className="w-full rounded-none"
+                  className="w-full rounded-none p-3"
                   onClick={handleTogglePopup}
                 >
                   {isPopupOpen ? "Cancelar" : "Recuperar cuenta"}
@@ -347,42 +372,7 @@ export default function Navbar1() {
                 />
               )}
             </div>
-
-            <div className="h-auto bg-gray-300  border-4 border-yellow-200  shadow-2xl flex mt-4 cursor-pointer">
-              <div className="flex p-4">
-                <img
-                  className=" h-7 w-7 rounded-full "
-                  src="/img/Home/Google.png"
-                  alt="User image"
-                />
-              </div>
-              <div className="flex justify-center mt-3">
-                <Button
-                  size="sm"
-                  onClick={login} // Llama a la función handleGoogleLogin
-                  variant="text"
-                  color="green"
-                  className="w-full rounded-none"
-                >
-                  Continuar con Google
-                </Button>
-              </div>
-            </div>
           </form>
-          <Fragment>
-            <Alert
-              color="red"
-              variant="gradient"
-              open={openAlert}
-              onClose={() => setOpenAlert(false)}
-              animate={{
-                mount: { y: 0 },
-                unmount: { y: 100 },
-              }}
-            >
-              {errorAlert}
-            </Alert>
-          </Fragment>
         </Drawer>
       </Fragment>
       <Fragment>

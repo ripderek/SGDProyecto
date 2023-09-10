@@ -10,15 +10,10 @@ import {
   IconButton,
   Tooltip,
   Input,
+  Chip,
 } from "@material-tailwind/react";
-const TABLE_HEAD = [
-  "Titulo",
-  "Codigo",
-  "Estado",
-  "Prefijo",
-  "Categoria",
-  "Accion",
-];
+const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo", "Código", ""];
+
 import CrearProyecto from "./CrearProyecto";
 export default function OpProyectos(id) {
   //Crear la tabla con usuarios
@@ -40,7 +35,11 @@ export default function OpProyectos(id) {
   const load = async () => {
     //Cargar la lista de usuarios
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/proyectos_areas/" + id.id,
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/proyectos_areas/" +
+        id.id +
+        "/" +
+        true,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -77,7 +76,7 @@ export default function OpProyectos(id) {
           <p className="mt-1"> Agregar Proyecto</p>
         </Button>
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left ">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -97,70 +96,111 @@ export default function OpProyectos(id) {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.p_id_proyecto}>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
+          {users.map(
+            (
+              {
+                p_id_proyecto,
+                p_titulo,
+                p_categoria,
+                p_titulo_nivel,
+                p_tipo_nivel,
+                p_reforma,
+                p_codigo,
+              },
+              index
+            ) => {
+              const isLast = index === users.length - 1;
+              const classes = isLast
+                ? "p-4"
+                : "p-4 border-b border-blue-gray-50";
+
+              return (
+                <tr key={p_id_proyecto}>
+                  <td className={classes}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {index + 1}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {p_titulo}
+                        </Typography>
+                      </div>
+                    </div>
+                    {p_reforma ? (
+                      <Chip
+                        size="sm"
+                        variant="ghost"
+                        value="Reforma"
+                        color="yellow"
+                        className="w-max"
+                      />
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                  <td className={classes}>
                     <div className="flex flex-col">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.p_titulo}
+                        {p_categoria}
                       </Typography>
                     </div>
-                  </div>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.p_codigo}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.p_estado ? "Habilitado" : "Deshabilitado"}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.p_prefijo}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.p_categoria}
-                  </Typography>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Tooltip content="Edit User">
-                    <IconButton variant="text" color="blue-gray">
-                      <PencilIcon className="h-4 w-4" />
-                    </IconButton>
-                  </Tooltip>
-                </td>
-              </tr>
-            );
-          })}
+                  </td>
+                  <td className={classes}>
+                    <div className="w-max">
+                      <Chip
+                        size="sm"
+                        variant="ghost"
+                        value={p_titulo_nivel}
+                        color={
+                          p_tipo_nivel === 1
+                            ? "green"
+                            : p_tipo_nivel === 2
+                            ? "yellow"
+                            : "cyan"
+                        }
+                      />
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <div className="w-max">
+                      <Chip
+                        size="sm"
+                        variant="ghost"
+                        value={p_codigo}
+                        color={"cyan"}
+                      />
+                    </div>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Tooltip content="Configurar proyecto">
+                      <IconButton variant="text" color="blue-gray">
+                        <PencilIcon className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

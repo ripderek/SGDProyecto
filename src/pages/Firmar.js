@@ -64,10 +64,10 @@ export default function Firmar() {
         form.append("pdf", file);
         form.append("firma", fileP12);
         form.append("palabra_secreta", descripcion);
-
+        //http://192.168.2.102:81
         axios({
             method: "post",
-            url: "http://192.168.1.22:81/procesar",
+            url: "http://192.168.2.102:81/procesar",
             data: form,
             responseType: "blob",
             withCredentials: false,
