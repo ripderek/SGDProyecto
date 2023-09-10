@@ -3,11 +3,13 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
-  List,
-  ListItem,
-  ListItemPrefix,
+  Tab,
+  TabsBody,
+  Tabs,
+  TabsHeader,
 } from "@material-tailwind/react";
 import UsersAreas from "../Areas/UsersAreas";
+import Loading from "@/components/loading";
 
 //prueba para dibujar el arbol
 import Arbol from "../Areas/VerArbol";
@@ -16,6 +18,8 @@ import EditarArea from "./EditarArea";
 import CambiarFoto from "./CambiarFoto";
 import CrearUsuarioArea from "./CrearUsuarioArea";
 export default function OPArea(idArea) {
+  const [loading, setLoading] = useState(false);
+
   const [openUsers, setOpenUsers] = useState(false);
   const handleUsers = () => {
     setOpenUsers(true);
@@ -104,6 +108,7 @@ export default function OPArea(idArea) {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
     try {
       const resultdata = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK +
@@ -117,12 +122,25 @@ export default function OPArea(idArea) {
       );
       const dataU = await resultdata.json();
       setUserAreaData(dataU);
+      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
+  };
+  //funcion que se activa cada vez que se anade un nuevo usuario para ver el listado
+  const ver_listado = (valor) => {
+    if (valor) handleUsers();
   };
   return (
     <div className="bg-white h-auto">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <DialogHeader className="justify-between">
         <div className="flex items-center gap-3">
           <div className="-mt-px flex flex-col">{UserAreaData.nombrearea}</div>
@@ -131,75 +149,61 @@ export default function OPArea(idArea) {
       <DialogBody divider={true}>
         <Fragment>
           <div className="bg-white">
-            <div className="grid grid-flow-col">
-              <div className="row-span-2 h-80 ">
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleUsers}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Usuarios
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleCrearUsuario}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Crear Usuario
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleProyectos}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Proyectos
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleJeraquia}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Jerarquia
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleEditar}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Editar Datos
-                  </ListItem>
-                </List>
-                <List>
-                  <ListItem
-                    className="border-b-2 border-black rounded-none"
-                    onClick={handleCambiarFoto}
-                  >
-                    <ListItemPrefix></ListItemPrefix>
-                    Cambiar foto
-                  </ListItem>
-                </List>
-              </div>
-              <div className="row-span-2  w-full h-auto col-span-12 ">
+            <Tabs orientation="vertical" className="p-3">
+              <TabsHeader className="w-32">
+                <Tab onClick={handleUsers} key={"Usuarios"} value={"Usuarios"}>
+                  Usuarios
+                </Tab>
+                <Tab
+                  onClick={handleCrearUsuario}
+                  key={"Crear Usuario"}
+                  value={"Crear Usuario"}
+                >
+                  Crear Usuario
+                </Tab>
+                <Tab
+                  onClick={handleProyectos}
+                  key={"Proyectos"}
+                  value={"Proyectos"}
+                >
+                  Proyectos
+                </Tab>
+                <Tab
+                  onClick={handleJeraquia}
+                  key={"Jerarquia"}
+                  value={"Jerarquia"}
+                >
+                  Jerarquia
+                </Tab>
+                <Tab
+                  onClick={handleEditar}
+                  key={"Editar Datos"}
+                  value={"Editar Datos"}
+                >
+                  Editar Datos
+                </Tab>
+                <Tab
+                  onClick={handleCambiarFoto}
+                  key={"Cambiar foto"}
+                  value={"Cambiar foto"}
+                >
+                  Cambiar foto
+                </Tab>
+              </TabsHeader>
+              <TabsBody className="overflow-x-auto">
                 {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
                 {openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
                 {openProyectos ? <OpProyectos id={idArea.idArea} /> : ""}
                 {openEditarArea ? <EditarArea id_user={idArea.idArea} /> : ""}
                 {openCambiarFoto ? <CambiarFoto id_user={idArea.idArea} /> : ""}
                 {openCrearUsuario ? (
-                  <CrearUsuarioArea id_user={idArea.idArea} />
+                  <CrearUsuarioArea
+                    id_user={idArea.idArea}
+                    ver_listado={ver_listado}
+                  />
                 ) : (
                   ""
                 )}
-
                 {fondo ? (
                   <div>
                     <div className="flex justify-center mt-7">
@@ -217,8 +221,8 @@ export default function OPArea(idArea) {
                 ) : (
                   ""
                 )}
-              </div>
-            </div>
+              </TabsBody>
+            </Tabs>
           </div>
         </Fragment>
       </DialogBody>

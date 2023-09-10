@@ -20,24 +20,6 @@ import {
   DialogBody,
 } from "@material-tailwind/react";
 
-const TABS = [
-  {
-    label: "Todos",
-    value: "Todos",
-  },
-  {
-    label: "Elaboracion",
-    value: "Elaboracion",
-  },
-  {
-    label: "Revision",
-    value: "Revision",
-  },
-  {
-    label: "Publicacion",
-    value: "Publicacion",
-  },
-];
 const TABLE_HEAD = [
   "",
   "Proyecto",
@@ -48,10 +30,9 @@ const TABLE_HEAD = [
   "Ver",
   "",
 ];
+import Loading from "@/components/loading";
 
-export default function ProyectosPublicados({
-  addIDPPV
-}) {
+export default function ProyectosPublicados({ addIDPPV }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
   //constante para abrir el dialog para poder hacerle reforma a un proyecto xdxd lgante lkl
@@ -67,8 +48,11 @@ export default function ProyectosPublicados({
   useEffect(() => {
     load();
   }, []);
+  //variables para el load
+  const [loading, setLoading] = useState(false);
 
   const load = async () => {
+    setLoading(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/proyectos_publicados",
       {
@@ -79,7 +63,7 @@ export default function ProyectosPublicados({
     );
     const data = await result.json();
     setAreasData(data);
-    console.log(areasdata);
+    setLoading(false);
   };
   const accion = (valor) => {
     setOpenDialog(valor);
@@ -87,6 +71,13 @@ export default function ProyectosPublicados({
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Dialog
         size="sm"
         open={OpenDialog}
@@ -252,11 +243,12 @@ export default function ProyectosPublicados({
                       </td>
                       <td className={classes}>
                         <Tooltip content="Ver proyecto">
-                          <IconButton variant="text"
-                            onClick={() => (
-                              addIDPPV(r_id_proyecto,r_titulo_proyecto)
-                            )}
-                            >
+                          <IconButton
+                            variant="text"
+                            onClick={() =>
+                              addIDPPV(r_id_proyecto, r_titulo_proyecto)
+                            }
+                          >
                             <EyeIcon className="h-4 w-4" />
                           </IconButton>
                         </Tooltip>

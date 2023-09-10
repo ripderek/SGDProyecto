@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
+import Loading from "@/components/loading";
 import {
   Button,
   Dialog,
@@ -15,6 +15,8 @@ const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", "Editar"];
 import AgregarUserArea from "../Areas/AgregarUserArea";
 import PerfilUser from "../Users/PerfilUser";
 export default function UsersAreas(id) {
+  const [loading, setLoading] = useState(false);
+
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
   const [userID, setUserID] = useState();
@@ -31,6 +33,7 @@ export default function UsersAreas(id) {
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
+    setLoading(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "area/user_area/" + id.id,
       {
@@ -42,9 +45,17 @@ export default function UsersAreas(id) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       {openArea ? (
         <Dialog
           size="xxl"

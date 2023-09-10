@@ -72,6 +72,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
       if (lista_niveles[i].id_area_f === data.id_area) {
         alert("Esta area ya se encuentra en el flujo");
         verifciar = false;
+        setLoading(false);
       }
     }
     if (!final) {

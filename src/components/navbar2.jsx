@@ -35,6 +35,7 @@ import { AiOutlineNotification } from "react-icons/ai";
 import Router from "next/router"; //Rutas para redireccionar a otra pagina
 import CardsNotification from "./Dashboard/CardsNotification";
 import Cookies from "universal-cookie";
+import Loading from "@/components/loading";
 
 //importar las ventanas para las opciones
 import AdminOptions from "./MenuOptions/AdminOptions";
@@ -79,17 +80,20 @@ export default function Navbar2() {
         setUserArea(false);
         setAbrirProyecto(false);
         setOpVersionesProyectosPublicados(false);
+        setUserArea1(false);
       } else {
         setOpenAreaADmin(true);
         setUserArea(false);
         setAbrirProyecto(false);
         setOpVersionesProyectosPublicados(false);
+        setUserArea1(false);
       }
     } else {
       setOpenAreaADmin(false);
       setOpenProyects1(false);
       setAbrirProyecto(false);
       setOpVersionesProyectosPublicados(false);
+      setUserArea1(false);
     }
   };
   const [idProyecto, setIdProyecto] = useState("");
@@ -104,17 +108,18 @@ export default function Navbar2() {
       setOpenAreaADmin(false);
       setOpProyectosPublicados(false);
       setOpVersionesProyectosPublicados(false);
+      setUserArea1(false);
     }
   };
 
-
   const [idProyectoVersio, setIdProyectoVersio] = useState("");
-  const [abrirVerProyectoPu,setOpVersionesProyectosPublicados] = useState(false);
+  const [abrirVerProyectoPu, setOpVersionesProyectosPublicados] =
+    useState(false);
   //guardar el nombre del proyecto seleccionado
   const [Proyectname, setProyectaname] = useState("");
 
   //Funcion para abrir el versiones proyectospublicados
-  const addIDPPV = (id,nombre_proyect) => {
+  const addIDPPV = (id, nombre_proyect) => {
     //guardar el id del proyecto y preguntar si existe el id para abrir las opciones del proyectospublicados
     if (id) {
       setIdProyectoVersio(id);
@@ -125,6 +130,7 @@ export default function Navbar2() {
       setOpenAreaADmin(false);
       setOpProyectosPublicados(false);
       setOpVersionesProyectosPublicados(true);
+      setUserArea1(false);
     }
   };
 
@@ -160,6 +166,7 @@ export default function Navbar2() {
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
+    setUserArea1(false);
   };
   //Estado para abrir la opcion de proyectos
   const [opProyects, setOpenProyects] = useState(false);
@@ -168,8 +175,26 @@ export default function Navbar2() {
   //Estado para el area data
   const [UserArea, setUserArea] = useState(false);
   const handleArea = () => {
-    setA(true);
+    setA(false);
     setUserArea(true);
+    setOpenAreaADmin(false);
+    setOpenM(false);
+    setOpenAdmin(false);
+    setOpPerfil(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
+    setOpProyectosPublicados(false);
+    setOpVersionesProyectosPublicados(false);
+    setUserArea1(false);
+  };
+  const [UserArea1, setUserArea1] = useState(false);
+
+  const handleArea1 = () => {
+    //setOpenProyects(true), setA(false)
+    setA(true);
+    setUserArea(false);
+    setUserArea1(true);
     setOpenAreaADmin(false);
     setOpenM(false);
     setOpenAdmin(false);
@@ -193,6 +218,7 @@ export default function Navbar2() {
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
+    setUserArea1(false);
   };
   //Estado para abrir la opcion de proyectos publicados para hacer reformas
   const [opProyectosPublicados, setOpProyectosPublicados] = useState(false);
@@ -207,6 +233,7 @@ export default function Navbar2() {
     setOpenProyects1(false);
     setAbrirProyecto(false);
     setOpVersionesProyectosPublicados(false);
+    setUserArea1(false);
   };
 
   //Estado para almacenar la data del usuario
@@ -237,8 +264,8 @@ export default function Navbar2() {
       setLoading(true);
       const result = await axios.get(
         process.env.NEXT_PUBLIC_ACCESLINK +
-        "user/User/" +
-        cookies.get("id_user"),
+          "user/User/" +
+          cookies.get("id_user"),
         {
           withCredentials: true,
         }
@@ -266,8 +293,8 @@ export default function Navbar2() {
       //y para mostrar opciones
       const resultdata = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK +
-        "area/data_area_user/" +
-        cookies.get("id_user"),
+          "area/data_area_user/" +
+          cookies.get("id_user"),
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -276,8 +303,8 @@ export default function Navbar2() {
       );
       setUserImage(
         process.env.NEXT_PUBLIC_ACCESLINK +
-        "user/foto/" +
-        cookies.get("id_user")
+          "user/foto/" +
+          cookies.get("id_user")
       );
       const dataU = await resultdata.json();
       setUserAreaData(dataU);
@@ -292,17 +319,24 @@ export default function Navbar2() {
 
   //Metodo para cerrar la sesion y eliminar las cookies
   const CerrarSesion = () => {
+    setLoading(true);
     cookies.remove("myTokenName");
     cookies.remove("id_user");
     cookies.remove("AD");
     //Redireccionar al home
     Router.push("/");
   };
-  //SI el estado esta cargando devolver un spinner load
-  if (loading) return "Cargando UI";
+
   //si ya cargo renderizar
   return (
     <Fragment>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Navbar className=" rounded-none shadow-none w-full  bg-gray-900  p-4 border-none mx-auto ">
         <div className="flex flex-wrap items-center justify-between gap-y-4 text-blue-gray-900">
           <Button
@@ -436,7 +470,7 @@ export default function Navbar2() {
               Perfil
             </ListItem>
             {UserAreaData.r_isadmin_area ? (
-              <ListItem onClick={handleArea}>
+              <ListItem onClick={() => handleArea1()}>
                 <ListItemPrefix>
                   <Square2StackIcon className="h-5 w-5" />
                 </ListItemPrefix>
@@ -495,6 +529,16 @@ export default function Navbar2() {
         ) : (
           ""
         )}
+        {UserArea1 ? (
+          <AreasAdmin
+            id_area={id_area}
+            nombre_area={nombre_area}
+            isadmin={a}
+            rolarea={rolarea}
+          />
+        ) : (
+          ""
+        )}
         {opPerfil ? (
           <PerfilUser
             iduser={cookies.get("id_user")}
@@ -533,17 +577,15 @@ export default function Navbar2() {
           ""
         )}
         {opProyectosPublicados ? (
-          <ProyectosPublicados
-            addIDPPV={addIDPPV}
-          />
+          <ProyectosPublicados addIDPPV={addIDPPV} />
         ) : (
           ""
         )}
         {abrirVerProyectoPu ? (
-            <VersionesProyectosPublicados
-              idproyecto={idProyectoVersio}
-              nombreproyecto={Proyectname}
-            />
+          <VersionesProyectosPublicados
+            idproyecto={idProyectoVersio}
+            nombreproyecto={Proyectname}
+          />
         ) : (
           ""
         )}

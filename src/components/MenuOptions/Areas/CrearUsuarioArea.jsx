@@ -12,22 +12,31 @@ import {
   Accordion,
   AccordionHeader,
   Alert,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
 } from "@material-tailwind/react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { AiOutlineUpload } from "react-icons/ai";
+import Loading from "@/components/loading";
+import Lottie from "lottie-react";
+import anim_error from "../../../../public/Anim/error_anim.json";
+import anim_check from "../../../../public/Anim/check_anim.json";
+export default function CrearUsuarioArea({ id_user, ver_listado }) {
+  const [loading, setLoading] = useState(false);
 
-export default function CrearUsuarioArea({ id_user }) {
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
-  const [openAlerterror, setOpenAlerterror] = useState(false);
-  const hadleAlerterror = () => setOpenAlerterror(!openAlert);
+
   const [file, setFile] = useState(null);
   //img preview
   const [fileP, setFileP] = useState();
 
   //mensaje de error
-  const [error, setError] = useState([]);
+  const [error, setError] = useState();
   const [tipoidentificacion, setTipoIdentificacion] = useState(
     "Tipo identificacion"
   );
@@ -42,7 +51,7 @@ export default function CrearUsuarioArea({ id_user }) {
     firma: "",
   });
   const [open1, setOpen1] = useState(false);
-
+  const [animacion, setanimacion] = useState(false);
   const handleOpen1 = () => {
     setOpen1(!open1);
   };
@@ -61,6 +70,7 @@ export default function CrearUsuarioArea({ id_user }) {
     // setUser({ ...user, tipo_identificacion: tipoidentificacion });
   };
   const HandleSUbumit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       //setUser({ tipo_identificacion: tipoidentificacion });
@@ -72,7 +82,8 @@ export default function CrearUsuarioArea({ id_user }) {
       //Verificar si no se esta enviando lo mismo que esta en el combobox xd
       if (tipoidentificacion === "Tipo identificacion") {
         setError("Escoja un tipo de identificacion");
-        hadleAlerterror();
+        setanimacion(false);
+        setOpenAlert(true);
       } else {
         console.log("ddd");
         const form = new FormData();
@@ -93,37 +104,63 @@ export default function CrearUsuarioArea({ id_user }) {
             withCredentials: true,
           }
         );
-
-        hadleAlert();
-        handleOpen();
+        setanimacion(true);
+        setError("Se creó el usuario");
+        setOpenAlert(true);
+        setLoading(false);
+        //enviar una funcion para que se habra la lista de usuarios cada vez que se anade un nuevo usuario xd skere
+        ver_listado(true);
       }
     } catch (error) {
-      setError(error.response.data); // esto genera un erro falso, no tiene valor data
-      hadleAlerterror(); 
+      setError(error.response.data.message);
+      setanimacion(false);
+      console.log(error);
+      setOpenAlert(true);
+      setLoading(false);
+    }
+  };
+
+  //esto es para activar el boton de tipo file personalizado xdxd skere modo diablo
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
     }
   };
   return (
     <div>
-      <Alert color="green" onClose={() => setOpenAlert(false)} open={openAlert}>
-        Se agrego un nuevo usuario al area
-      </Alert>
-      <Alert
-        color="red"
-        onClose={() => setOpenAlerterror(false)}
-        open={openAlerterror}
-      >
-        {error.message}
-      </Alert>
-      <Card className="w-full max-w-[40rem] mx-auto bg-gray-50 rounded-none">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+      <Dialog open={openAlert} handler={() => setOpenAlert(false)} size="sm">
+        <DialogBody>
+          <div className="mx-auto text-center font-semibold text-black text-xl">
+            {error}
+            <Lottie
+              animationData={animacion ? anim_check : anim_error}
+              className="w-40 mx-auto"
+            />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={() => setOpenAlert(false)}
+          >
+            <span>Aceptar</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
+
+      <Card className="w-full max-w-[40rem] mx-auto bg-white shadow-none rounded-none">
         <CardHeader></CardHeader>
         <CardBody>
-          <Typography
-            color="black"
-            variant="h5"
-            className="mr-auto font-normal text-center mt-4 mb-3"
-          >
-            Crear Usuario
-          </Typography>
           <div className="flex justify-center mb-5">
             <img
               className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 cursor-pointer"
@@ -142,11 +179,25 @@ export default function CrearUsuarioArea({ id_user }) {
           >
             <form className=" sm:w-full" onSubmit={HandleSUbumit}>
               <div className="mb-4 flex flex-col gap-6">
-                <input
-                  type="file"
-                  onChange={ImagePreview}
-                  accept="image/png, .jpeg"
-                />
+                <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                  <label htmlFor="fileInput" className="text-black ">
+                    Subir Foto:
+                  </label>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    onChange={ImagePreview}
+                    accept="image/png, .jpeg"
+                    className="hidden"
+                    ref={fileInputRef}
+                  />
+                  <Button
+                    className="ml-3  rounded-xl  bg-white h-11"
+                    onClick={handleButtonClick}
+                  >
+                    <AiOutlineUpload size="25px" color="black" />
+                  </Button>
+                </div>
                 <Input
                   size="lg"
                   name="nombres"
