@@ -271,7 +271,7 @@ export default function Proyecto({
                     );
                   }
                 } else if (value == "Guias") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -296,7 +296,7 @@ export default function Proyecto({
                       );
                     }
                 } else if (value == "Flujo") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Revisor") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -305,7 +305,7 @@ export default function Proyecto({
                   }
                 } else if (value == "Revisiones") {
                   if (areasdata.p_flujo) {
-                    if (areasdata.p_rol === "Admin" ||RolUser.rol_user === "Revisor"){
+                    if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" ||RolUser.rol_user === "Revisor"){
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -322,7 +322,7 @@ export default function Proyecto({
                     );
                   }
                 } else if (value == "Alcance") {
-                  if (areasdata.p_reforma && (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor")) {
+                  if (areasdata.p_reforma && (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor"|| RolUser.rol_user === "Revisor")) {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -330,7 +330,7 @@ export default function Proyecto({
                     );
                   }
                 } else if (value == "Historial de borradores") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Revisor") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -338,7 +338,7 @@ export default function Proyecto({
                     );
                   }
                 } else if (value == "Historial") {
-                  if (areasdata.p_rol === "Admin") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor"|| RolUser.rol_user === "Revisor") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -397,7 +397,7 @@ export default function Proyecto({
                     <GuiasProyecto
                       id={idproyecto}
                       rol={areasdata.p_rol}
-                      editproyecto={users2.length >= 2 ? false : true}
+                      editproyecto={(users2.length >= 2 || RolUser.rol_user === "Revisor"|| RolUser.rol_user === "Editor") ? false : true}
                     />
                   </TabPanel>
                 );
