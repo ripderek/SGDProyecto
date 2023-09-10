@@ -15,6 +15,7 @@ import {
   Typography,
 } from "@material-tailwind/react";
 
+import AlcanceProyecto from "./AlcanceProyecto";
 import DocumentosAreas from "./DocumentosAreas";
 import GuiasProyecto from "./GuiasProyecto";
 import CrearFlujoProyecto from "./CrearFlujoProyecto";
@@ -45,6 +46,10 @@ export default function Proyecto({
     {
       label: "Editor de Texto",
       value: "Editor de Texto",
+    },
+    {
+      label: "Alcance",
+      value: "Alcance",
     },
     {
       label: "Guias",
@@ -96,6 +101,7 @@ export default function Proyecto({
   const [openD, setOpenD] = useState(false);
   const [users2, setUsers2] = useState([]);
   const [proyectoEdit, setProyectoEdit] = useState(true);
+  const [RolUser,setRolUser] = useState([]);
   const [dataUser, setDataUser] = useState({
     correo_institucional_user: "",
     correo_personal_user: "",
@@ -113,6 +119,28 @@ export default function Proyecto({
   }, []);
   // cookies.get("id_user")
   const load = async () => {
+    //Cargar el rol del usario en ese proyecto
+    try {
+      const user_data = {
+        idu: cookies.get("id_user"),
+        p_id_proyecto: idproyecto,
+        p_id_area: idarea,
+      };
+
+      const result3 = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/User_rol",
+        user_data,
+        {
+          withCredentials: true,
+        }
+      );
+      setRolUser(result3.data);
+      console.log(result3.data);
+      
+    } catch (error) {
+      console.log(error);
+    }
+
     //Cargar la lista de las areas
     const user = {
       p_id_user: cookies.get("id_user"),
@@ -132,8 +160,8 @@ export default function Proyecto({
       //obtener el id mediante cookies
       const result = await axios.get(
         process.env.NEXT_PUBLIC_ACCESLINK +
-          "user/User/" +
-          cookies.get("id_user"),
+        "user/User/" +
+        cookies.get("id_user"),
         {
           withCredentials: true,
         }
@@ -164,8 +192,8 @@ export default function Proyecto({
     //obtener los niveles del proyecto
     const result2 = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
-        "proyects/estados_niveles/" +
-        idproyecto,
+      "proyects/estados_niveles/" +
+      idproyecto,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -177,11 +205,13 @@ export default function Proyecto({
     //si el proyecto tiene mas de 1 estado nivel no se debe permitir entrar a su configuracion ni dejar subir documentos nuevos.
     setProyectoEdit(data2.length >= 2 ? false : true);
   };
+
   const Recargar = (valor) => {
     if (valor) {
       load();
     }
   };
+
   return (
     <div className="bg-white h-full mb-10">
       <Dialog
@@ -224,6 +254,30 @@ export default function Proyecto({
                       </Tab>
                     );
                   }
+                } else if (value == "Documentos") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Editor de Texto") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Guias") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
                 } else if (value == "Definir Flujo") {
                   if (areasdata.p_rol === "Admin" && !areasdata.p_flujo) {
                     return (
@@ -241,16 +295,58 @@ export default function Proyecto({
                         </Tab>
                       );
                     }
-                } else if (value == "Revisiones") {
-                  if (areasdata.p_flujo) {
+                } else if (value == "Flujo") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Revisor") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
                       </Tab>
                     );
                   }
+                } else if (value == "Revisiones") {
+                  if (areasdata.p_flujo) {
+                    if (areasdata.p_rol === "Admin" ||RolUser.rol_user === "Revisor"){
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                    }
+                  }
                 } else if (value == "Configuracion") {
                   if (areasdata.p_rol === "Admin" && proyectoEdit) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Alcance") {
+                  if (areasdata.p_reforma && (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor")) {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Historial de borradores") {
+                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Revisor") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Historial") {
+                  if (areasdata.p_rol === "Admin") {
+                    return (
+                      <Tab key={label} value={value}>
+                        {label}
+                      </Tab>
+                    );
+                  }
+                } else if (value == "Participantes") {
+                  if (areasdata.p_rol === "Admin") {
                     return (
                       <Tab key={label} value={value}>
                         {label}
@@ -275,8 +371,16 @@ export default function Proyecto({
                     <DocumentosAreas
                       id={idproyecto}
                       rol={areasdata.p_rol}
-                      editproyecto={users2.length >= 2 ? false : true}
+                      editproyecto = {(users2.length >= 2 || RolUser.rol_user === "Revisor") ? false : true }
                     />
+                  </TabPanel>
+                );
+              } else if (value === "Alcance") {
+                return (
+                  <TabPanel key={value} value={value} className="py-0">
+                    {<AlcanceProyecto
+                      id={idproyecto}
+                    />}
                   </TabPanel>
                 );
               } else if (value === "Editor de Texto") {
