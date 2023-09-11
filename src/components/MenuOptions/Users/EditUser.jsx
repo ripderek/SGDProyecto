@@ -156,7 +156,7 @@ export default function EditUser({ openEditUser, userID }) {
               onClose={() => setOpenAlert(false)}
               open={openAlert}
             >
-              Mensaje de error {MensajeError}
+              {MensajeError}
             </Alert>
 
             <Card

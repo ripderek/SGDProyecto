@@ -7,12 +7,14 @@ import {
   Tooltip,
   DialogHeader,
   Button,
+  Chip,
+  Avatar,
 } from "@material-tailwind/react";
 const TABLE_HEAD = ["", "", "Archivo", "Fecha"];
 import VerBorradorPDF from "./VerBorradorPDF";
 import Loading from "@/components/loading";
 
-export default function BorradoresProyecto({ id }) {
+export default function BorradoresProyecto({ id, TituloProyecto, idarea }) {
   const [users, setUsers] = useState([]);
   const [link, setLink] = useState("");
   const [openD, setOpenD] = useState(false);
@@ -61,6 +63,34 @@ export default function BorradoresProyecto({ id }) {
         >
           <DialogHeader className="bg-gray-900 text-white">
             Borradores
+            <div className="ml-5">
+              <Chip
+                icon={
+                  <Avatar
+                    size="xxl"
+                    variant="circular"
+                    className="h-full w-full -translate-x-0.5"
+                    alt={TituloProyecto}
+                    src={
+                      process.env.NEXT_PUBLIC_ACCESLINK +
+                      "area/Areaimagen/" +
+                      idarea
+                    }
+                  />
+                }
+                value={
+                  <Typography
+                    variant="small"
+                    color="black"
+                    className="font-bold capitalize leading-none "
+                  >
+                    {TituloProyecto}
+                  </Typography>
+                }
+                className="rounded-full  p-3"
+                color="yellow"
+              />
+            </div>
             <Button
               color="red"
               variant="text"
