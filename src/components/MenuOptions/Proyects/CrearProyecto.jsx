@@ -13,22 +13,16 @@ import {
 import { useState, React } from "react";
 import ListaCategorias from "../Categorias/ListaCategorias";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-
 import axios from "axios";
+import Loading from "@/components/loading";
 
 export default function CrearProyecto({ id, openDiv }) {
+  const [loading, setLoading] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   const [error, setError] = useState([]);
 
-  ///---------------------------------------------------------------------------
-  //estado creados exclusivamente para esta clase
-  /* p_titulo --->  enviar input
-    p_id_area --->id
-    p_id_categoria ---->seleccionar con un menu
-    p_prefijo_proyecto  ---->enviar input
-  */
   const [user, setUser] = useState({
     p_titulo: "",
     p_id_area: id,
@@ -56,6 +50,7 @@ export default function CrearProyecto({ id, openDiv }) {
     setOpenCat(false);
   };
   const HandleSUbumit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const result = await axios.post(
@@ -65,7 +60,7 @@ export default function CrearProyecto({ id, openDiv }) {
           withCredentials: true,
         }
       );
-
+      setLoading(false);
       console.log(result);
       console.log(user);
       openDiv(false);
@@ -73,10 +68,18 @@ export default function CrearProyecto({ id, openDiv }) {
       console.log(error);
       setError(error.response.data.message);
       hadleAlerterror();
+      setLoading(false);
     }
   };
   return (
     <div className="h-auto mb-5 ">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Drawer
         open={openCat}
         onClose={() => setOpenCat(false)}
@@ -171,9 +174,8 @@ export default function CrearProyecto({ id, openDiv }) {
               disabled
             />
             <Button
-              className="mt-6 rounded-none mx-auto p-3 w-52"
+              className="mt-6 rounded-none mx-auto p-3 w-52 bg-yellow-800"
               fullWidth
-              color="green"
               onClick={() => setOpenCat(true)}
             >
               Seleccionar categoria
@@ -181,9 +183,8 @@ export default function CrearProyecto({ id, openDiv }) {
           </div>
 
           <Button
-            className="mt-6 rounded-none  "
+            className="mt-6 rounded-none  bg-green-800"
             fullWidth
-            color="yellow"
             type="submit"
           >
             Crear

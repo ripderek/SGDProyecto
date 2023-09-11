@@ -27,6 +27,8 @@ import {
 } from "@heroicons/react/24/solid";
 import OpHistorial0 from "./OpHistorial0";
 import OpHistorial3 from "./OpHistorial3";
+import Loading from "@/components/loading";
+
 export default function Historial({ id }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
@@ -36,10 +38,14 @@ export default function Historial({ id }) {
   const [users, setUsers] = useState([]);
   const classNameIcons = "h-4 w-4";
   const classNameTypografi = "font-normal text-gray-600 text-base";
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/Historial/" + id,
       {
@@ -51,9 +57,17 @@ export default function Historial({ id }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Dialog open={open} handler={handleOpen} size="xl">
         <DialogHeader>{titulo}</DialogHeader>
         <DialogBody divider className="overflow-y-scroll">

@@ -1,17 +1,15 @@
-import { CardBody, Typography, Card } from "@material-tailwind/react";
+import {
+  CardBody,
+  Typography,
+  Card,
+  IconButton,
+  Tooltip,
+} from "@material-tailwind/react";
 import { Fragment, useState, useEffect } from "react";
 import EditUser from "../Users/EditUser";
 import EditUserM from "../Users/EditUserM";
 import Loading from "@/components/loading";
-const TABLE_HEAD = [
-  "Tipo Identificacion",
-  "Identificacion",
-  "Correo Personal",
-  "Correo Institucional",
-  "Numero Celular",
-  "Firma",
-  "Accion",
-];
+import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
 
 export default function MiPerfi({ admin, iduser }) {
   //Data para almacenar la respuesta del usuario
@@ -110,7 +108,7 @@ export default function MiPerfi({ admin, iduser }) {
                     color="blue-gray"
                     className="font-normal leading-none opacity-70"
                   >
-                    Clave
+                    Dato
                   </Typography>
                 </th>
                 <th
@@ -133,7 +131,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Tipo identificacion:
                   </Typography>
@@ -153,7 +151,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Identificacion:
                   </Typography>
@@ -173,7 +171,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Correo personal:
                   </Typography>
@@ -193,7 +191,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Correo institucional:
                   </Typography>
@@ -213,7 +211,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Numero Celular:
                   </Typography>
@@ -233,7 +231,7 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Firma:
                   </Typography>
@@ -253,19 +251,22 @@ export default function MiPerfi({ admin, iduser }) {
                   <Typography
                     variant="small"
                     color="blue-gray"
-                    className="font-normal"
+                    className="font-bold"
                   >
                     Accion:
                   </Typography>
                 </td>
-                <td className={classes} onClick={() => setOpenEdit(!openEdit)}>
-                  <Typography
-                    variant="small"
-                    color="blue"
-                    className="font-medium cursor-pointer"
-                  >
-                    Editar
-                  </Typography>
+
+                <td className={classes}>
+                  <Tooltip content="Editar datos">
+                    <IconButton
+                      variant="text"
+                      color="blue-gray"
+                      onClick={() => setOpenEdit(!openEdit)}
+                    >
+                      <PencilIcon className="h-4 w-4" />
+                    </IconButton>
+                  </Tooltip>
                 </td>
               </tr>
             </tbody>

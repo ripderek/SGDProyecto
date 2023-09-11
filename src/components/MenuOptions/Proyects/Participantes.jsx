@@ -11,15 +11,19 @@ import {
   Input,
   DialogHeader,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", ""];
+const TABLE_HEAD = ["", "Datos", "Identificacion", "Celular", "Rol", ""];
 import Participantessinproyectos from "./Participantessinproyectos";
+import Loading from "@/components/loading";
+
 export default function Participantes({
   idproyecto,
   idarea,
   agregarRevisores,
+  permite_agregar,
 }) {
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
@@ -34,6 +38,8 @@ export default function Participantes({
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/participantes_proyecto/" +
@@ -49,9 +55,12 @@ export default function Participantes({
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   //funcion para expulsar a un usuario del proyecto
   const expulsarUsuario = async (id_rel) => {
+    setLoading(true);
+
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK +
@@ -65,12 +74,21 @@ export default function Participantes({
       console.log(result);
       load();
       //console.log(result);
+      setLoading(false);
     } catch (error) {
       alert("error:" + error);
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none">
         {openUser ? (
           <Dialog
@@ -80,7 +98,7 @@ export default function Participantes({
             className="overflow-y-scroll rounded-none h-4/5"
           >
             <DialogHeader className="bg-light-green-900 text-white">
-              Usuarios del area
+              Agregar Usuarios
               <Button
                 color="red"
                 variant="text"
@@ -110,7 +128,7 @@ export default function Participantes({
             icon={<MagnifyingGlassIcon className="h-5 w-5" />}
           />
         </div>
-        {agregarRevisores ? (
+        {agregarRevisores && permite_agregar ? (
           <Button
             className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
             onClick={() => (handlerOpenUsers(), setTipoRol(3))}
@@ -121,15 +139,19 @@ export default function Participantes({
         ) : (
           ""
         )}
-        <Button
-          className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
-          onClick={() => (handlerOpenUsers(), setTipoRol(2))}
-        >
-          <UserPlusIcon className="h-7 w-7" />
-          <p className="mt-1"> Agregar revisores</p>
-        </Button>
+        {permite_agregar ? (
+          <Button
+            className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
+            onClick={() => (handlerOpenUsers(), setTipoRol(2))}
+          >
+            <UserPlusIcon className="h-7 w-7" />
+            <p className="mt-1"> Agregar revisores</p>
+          </Button>
+        ) : (
+          ""
+        )}
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left m-4">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -149,99 +171,123 @@ export default function Participantes({
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.u_id_user}>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={
-                        process.env.NEXT_PUBLIC_ACCESLINK +
-                        "user/foto/" +
-                        user.r_id_user
-                      }
-                      alt={user.r_nombres}
-                      size="sm"
-                    />
-                    <div className="flex flex-col">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_nombres}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_correo_personal}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_correo_institucional}
-                      </Typography>
-
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_nombre_firma}
-                      </Typography>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_identificacion}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_numero_celular}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_rol}
-                  </Typography>
-                </td>
-                {user.r_rol !== "Admin" ? (
+          {users.map(
+            (
+              {
+                r_id_user,
+                r_nombres,
+                r_correo_personal,
+                r_correo_institucional,
+                r_nombre_firma,
+                r_identificacion,
+                r_numero_celular,
+                r_rol,
+                r_id_realcion,
+              },
+              index
+            ) => {
+              return (
+                <tr key={r_id_user}>
                   <td className="p-4 border-b border-blue-gray-50">
-                    <Tooltip content="Expulsar usuario del proyecto">
-                      <Button
-                        className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-light-green-800 h-11"
-                        onClick={() => expulsarUsuario(user.r_id_realcion)}
-                      >
-                        <UserMinusIcon className="h-7 w-7" />
-                        <p className="mt-1"> Expulsar</p>
-                      </Button>
-                    </Tooltip>
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {index + 1}
+                    </Typography>
                   </td>
-                ) : (
-                  ""
-                )}
-              </tr>
-            );
-          })}
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        src={
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "user/foto/" +
+                          r_id_user
+                        }
+                        alt={r_nombres}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_nombres}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_correo_personal}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_correo_institucional}
+                        </Typography>
+
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_nombre_firma}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_identificacion}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_numero_celular}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_rol}
+                    </Typography>
+                  </td>
+                  {r_rol !== "Admin" && permite_agregar ? (
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Tooltip content="Expulsar usuario del proyecto">
+                        <Button
+                          className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-light-green-800 h-11"
+                          onClick={() => expulsarUsuario(r_id_realcion)}
+                        >
+                          <UserMinusIcon className="h-7 w-7" />
+                          <p className="mt-1"> Expulsar</p>
+                        </Button>
+                      </Tooltip>
+                    </td>
+                  ) : (
+                    ""
+                  )}
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

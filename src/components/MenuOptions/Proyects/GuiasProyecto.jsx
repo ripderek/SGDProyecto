@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import {
@@ -15,10 +15,14 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import fileDownload from "js-file-download";
+import Loading from "@/components/loading";
+import { AiOutlineUpload } from "react-icons/ai";
 
-const TABLE_HEAD = ["Archivo", "Fecha", "Tipo", "Descargar"];
+const TABLE_HEAD = ["", "Archivo", "Fecha", "Tipo", "Descargar"];
 
-export default function GuiasProyecto({ id, rol, editproyecto }) {
+export default function GuiasProyecto({ id, rol, editproyecto, permitesubir }) {
+  const [loading, setLoading] = useState(false);
+
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
@@ -36,6 +40,8 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
   }, []);
   const load = async () => {
     //Cargar la lista de guias
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/guias/" + id,
       {
@@ -47,19 +53,22 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   //mensaje de error
-  const [error, setError] = useState([]);
+  const [error, setError] = useState();
   //abrir el pdf
 
   //connstante para almacenar la descripcion
   const [descripcion, setDescripcion] = useState("");
 
   const HandleSUbumit = async (e) => {
+    setLoading(true);
+
     e.preventDefault();
     try {
       const form = new FormData();
@@ -83,8 +92,9 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
       //console.log(result);
     } catch (error) {
       console.log(error);
-      setError(error);
+      setError(error.response.data.message);
       hadleAlerterror();
+      setLoading(false);
     }
   };
   const [link1, setLink1] = useState("");
@@ -94,6 +104,7 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
   //funcion para descargar la guia
   const DescargarGuia = async (archvi, guia) => {
     console.log(guiaDown);
+    setLoading(true);
 
     axios({
       method: "post",
@@ -103,11 +114,27 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
       withCredentials: true,
     }).then((res) => {
       fileDownload(res.data, archvi);
+      setLoading(false);
     });
+    //setLoading(false);
   };
+  const fileInputRef = useRef(null);
 
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
+    }
+  };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none ">
         {openUser ? (
           <Dialog
@@ -145,7 +172,7 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
                   onClose={() => setOpenAlerterror(false)}
                   open={openAlerterror}
                 >
-                  {error.message}
+                  {error}
                 </Alert>
                 <CardHeader
                   color="white"
@@ -162,11 +189,26 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
                       onChange={(e) => setDescripcion(e.target.value)}
                     />
                   </div>
-                  <input
-                    type="file"
-                    accept=".pdf , .docx"
-                    onChange={ImagePreview}
-                  />
+
+                  <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                    <label htmlFor="fileInput" className="text-black ">
+                      Subir documento:
+                    </label>
+                    <input
+                      type="file"
+                      id="fileInput"
+                      onChange={ImagePreview}
+                      accept=".pdf , .docx"
+                      className="hidden"
+                      ref={fileInputRef}
+                    />
+                    <Button
+                      className="ml-3  rounded-xl  bg-white h-11"
+                      onClick={handleButtonClick}
+                    >
+                      <AiOutlineUpload size="25px" color="black" />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardBody className="text-right">
                   <div>
@@ -186,7 +228,7 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
         ) : (
           ""
         )}
-        {editproyecto ? (
+        {editproyecto && permitesubir ? (
           <Button
             className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
             onClick={handlerOpenUsers}
@@ -198,7 +240,7 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
           ""
         )}
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left m-3">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -225,60 +267,75 @@ export default function GuiasProyecto({ id, rol, editproyecto }) {
           ) : (
             ""
           )}
-          {users.map((user) => {
-            return (
-              <tr key={user.u_id_user} className="cursor-pointer">
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_descripcion}
-                      </Typography>
+          {users.map(
+            (
+              { r_descripcion, r_fecha, r_tipo, r_url_guia, u_id_user },
+              index
+            ) => {
+              return (
+                <tr key={u_id_user} className="cursor-pointer">
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {index + 1}
+                        </Typography>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_descripcion}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
 
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_fecha}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <img
+                      className=" h-7 w-7 rounded-full "
+                      src={
+                        r_tipo === ".pdf"
+                          ? "/img/Home/pdf_icon.png"
+                          : "/img/Home/doc_icon.png"
+                      }
+                      alt="User image"
+                    />
+                  </td>
+                  <td
+                    className="p-4 border-b border-blue-gray-50"
+                    onClick={() => (
+                      setGuiaDown({ link: r_url_guia }),
+                      DescargarGuia(r_descripcion + r_tipo, r_url_guia)
+                    )}
                   >
-                    {user.r_fecha}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <img
-                    className=" h-7 w-7 rounded-full "
-                    src={
-                      user.r_tipo === ".pdf"
-                        ? "/img/Home/pdf_icon.png"
-                        : "/img/Home/doc_icon.png"
-                    }
-                    alt="User image"
-                  />
-                </td>
-                <td
-                  className="p-4 border-b border-blue-gray-50"
-                  onClick={() => (
-                    setGuiaDown({ link: user.r_url_guia }),
-                    DescargarGuia(
-                      user.r_descripcion + user.r_tipo,
-                      user.r_url_guia
-                    )
-                  )}
-                >
-                  <IconButton variant="text" color="blue-gray">
-                    <ArrowDownIcon className="h-4 w-4" />
-                  </IconButton>
-                </td>
-              </tr>
-            );
-          })}
+                    <IconButton variant="text" color="blue-gray">
+                      <ArrowDownIcon className="h-4 w-4" />
+                    </IconButton>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

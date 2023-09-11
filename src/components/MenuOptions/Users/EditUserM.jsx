@@ -30,6 +30,7 @@ import OPArea from "../Areas/OPArea";
 import { useState, useEffect, Fragment } from "react";
 import { FaSearch } from "react-icons/fa";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import Loading from "@/components/loading";
 
 export default function EditUserM({ openEditUser, userID }) {
   //Estado para cargar los datos que se van a editar segun el id que se recibe xd jijiij ja
@@ -37,6 +38,8 @@ export default function EditUserM({ openEditUser, userID }) {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [MensajeError, setMensajeError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleOpen = () => {
     setOpen(!open);
   };
@@ -62,6 +65,7 @@ export default function EditUserM({ openEditUser, userID }) {
   //funcion para effect
 
   const load = async () => {
+    setLoading(true);
     try {
       const resultdata = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK + "user/Datos/" + userID,
@@ -72,18 +76,26 @@ export default function EditUserM({ openEditUser, userID }) {
         }
       );
       const dataU = await resultdata.json();
-      setUserData(dataU);
+      // setUserData(dataU);
+      setUser({
+        ...user,
+        correo1: dataU.u_correopersonal,
+        celular: dataU.u_numero_celular,
+        firma: dataU.u_nombre_firma,
+      });
+
+      setLoading(false);
     } catch (error) {
       //setMensajeError(error);
       //setOpenAlert(true);
+      setLoading(false);
     }
   };
   //funcion para enviar los datos a la API
   const HandleSUbumit = async (e) => {
     e.preventDefault();
     try {
-      //setUser({ tipo_identificacion: tipoidentificacion });
-      //setUser({ ...user, tipo_identificacion: tipoidentificacion });
+      setLoading(true);
 
       console.log("datos del usuario para enviar");
       console.log(user);
@@ -97,14 +109,23 @@ export default function EditUserM({ openEditUser, userID }) {
       );
       console.log(result);
       openEditUser(false);
+      setLoading(false);
     } catch (error) {
       setMensajeError(error.response.data.message);
       setOpenAlert(true);
       console.log(error);
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="w-auto">
         <Dialog
           open={true}
@@ -146,7 +167,7 @@ export default function EditUserM({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Correo Personal"
-                    label={UserData.u_correopersonal}
+                    value={user.correo1}
                     onChange={HandleChange}
                     required
                   />
@@ -157,8 +178,9 @@ export default function EditUserM({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Celular"
-                    label={UserData.u_numero_celular}
+                    value={user.celular}
                     onChange={HandleChange}
+                    maxLength={10}
                     required
                   />
                   <Input
@@ -167,7 +189,7 @@ export default function EditUserM({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Firma"
-                    label={UserData.u_nombre_firma}
+                    value={user.firma}
                     onChange={HandleChange}
                     required
                   />

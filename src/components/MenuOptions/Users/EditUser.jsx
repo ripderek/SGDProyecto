@@ -17,6 +17,8 @@ import {
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import Loading from "@/components/loading";
+import { data } from "jquery";
 
 export default function EditUser({ openEditUser, userID }) {
   //Estado para cargar los datos que se van a editar segun el id que se recibe xd jijiij ja
@@ -24,6 +26,8 @@ export default function EditUser({ openEditUser, userID }) {
   const [open, setOpen] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [MensajeError, setMensajeError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const handleOpen = () => {
     setOpen(!open);
   };
@@ -53,6 +57,8 @@ export default function EditUser({ openEditUser, userID }) {
   //funcion para effect
 
   const load = async () => {
+    setLoading(true);
+
     try {
       const resultdata = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK + "user/Datos/" + userID,
@@ -63,22 +69,42 @@ export default function EditUser({ openEditUser, userID }) {
         }
       );
       const dataU = await resultdata.json();
-      setUserData(dataU);
+      //aqui enviar los datos al json para verlos en los input skere
+      //    setUser({ ...user, [e.target.name]: e.target.value });
+      /*
+
+      
+      firma: "",
+      */
+      setUser({
+        ...user,
+        nombres: dataU.u_nombres,
+        identificacion: dataU.u_identificacion,
+        correo1: dataU.u_correopersonal,
+        correo2: dataU.u_correo_institucional,
+        celular: dataU.u_numero_celular,
+        firma: dataU.u_nombre_firma,
+        tipoidentifiacion: dataU.u_tipo_identificacion,
+      });
+      setTipoIdentificacion(dataU.u_tipo_identificacion);
+      //UserData
+      //setUserData(dataU);
+      setLoading(false);
     } catch (error) {
       //setMensajeError(error);
       //setOpenAlert(true);
+      setLoading(false);
     }
   };
   //funcion para enviar los datos a la API
   const HandleSUbumit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       //setUser({ tipo_identificacion: tipoidentificacion });
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
-
       console.log("datos del usuario para enviar");
       console.log(user);
-
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "user/Editar/" + userID,
         user,
@@ -88,14 +114,23 @@ export default function EditUser({ openEditUser, userID }) {
       );
       console.log(result);
       openEditUser(false);
+      setLoading(false);
     } catch (error) {
       setMensajeError(error.response.data.message);
       setOpenAlert(true);
       console.log(error);
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="w-auto">
         <Dialog
           open={true}
@@ -137,7 +172,7 @@ export default function EditUser({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Nombres"
-                    label={UserData.u_nombres}
+                    value={user.nombres}
                     onChange={HandleChange}
                     required
                   />
@@ -218,8 +253,9 @@ export default function EditUser({ openEditUser, userID }) {
                       variant="standard"
                       color="black"
                       placeholder="Identificacion"
-                      label={UserData.u_identificacion}
+                      value={user.identificacion}
                       onChange={HandleChange}
+                      maxLength={13}
                       required
                     />
                   </div>
@@ -230,7 +266,7 @@ export default function EditUser({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Correo Personal"
-                    label={UserData.u_correopersonal}
+                    value={user.correo1}
                     onChange={HandleChange}
                     required
                   />
@@ -240,7 +276,7 @@ export default function EditUser({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Correo Institucional"
-                    label={UserData.u_correo_institucional}
+                    value={user.correo2}
                     onChange={HandleChange}
                     required
                   />
@@ -250,8 +286,9 @@ export default function EditUser({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Celular"
-                    label={UserData.u_numero_celular}
+                    value={user.celular}
                     onChange={HandleChange}
+                    maxLength={10}
                     required
                   />
                   <Input
@@ -260,7 +297,7 @@ export default function EditUser({ openEditUser, userID }) {
                     variant="standard"
                     color="black"
                     placeholder="Firma"
-                    label={UserData.u_nombre_firma}
+                    value={user.firma}
                     onChange={HandleChange}
                     required
                   />

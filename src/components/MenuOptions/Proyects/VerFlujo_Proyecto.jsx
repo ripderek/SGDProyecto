@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
+import Loading from "@/components/loading";
 
 export default function VerFlujo_Proyecto({ idproyecto }) {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
@@ -22,9 +26,17 @@ export default function VerFlujo_Proyecto({ idproyecto }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   return (
     <div className="relative overflow-y-auto h-screen mx-auto">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="relative h-full mb-16 mx-auto">
         {users.length === 0 ? "No hay flujo para cargar" : ""}
         {users.map((task) => (

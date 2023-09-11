@@ -11,11 +11,13 @@ import { useState, useEffect } from "react";
 const TABLE_HEAD = ["Ver Flujo", "Titulo", "Fecha creacion", ""];
 import { EyeIcon } from "@heroicons/react/24/solid";
 import Ver_Flujo from "../Flujo/Ver_Flujo";
+import Loading from "@/components/loading";
 
 export default function Flujos_Etapas({ handlerNiveles, handlerID }) {
   const [users, setUsers] = useState([]);
   //handleVerFLujo
   const [id_tipo_flujo, setIdTipoFlujo] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [openVerFlujo, setOpenVerFLujo] = useState(false);
   const handleVerFLujo = (estado) => {
@@ -26,6 +28,8 @@ export default function Flujos_Etapas({ handlerNiveles, handlerID }) {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_jerarquias_activas",
       {
@@ -38,9 +42,17 @@ export default function Flujos_Etapas({ handlerNiveles, handlerID }) {
     const data = await result.json();
     setUsers(data);
     console.log(data);
+    setLoading(false);
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Dialog size="sm" open={true} className="rounded-none">
         {openVerFlujo ? (
           <Ver_Flujo
