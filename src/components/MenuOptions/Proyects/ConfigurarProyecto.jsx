@@ -13,7 +13,7 @@ import {
 import { DocumentTextIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
 import Loading from "@/components/loading";
-
+import EditarProyecto from "./EditarProyecto";
 export default function ConfigurarProyecto({
   eliminarFlujo,
   id_proyecto,
@@ -21,7 +21,7 @@ export default function ConfigurarProyecto({
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-
+  const [openEditarDatos, setOpenEditarDatos] = useState(false);
   const handleOpen = () => setOpen(!open);
   //funcion para deshabilitar el flujo de un proyecto
   const handlerSubmit = async () => {
@@ -47,12 +47,24 @@ export default function ConfigurarProyecto({
       setLoading(false);
     }
   };
+  const handlerSalir = (valor) => {
+    if (valor) {
+      setOpenEditarDatos(false);
+      //aqui tambien volver a la pagina principal xdxdx skere modo dibalo
+      Recargar(true);
+    }
+  };
   return (
     <div>
       {loading ? (
         <div>
           <Loading />
         </div>
+      ) : (
+        ""
+      )}
+      {openEditarDatos ? (
+        <EditarProyecto idproyecto={id_proyecto} handlerSalir={handlerSalir} />
       ) : (
         ""
       )}
@@ -103,7 +115,10 @@ export default function ConfigurarProyecto({
                   </div>
                 </div>
                 <div className="p-2  bg-green-400">
-                  <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
+                  <button
+                    className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900"
+                    onClick={() => setOpenEditarDatos(true)}
+                  >
                     <p className="text-lg font-semibold items-center text-white">
                       Seleccionar
                     </p>

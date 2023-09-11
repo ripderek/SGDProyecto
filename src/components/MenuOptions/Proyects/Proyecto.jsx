@@ -552,6 +552,8 @@ export default function Proyecto({
                         ? false
                         : true
                     }
+                    TituloProyecto={areasdata.p_titulo}
+                    idarea={idarea}
                   />
                 ) : (
                   ""
@@ -595,7 +597,15 @@ export default function Proyecto({
                 ) : (
                   ""
                 )}
-                {openBorradores ? <BorradoresProyecto id={idproyecto} /> : ""}
+                {openBorradores ? (
+                  <BorradoresProyecto
+                    id={idproyecto}
+                    TituloProyecto={areasdata.p_titulo}
+                    idarea={idarea}
+                  />
+                ) : (
+                  ""
+                )}
                 {openConfiguracion ? (
                   <ConfigurarProyecto
                     eliminarFlujo={areasdata.p_flujo ? true : false}

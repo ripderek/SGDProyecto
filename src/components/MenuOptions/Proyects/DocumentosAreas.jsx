@@ -14,13 +14,21 @@ import {
   Card,
   CardHeader,
   CardBody,
+  Chip,
+  Avatar,
 } from "@material-tailwind/react";
 import axios from "axios";
 const TABLE_HEAD = ["Ver archivo", "Archivo", "Fecha"];
 import Loading from "@/components/loading";
 import { AiOutlineUpload } from "react-icons/ai";
 
-export default function DocumentosAreas({ id, rol, editproyecto }) {
+export default function DocumentosAreas({
+  id,
+  rol,
+  editproyecto,
+  TituloProyecto,
+  idarea,
+}) {
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -121,6 +129,34 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
         >
           <DialogHeader className="bg-light-green-900 text-white">
             Documento Actual
+            <div className="ml-5">
+              <Chip
+                icon={
+                  <Avatar
+                    size="xxl"
+                    variant="circular"
+                    className="h-full w-full -translate-x-0.5"
+                    alt={TituloProyecto}
+                    src={
+                      process.env.NEXT_PUBLIC_ACCESLINK +
+                      "area/Areaimagen/" +
+                      idarea
+                    }
+                  />
+                }
+                value={
+                  <Typography
+                    variant="small"
+                    color="black"
+                    className="font-bold capitalize leading-none "
+                  >
+                    {TituloProyecto}
+                  </Typography>
+                }
+                className="rounded-full  p-3"
+                color="yellow"
+              />
+            </div>
             <Button
               color="red"
               variant="text"
