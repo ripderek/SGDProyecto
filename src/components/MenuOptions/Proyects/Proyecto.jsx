@@ -204,6 +204,8 @@ export default function Proyecto({
     setUsers2(data2);
     //si el proyecto tiene mas de 1 estado nivel no se debe permitir entrar a su configuracion ni dejar subir documentos nuevos.
     setProyectoEdit(data2.length >= 2 ? false : true);
+
+    console.log("asdasdasdasd",RolUser.rol_user);
   };
 
   const Recargar = (valor) => {
@@ -248,11 +250,13 @@ export default function Proyecto({
               if (value !== "Html") {
                 if (value == "Flujo") {
                   if (areasdata.p_flujo) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
+                    if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
+                      return (
+                        <Tab key={label} value={value}>
+                          {label}
+                        </Tab>
+                      );
+                    }
                   }
                 } else if (value == "Documentos") {
                   if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
@@ -295,14 +299,6 @@ export default function Proyecto({
                         </Tab>
                       );
                     }
-                } else if (value == "Flujo") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
                 } else if (value == "Revisiones") {
                   if (areasdata.p_flujo) {
                     if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" ||RolUser.rol_user === "Revisor"){

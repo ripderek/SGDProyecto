@@ -65,17 +65,50 @@ export default function Firmar() {
         form.append("firma", fileP12);
         form.append("palabra_secreta", descripcion);
         //http://192.168.2.102:81
-        axios({
+        //mia john 192.168.0.100:81
+        await axios({
             method: "post",
-            url: "http://192.168.2.102:81/procesar",
+            url: "http://192.168.0.100:81/procesar",
             data: form,
             responseType: "blob",
             withCredentials: false,
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-        }).then((res) => {
-            fileDownload(res.data, 'archiv.pdf');
+        }).then(async (res) => {
+            console.log(res.data);
+            //fileDownload(res.data, 'archiv.pdf');
+
+            // Convertir el Blob del PDF en un archivo File
+            const pdfBlob = new Blob([res.data], { type: 'application/pdf' });
+
+            //const pdfFile = new File([pdfBlob], 'archivo.pdf');
+            // Crear un archivo File a partir del Blob
+            const pdfFile = new File([pdfBlob], 'archivo.pdf', { type: 'application/pdf' });
+
+            // Crear un objeto FormData para adjuntar el archivo PDF
+            const formData = new FormData();
+            formData.append('file', pdfFile);
+
+            // Realizar la solicitud POST al servidor
+            await axios({
+                method: 'post',
+                url: process.env.NEXT_PUBLIC_ACCESLINK + "firma/guardar_pdf_firma",
+                data: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            })
+                .then(async (response) => {
+                    console.log(response);
+                    alert('PDF guardado con éxito');
+                })
+                .catch((error) => {
+                    // Maneja los errores de la solicitud aquí
+                    console.error('Error en la solicitud:', error);
+                });
+
+
         });
         /*
         try {
