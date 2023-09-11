@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
+import Loading from "@/components/loading";
 import {
   Card,
   CardHeader,
@@ -45,6 +45,7 @@ export default function ProyectosAreas({
 }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
@@ -53,7 +54,7 @@ export default function ProyectosAreas({
   const load = async () => {
     //Cargar la lista de las areas
     //aqui tengo que enviar un parametro que indique que el usuario que solicita cargar la lista de los proyectos es administrador del area por ende deben de cargar los proyectos que vienen de areas inferiores para su revision o publicacion
-
+    setLoading(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/proyectos_areas/" +
@@ -70,9 +71,17 @@ export default function ProyectosAreas({
     const data = await result.json();
     setAreasData(data);
     console.log(areasdata);
+    setLoading(false);
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Card className="h-full w-full p-7 rounded-none shadow-none">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">

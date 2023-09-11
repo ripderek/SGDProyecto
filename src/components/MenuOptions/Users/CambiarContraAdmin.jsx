@@ -9,8 +9,11 @@ import {
   Input,
 } from "@material-tailwind/react";
 import axios from "axios";
+import Loading from "@/components/loading";
 
 export default function CambiarContraAdmin({ id_user }) {
+  const [loading, setLoading] = useState(false);
+
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
@@ -27,6 +30,7 @@ export default function CambiarContraAdmin({ id_user }) {
     console.log(e.target.name, e.target.value);
   };
   const HandleSUbumit = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "user/Actualizar_Contra_admin",
@@ -37,14 +41,23 @@ export default function CambiarContraAdmin({ id_user }) {
       );
       hadleAlert();
       console.log(result);
+      setLoading(false);
     } catch (error) {
       console.log(error);
       setError(error.response.data);
       hadleAlerterror();
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="mb-9">
         <Alert
           color="green"
@@ -78,6 +91,7 @@ export default function CambiarContraAdmin({ id_user }) {
                 name="contra_nueva"
                 type="password"
                 onChange={HandleChange}
+                required
               />
             </div>
             <div className=" w-full">
@@ -88,6 +102,7 @@ export default function CambiarContraAdmin({ id_user }) {
                 name="contra_nueva1"
                 type="password"
                 onChange={HandleChange}
+                required
               />
             </div>
           </CardHeader>

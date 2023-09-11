@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import Verpdf from "./Verpdf";
@@ -18,6 +18,7 @@ import {
 import axios from "axios";
 const TABLE_HEAD = ["Ver archivo", "Archivo", "Fecha"];
 import Loading from "@/components/loading";
+import { AiOutlineUpload } from "react-icons/ai";
 
 export default function DocumentosAreas({ id, rol, editproyecto }) {
   const [users, setUsers] = useState([]);
@@ -84,8 +85,7 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
 
       console.log(result);
       hadleAlert();
-      load();
-      setLoading(false);
+      handlerOpenUsers(), load();
       //console.log(result);
     } catch (error) {
       console.log(error);
@@ -94,14 +94,24 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
       setLoading(false);
     }
   };
-  if (loading)
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
+    }
+  };
+
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none ">
         <Dialog
           size="xxl"
@@ -163,7 +173,7 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
                   onClose={() => setOpenAlerterror(false)}
                   open={openAlerterror}
                 >
-                  {error.message}
+                  El formato de subida no es el correcto
                 </Alert>
                 <CardHeader
                   color="white"
@@ -180,7 +190,25 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
                       onChange={(e) => setDescripcion(e.target.value)}
                     />
                   </div>
-                  <input type="file" accept=".pdf" onChange={ImagePreview} />
+                  <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                    <label htmlFor="fileInput" className="text-black ">
+                      Subir archivo:
+                    </label>
+                    <input
+                      type="file"
+                      id="fileInput"
+                      onChange={ImagePreview}
+                      accept=".pdf"
+                      className="hidden"
+                      ref={fileInputRef}
+                    />
+                    <Button
+                      className="ml-3  rounded-xl  bg-white h-11"
+                      onClick={handleButtonClick}
+                    >
+                      <AiOutlineUpload size="25px" color="black" />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardBody className="text-right">
                   <div>
@@ -212,7 +240,7 @@ export default function DocumentosAreas({ id, rol, editproyecto }) {
           ""
         )}
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left m-3">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (

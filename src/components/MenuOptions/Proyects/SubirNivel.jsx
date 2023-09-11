@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
+import Loading from "@/components/loading";
 
 import { Button } from "@material-tailwind/react";
 export default function SubirNivel0({ id_proyect }) {
@@ -12,11 +13,14 @@ export default function SubirNivel0({ id_proyect }) {
   const inputTitle2 =
     "w-60 text-center text-lg  font-semibold	text-black bg-yellow-600";
   const inputSubtitile2 = "w-60 text-center text-lg 	text-black bg-yellow-600";
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
@@ -31,8 +35,10 @@ export default function SubirNivel0({ id_proyect }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   const HandleSUbumit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       const result = await axios.post(
@@ -42,16 +48,25 @@ export default function SubirNivel0({ id_proyect }) {
           withCredentials: true,
         }
       );
-
       console.log(result);
       alert("Se subio de nivel");
+      setLoading(false);
       //console.log(result);
     } catch (error) {
       alert("error:" + error);
+      setLoading(false);
     }
   };
   return (
     <div className="relative overflow-y-auto h-screen mx-auto">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+
       <div className="bg-gray-100  mb-3" id="Header">
         <div className="ml-10 text-black font-semibold">
           {users.length != 0 ? " Subir al nivel de " + users[1].nivel : ""}

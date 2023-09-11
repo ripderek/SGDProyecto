@@ -12,9 +12,10 @@ import {
   Input,
 } from "@material-tailwind/react";
 import { Fragment, useState, useEffect, React } from "react";
+import Loading from "@/components/loading";
 
 import axios from "axios";
-const TABLE_HEAD = ["Datos", "Identificacion", "Agregar"];
+const TABLE_HEAD = ["", "Datos", "Identificacion", "Agregar"];
 
 export default function AgregarUserArea(id) {
   const [users, setUsers] = useState([]);
@@ -25,6 +26,7 @@ export default function AgregarUserArea(id) {
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   const [user, setUser] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   //mensaje de error
   const [error, setError] = useState([]);
@@ -38,6 +40,8 @@ export default function AgregarUserArea(id) {
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "area/users_sin_area/" + id.id,
       {
@@ -49,8 +53,10 @@ export default function AgregarUserArea(id) {
     setIdeArea(id.id);
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   const HandleSUbumit = async (p1) => {
+    setLoading(true);
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "area/usuario_area",
@@ -70,10 +76,18 @@ export default function AgregarUserArea(id) {
       console.log(error);
       setError(error.response.data.message);
       hadleAlerterror();
+      setLoading(false);
     }
   };
   return (
     <div className="h-auto">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <DialogHeader className="justify-between">
         <Alert
           color="yellow"
@@ -119,82 +133,107 @@ export default function AgregarUserArea(id) {
             </tr>
           </thead>
           <tbody>
-            {users.map((user1) => {
-              return (
-                <tr key={user1.u_id_user}>
-                  <td className="p-4 border-b border-blue-gray-50">
-                    <div className="flex items-center gap-3">
-                      <Avatar
-                        src={
-                          process.env.NEXT_PUBLIC_ACCESLINK +
-                          "user/foto/" +
-                          user1.u_id_user
-                        }
-                        alt={user1.u_nombres}
-                        size="sm"
-                      />
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {user1.u_nombres}
-                        </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user1.u_correo}
-                        </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user1.u_correo2}
-                        </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user1.u_id_user}
-                        </Typography>
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal opacity-70"
-                        >
-                          {user1.u_nombrefirma}
-                        </Typography>
+            {users.map(
+              (
+                {
+                  u_id_user,
+                  u_nombres,
+                  u_correo,
+                  u_correo2,
+                  u_nombrefirma,
+                  u_identificacion,
+                },
+                index
+              ) => {
+                return (
+                  <tr key={u_id_user}>
+                    <td>
+                      <div className="flex items-center gap-3 text-center">
+                        <div className="flex flex-col text-center">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal text-center"
+                          >
+                            {index + 1}
+                          </Typography>
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="p-4 border-b border-blue-gray-50">
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal"
-                    >
-                      {user1.u_identificacion}
-                    </Typography>
-                  </td>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <div className="flex items-center gap-3">
+                        <Avatar
+                          src={
+                            process.env.NEXT_PUBLIC_ACCESLINK +
+                            "user/foto/" +
+                            u_id_user
+                          }
+                          alt={u_nombres}
+                          size="sm"
+                        />
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {u_nombres}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {u_correo}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {u_correo2}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {u_id_user}
+                          </Typography>
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal opacity-70"
+                          >
+                            {u_nombrefirma}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {u_identificacion}
+                      </Typography>
+                    </td>
 
-                  <td
-                    className="p-4 border-b border-blue-gray-50"
-                    onClick={() => HandleSUbumit(user1.u_id_user)}
-                  >
-                    <Tooltip content="Edit User">
-                      <IconButton variant="text" color="blue-gray">
-                        <UserPlusIcon className="h-4 w-4" />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                </tr>
-              );
-            })}
+                    <td
+                      className="p-4 border-b border-blue-gray-50"
+                      onClick={() => HandleSUbumit(u_id_user)}
+                    >
+                      <Tooltip content="Edit User">
+                        <IconButton variant="text" color="blue-gray">
+                          <UserPlusIcon className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
           </tbody>
         </table>
       </DialogBody>

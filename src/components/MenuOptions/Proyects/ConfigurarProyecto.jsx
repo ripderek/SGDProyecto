@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -12,13 +12,21 @@ import {
 } from "@material-tailwind/react";
 import { DocumentTextIcon, ArchiveBoxIcon } from "@heroicons/react/24/outline";
 import axios from "axios";
+import Loading from "@/components/loading";
 
-export default function ConfigurarProyecto({ eliminarFlujo, id_proyecto }) {
-  const [open, setOpen] = React.useState(false);
+export default function ConfigurarProyecto({
+  eliminarFlujo,
+  id_proyecto,
+  Recargar,
+}) {
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleOpen = () => setOpen(!open);
   //funcion para deshabilitar el flujo de un proyecto
   const handlerSubmit = async () => {
+    setLoading(true);
+
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK +
@@ -29,14 +37,25 @@ export default function ConfigurarProyecto({ eliminarFlujo, id_proyecto }) {
           withCredentials: true,
         }
       );
-      alert("Se elimino el flujo");
+      //alert("Se elimino el flujo");
+      //aqui enviar al inicio xdxd skere modo diablo
       setOpen(!open);
+      setLoading(false);
+      Recargar(true);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Dialog open={open} handler={handleOpen}>
         <DialogHeader>Borrar Flujo</DialogHeader>
         <DialogBody divider>

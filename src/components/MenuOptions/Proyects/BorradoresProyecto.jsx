@@ -8,18 +8,22 @@ import {
   DialogHeader,
   Button,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["", "Archivo", "Fecha"];
+const TABLE_HEAD = ["", "", "Archivo", "Fecha"];
 import VerBorradorPDF from "./VerBorradorPDF";
+import Loading from "@/components/loading";
 
 export default function BorradoresProyecto({ id }) {
   const [users, setUsers] = useState([]);
   const [link, setLink] = useState("");
   const [openD, setOpenD] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     //Cargar la lista de usuarios
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/borradores/" + id,
@@ -32,9 +36,22 @@ export default function BorradoresProyecto({ id }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+      <div className="flex shrink-0 flex-col gap-2 sm:flex-row rounded-none">
+        <Typography color="blue-gray" className="font-semibold text-xl ml-6">
+          Historial de borradores
+        </Typography>
+      </div>
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none ">
         <Dialog
           size="xxl"
@@ -60,7 +77,7 @@ export default function BorradoresProyecto({ id }) {
           <VerBorradorPDF link={link} />
         </Dialog>
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left m-5">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -87,9 +104,22 @@ export default function BorradoresProyecto({ id }) {
           ) : (
             ""
           )}
-          {users.map((user) => {
+          {users.map(({ d_id, d_descripcion, d_fecha }, index) => {
             return (
-              <tr key={user.u_id_user} className="cursor-pointer">
+              <tr key={d_id} className="cursor-pointer">
+                <td className="p-4 border-b border-blue-gray-50">
+                  <div className="flex items-center gap-3">
+                    <div className="flex flex-col">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal"
+                      >
+                        {index + 1}
+                      </Typography>
+                    </div>
+                  </div>
+                </td>
                 <td className="p-4 border-b border-blue-gray-50">
                   <Tooltip content="Ver documento">
                     <IconButton
@@ -99,7 +129,7 @@ export default function BorradoresProyecto({ id }) {
                         setLink(
                           process.env.NEXT_PUBLIC_ACCESLINK +
                             "proyects/pdf/" +
-                            user.d_id
+                            d_id
                         ),
                         setOpenD(true)
                       )}
@@ -116,7 +146,7 @@ export default function BorradoresProyecto({ id }) {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {user.d_descripcion}
+                        {d_descripcion}
                       </Typography>
                     </div>
                   </div>
@@ -128,7 +158,7 @@ export default function BorradoresProyecto({ id }) {
                     color="blue-gray"
                     className="font-normal"
                   >
-                    {user.d_fecha}
+                    {d_fecha}
                   </Typography>
                 </td>
               </tr>

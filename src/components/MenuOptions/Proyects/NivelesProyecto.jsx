@@ -1,13 +1,17 @@
 import { Fragment, React, useState, useEffect } from "react";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
+import Loading from "@/components/loading";
 
 export default function NivelesProyecto({ id }) {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     //Cargar la lista de usuarios
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/estados_niveles/" + id,
@@ -21,9 +25,17 @@ export default function NivelesProyecto({ id }) {
     const data = await result.json();
     setUsers(data);
     console.log(data);
+    setLoading(false);
   };
   return (
     <div className="relative overflow-y-auto h-screen mx-auto">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="relative h-full mb-16 mx-auto">
         {users.length === 0 ? "No hay flujo para cargar" : ""}
         {users.map((task) => (
