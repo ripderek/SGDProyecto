@@ -44,8 +44,11 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
     setLoading(false);
   };
   const [openVerNiveles, setVerNiveles] = useState(false);
+
   const handlerNiveles = (estado) => {
+    setLoading(true);
     setVerNiveles(estado);
+    setLoading(false);
   };
   //constante simplemente para la estectic xd
   const [titulonivel, setTitulNivel] = useState("");
@@ -59,12 +62,17 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
   const [masAreas, setMasAreas] = useState(false);
   //estado para retornar el objeto que me devuelve areasFlujo
   const [areaD, setAreaD] = useState([]);
+  const [cabezera, setCabezera] = useState(false);
   const datos = (data) => {
     setLoading(true);
 
     console.log("datos retornados");
     console.log(data);
     console.log(users);
+    //aqui tengo que obtener el dato retornardo para saber si se escojio un area padre para que no empate con un area hija
+    //y si es el ultimo area entonces solo puede ser area padre
+    setCabezera(data.cabezera);
+
     //primero hay que preguntar si el id area que se esta ingresando no esta ya en el flujo
     //si ya esta en el flujo enviar una alerta
     var verifciar = true;
@@ -153,7 +161,6 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
   const [verbotonSeleccionar, setVerbotonSeleccionar] = useState(true);
   const handlerID = (valor) => {
     setLoading(true);
-
     setIdTipo(valor);
     setVerbotonAnadir(true);
     setVerbotonSeleccionar(false);
@@ -235,16 +242,17 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
         }
       );
       console.log(result.data);
-      alert(result.data.message);
+      //alert(result.data.message);
       setVerGuardar(true);
       Recargar(true);
+      setLoading(false);
     } catch (error) {
       alert(error.response.data);
       setLoading(false);
     }
-    setLoading(false);
   };
   const btnEliminar = () => {
+    setCabezera(false);
     setLoading(true);
     setLista_niveles([]), setcontador(0), setEspacio(0);
     setVerbotonAnadir(false);
@@ -278,6 +286,7 @@ export default function CrearFlujoProyecto({ idproyecto, idarea, Recargar }) {
             datos={datos}
             title={titulonivel}
             masAreas={masAreas}
+            padre={cabezera}
           />
         ) : (
           ""

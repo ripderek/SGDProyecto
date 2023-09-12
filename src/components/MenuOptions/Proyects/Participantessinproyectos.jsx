@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogFooter,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Acción"];
+const TABLE_HEAD = ["", "Datos", "Identificacion", "Celular", "Acción"];
 import Loading from "@/components/loading";
 
 export default function Participantessinproyectos({
@@ -108,7 +108,7 @@ export default function Participantessinproyectos({
           />
         </div>
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left">
+      <table className="mt-4 w-full min-w-max table-auto text-left ">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -128,87 +128,110 @@ export default function Participantessinproyectos({
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.u_id_user}>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={
-                        process.env.NEXT_PUBLIC_ACCESLINK +
-                        "user/foto/" +
-                        user.r_id_user
-                      }
-                      alt={user.r_nombres}
-                      size="sm"
-                    />
-                    <div className="flex flex-col">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.r_nombres}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_correo_personal}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_correo_institucional}
-                      </Typography>
-
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.r_nombre_firma}
-                      </Typography>
-                    </div>
-                  </div>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_identificacion}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_numero_celular}
-                  </Typography>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Tooltip content="Agregar usuario al proyecto">
-                    <Button
-                      className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-light-green-800 h-11"
-                      onClick={() => AnadirUsuarioProyecto(user.r_id_realcion)}
+          {users.map(
+            (
+              {
+                r_id_user,
+                r_nombres,
+                r_correo_personal,
+                r_correo_institucional,
+                r_nombre_firma,
+                r_identificacion,
+                r_numero_celular,
+                r_id_realcion,
+              },
+              index
+            ) => {
+              return (
+                <tr key={r_id_user}>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
                     >
-                      <UserPlusIcon className="h-7 w-7" />
-                      <p className="mt-1"> Agregar</p>
-                    </Button>
-                  </Tooltip>
-                </td>
-              </tr>
-            );
-          })}
+                      {index + 1}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        src={
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "user/foto/" +
+                          r_id_user
+                        }
+                        alt={r_nombres}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_nombres}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_correo_personal}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_correo_institucional}
+                        </Typography>
+
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {r_nombre_firma}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_identificacion}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_numero_celular}
+                    </Typography>
+                  </td>
+
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Tooltip content="Agregar usuario al proyecto">
+                      <Button
+                        className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-light-green-800 h-11"
+                        onClick={() => AnadirUsuarioProyecto(r_id_realcion)}
+                      >
+                        <UserPlusIcon className="h-7 w-7" />
+                        <p className="mt-1"> Agregar</p>
+                      </Button>
+                    </Tooltip>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

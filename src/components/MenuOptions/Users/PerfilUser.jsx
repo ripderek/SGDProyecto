@@ -11,6 +11,7 @@ import {
   TabsHeader,
 } from "@material-tailwind/react";
 import axios from "axios";
+import Loading from "@/components/loading";
 
 import MiPerfi from "../Users/MiPerfi";
 import CambiarFoto from "./CambiarFoto";
@@ -25,9 +26,12 @@ export default function PerfilUser({
   idarea,
   admin,
   relacionarea,
+  Salir,
 }) {
   //Estados para abrir las opciones del menu
   //estado para abrir la opcion de usuarios
+  const [loading, setLoading] = useState(false);
+
   const [openUsers, setOpenUsers] = useState(false);
   const handleUsers = () => {
     setOpenUsers(true);
@@ -115,6 +119,7 @@ export default function PerfilUser({
 
   //Cambiar el estado del usuario en el area
   const HandleSUbumit = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "area/Deshabilitar_usuario_area",
@@ -124,13 +129,18 @@ export default function PerfilUser({
         }
       );
       handleCambiarEstado();
+      //aqui enviar un estado para saber que se salio del control xd xdxd skere modo diablo
+      setLoading(false);
+      Salir(true);
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
 
   const HandleSUbumit1 = async () => {
     try {
+      setLoading(true);
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "user/Deshabilitar/" + iduser,
         {},
@@ -138,14 +148,17 @@ export default function PerfilUser({
           withCredentials: true,
         }
       );
+      setLoading(false);
       handleCambiarEstadoAPP();
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   };
 
   //Submit para cambiar el rol del usuario dentro del area
   const HandleSUbumitAreaRol = async () => {
+    setLoading(true);
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "area/CambiarRol",
@@ -158,14 +171,24 @@ export default function PerfilUser({
       alert(result.data.message);
 
       handleCambiarROL();
+      setLoading(false);
+      Salir(true);
     } catch (error) {
       alert(error.response.data.message);
+      setLoading(false);
       console.log(error);
     }
   };
   //Retornar interfaz
   return (
     <Fragment>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Fragment>
         <Dialog open={openCambiarEstadoAPP} handler={handleCambiarEstadoAPP}>
           <DialogHeader> Cambiar estado usuario </DialogHeader>
@@ -201,7 +224,7 @@ export default function PerfilUser({
             <Button
               variant="text"
               color="red"
-              onClick={handleCambiarROL}
+              onClick={() => setOpenCambiarROL(false)}
               className="mr-1"
             >
               <span>Cancelar</span>
@@ -226,7 +249,7 @@ export default function PerfilUser({
             <Button
               variant="text"
               color="red"
-              onClick={handleCambiarEstado}
+              onClick={() => setOpenCambiarEstado(false)}
               className="mr-1"
             >
               <span>Cancelar</span>

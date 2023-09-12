@@ -12,14 +12,17 @@ import {
   CurrencyDollarIcon,
 } from "@heroicons/react/24/solid";
 import { useState, useEffect, Fragment } from "react";
+import Loading from "@/components/loading";
 
 export default function Arbol(idarea) {
   //        {posiciones.map((task) => task.area_id + " Position X: " + task.pos_x)}
 
-  const [areasdata, setAreasData] = useState([]);
+  //const [areasdata, setAreasData] = useState([]);
   //constante para saber si el array solo tiene  1 elemento que seria la cabezera
   const [posiciones, setPosiciones] = useState([]);
-  const verFlujo = () => {
+  const [loading, setLoading] = useState(false);
+
+  const verFlujo = (areasdata) => {
     console.log("ver flujo");
     var num = 0;
     var x = 10;
@@ -91,7 +94,9 @@ export default function Arbol(idarea) {
 
   const load = async () => {
     //Cargar la lista de las areas
-
+    setLoading(true);
+    //const data = {};
+    /*
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "area/Jerarquias/" + idarea.idarea,
       {
@@ -99,10 +104,31 @@ export default function Arbol(idarea) {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       }
-    );
+    ).then(setAreasData(await result.json()), verFlujo());
+      */
+    fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK + "area/Jerarquias/" + idarea.idarea,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Esto convierte la respuesta en formato JSON
+      })
+      .then((data) => {
+        // Manejar la data aquí
+        verFlujo(data), setLoading(false);
+      })
+      .catch((error) => {
+        // Manejar errores aquí
+        console.error("Error:", error);
+      });
 
-    const data = await result.json();
-    setAreasData(data);
     //console.log(areasdata);
   };
   return (
@@ -111,7 +137,13 @@ export default function Arbol(idarea) {
       h-full
       overflow-x-scroll   "
     >
-      <button onClick={verFlujo}>Cargar Flujo</button>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="relative  w-full ">
         {posiciones.map((task) => (
           <div

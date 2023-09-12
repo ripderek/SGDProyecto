@@ -1,7 +1,9 @@
 import { React, Fragment, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
+
 import Cookies from "universal-cookie";
+
 
 import {
   Button,
@@ -13,14 +15,24 @@ import {
   Input,
   Chip,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["", "Titulo Proyecto", "Categoria", "Tipo", "Código", ""];
-
+const TABLE_HEAD = [
+  "",
+  "Titulo Proyecto",
+  "Categoria",
+  "Tipo",
+  "Código",
+  "Estado",
+  "",
+];
 import CrearProyecto from "./CrearProyecto";
+import Loading from "@/components/loading";
+
 export default function OpProyectos(id) {
   //Crear la tabla con usuarios
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
+  const [loading, setLoading] = useState(false);
 
   const cookies = new Cookies();
 
@@ -36,6 +48,8 @@ export default function OpProyectos(id) {
     load();
   }, []);
   const load = async () => {
+    setLoading(true);
+
     //Cargar la lista de usuarios
     try {
 
@@ -60,14 +74,22 @@ export default function OpProyectos(id) {
 
       const data = await result.json();
       setUsers(data);
-
+     setLoading(false);
     } catch (error) {
       console.log(error);
+       setLoading(false);
     }
 
-  };
+
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="flex shrink-0 flex-col  sm:flex-row justify-end rounded-none">
         {openFOrm ? (
           <Dialog open={openFOrm} className="overflow-y-scroll rounded-none">
@@ -122,6 +144,7 @@ export default function OpProyectos(id) {
                 p_tipo_nivel,
                 p_reforma,
                 p_codigo,
+                p_estado,
               },
               index
             ) => {
@@ -129,7 +152,6 @@ export default function OpProyectos(id) {
               const classes = isLast
                 ? "p-4"
                 : "p-4 border-b border-blue-gray-50";
-
               return (
                 <tr key={p_id_proyecto}>
                   <td className={classes}>
@@ -203,6 +225,16 @@ export default function OpProyectos(id) {
                         variant="ghost"
                         value={p_codigo}
                         color={"cyan"}
+                      />
+                    </div>
+                  </td>
+                  <td className={classes}>
+                    <div className="w-max">
+                      <Chip
+                        size="sm"
+                        variant="ghost"
+                        value={p_estado ? "Habilitado" : "Deshabilitado"}
+                        color={p_estado ? "green" : "cyan"}
                       />
                     </div>
                   </td>

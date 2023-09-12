@@ -9,12 +9,49 @@ import {
   Input,
 } from "@material-tailwind/react";
 import axios from "axios";
+import Loading from "@/components/loading";
+
 export default function EditarArea({ id_user }) {
+  const [loading, setLoading] = useState(false);
+
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   const [error, setError] = useState([]);
+  const [UserData, setUserData] = useState([]);
+
+  useEffect(() => {
+    load();
+  }, []);
+  //funcion para effect
+
+  const load = async () => {
+    try {
+      setLoading(true);
+
+      const resultdata = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/DatosEditar/" + id_user,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const dataU = await resultdata.json();
+      setUserData(dataU);
+      setArea({
+        ...area,
+        p_nombre_area: dataU.r_nombre_area,
+        p_prefijo_area: dataU.r_prefijo_area,
+      });
+
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
   const [area, setArea] = useState({
     p_nombre_area: "",
     p_prefijo_area: "",
@@ -24,7 +61,10 @@ export default function EditarArea({ id_user }) {
     setArea({ ...area, [e.target.name]: e.target.value });
     console.log(e.target.name, e.target.value);
   };
+  //hacer una funcion que retorne los datos que tiene actualmente la wea fobe xd
   const HandleSUbumit = async () => {
+    setLoading(true);
+
     try {
       //aqui mandar a editar los datos del area
       const result = await axios.post(
@@ -36,14 +76,23 @@ export default function EditarArea({ id_user }) {
       );
       hadleAlert();
       console.log(result);
+      setLoading(false);
     } catch (error) {
       console.log(error);
       setError(error.response.data);
       hadleAlerterror();
+      setLoading(false);
     }
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="mb-9">
         <Alert
           color="green"
@@ -76,6 +125,7 @@ export default function EditarArea({ id_user }) {
                 label="Nombre del area"
                 name="p_nombre_area"
                 onChange={HandleChange}
+                value={area.p_nombre_area}
               />
             </div>
             <div className=" w-full">
@@ -84,6 +134,8 @@ export default function EditarArea({ id_user }) {
                 color="black"
                 label="Prefijo"
                 name="p_prefijo_area"
+                maxLength={5}
+                value={area.p_prefijo_area}
                 onChange={HandleChange}
               />
             </div>

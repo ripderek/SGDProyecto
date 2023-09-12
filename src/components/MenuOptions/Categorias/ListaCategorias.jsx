@@ -9,6 +9,7 @@ import {
 } from "@material-tailwind/react";
 import { useState, useEffect, Fragment } from "react";
 import { FaSearch } from "react-icons/fa";
+import Loading from "@/components/loading";
 
 export default function ListaCategorias({
   id_categoria,
@@ -17,12 +18,14 @@ export default function ListaCategorias({
 }) {
   //variables para almacenar todas las areas
   const [areasdata, setAreasData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   const load = async () => {
     //Cargar la lista de las areas
+    setLoading(true);
 
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "proyects/categorias_proyecto",
@@ -36,9 +39,17 @@ export default function ListaCategorias({
     const data = await result.json();
     setAreasData(data);
     console.log(areasdata);
+    setLoading(false);
   };
   return (
     <Fragment>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <div className="flex w-auto">
         <Input label="" variant="standard" placeholder="Buscar" color="black" />
         <Button className="flex gap-1 rounded-none bg-light-green-900 h-auto w-auto">

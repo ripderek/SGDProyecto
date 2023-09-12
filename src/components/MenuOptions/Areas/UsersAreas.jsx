@@ -10,8 +10,9 @@ import {
   IconButton,
   Tooltip,
   Input,
+  DialogHeader,
 } from "@material-tailwind/react";
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Rol", "Editar"];
+const TABLE_HEAD = ["", "Datos", "Identificacion", "Celular", "Rol", "Editar"];
 import AgregarUserArea from "../Areas/AgregarUserArea";
 import PerfilUser from "../Users/PerfilUser";
 export default function UsersAreas(id) {
@@ -47,6 +48,12 @@ export default function UsersAreas(id) {
     setUsers(data);
     setLoading(false);
   };
+  const Salir = (valor) => {
+    if (valor) {
+      setOpenArea(false);
+      load();
+    }
+  };
   return (
     <div>
       {loading ? (
@@ -63,16 +70,28 @@ export default function UsersAreas(id) {
           handler={handleOpenArea}
           className="overflow-y-scroll"
         >
-          <button onClick={handleOpenArea} className="bg-yellow-900">
-            <Typography variant="h2" color="white">
-              Cerrar opciones de usuario
-            </Typography>
-          </button>
+          <DialogHeader className="bg-light-green-900 text-white">
+            Editar usuario
+            <Button
+              color="red"
+              variant="text"
+              size="md"
+              className="!absolute top-3 right-3"
+              onClick={() => (handleOpenArea(), load())}
+            >
+              <Typography variant="h5" color="white">
+                X
+              </Typography>
+            </Button>
+          </DialogHeader>
+
           <PerfilUser
             iduser={userID}
             isadminarea={true}
+            admin={true}
             idarea={id.id}
             relacionarea={ID_relacion}
+            Salir={Salir}
           />
         </Dialog>
       ) : (
@@ -86,15 +105,20 @@ export default function UsersAreas(id) {
             handler={handlerOpenUsers}
             className="overflow-y-scroll rounded-none h-4/5"
           >
-            <button
-              className="bg-green-900 w-full"
-              onClick={() => (handlerOpenUsers(), load())}
-            >
-              <Typography variant="h2" color="white">
-                Cerrar
-              </Typography>
-            </button>
-
+            <DialogHeader className="bg-light-green-900 text-white">
+              Agregar usuario
+              <Button
+                color="red"
+                variant="text"
+                size="md"
+                className="!absolute top-3 right-3"
+                onClick={() => (handlerOpenUsers(), load())}
+              >
+                <Typography variant="h5" color="white">
+                  X
+                </Typography>
+              </Button>
+            </DialogHeader>
             <AgregarUserArea id={id.id} key={id} />
           </Dialog>
         ) : (
@@ -136,106 +160,134 @@ export default function UsersAreas(id) {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            return (
-              <tr key={user.u_id_user}>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
-                    <Avatar
-                      src={
-                        process.env.NEXT_PUBLIC_ACCESLINK +
-                        "user/foto/" +
-                        user.u_id_user
-                      }
-                      alt={user.u_nombres}
-                      size="sm"
-                    />
-                    <div className="flex flex-col">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.u_nombres}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_correo}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_correo2}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_id_user}
-                      </Typography>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal opacity-70"
-                      >
-                        {user.u_nombrefirma}
-                      </Typography>
+          {users.map(
+            (
+              {
+                u_id_user,
+                u_nombres,
+                u_correo,
+                u_correo2,
+                u_nombrefirma,
+                u_identificacion,
+                u_celular,
+                u_rol,
+                u_relacion,
+              },
+              index
+            ) => {
+              return (
+                <tr key={u_id_user}>
+                  <td>
+                    <div className="flex items-center gap-3 text-center">
+                      <div className="flex flex-col text-center">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal text-center"
+                        >
+                          {index + 1}
+                        </Typography>
+                      </div>
                     </div>
-                  </div>
-                </td>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <Avatar
+                        src={
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "user/foto/" +
+                          u_id_user
+                        }
+                        alt={u_nombres}
+                        size="sm"
+                      />
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {u_nombres}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {u_correo}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {u_correo2}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {u_id_user}
+                        </Typography>
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal opacity-70"
+                        >
+                          {u_nombrefirma}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
 
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.u_identificacion}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.u_celular}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.u_rol}
-                  </Typography>
-                </td>
-
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Tooltip content="Editar Usuario">
-                    <IconButton
-                      variant="text"
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
                       color="blue-gray"
-                      onClick={() => (
-                        handleOpenArea(),
-                        setUserID(user.u_id_user),
-                        setIDRealcion(user.u_relacion)
-                      )}
+                      className="font-normal"
                     >
-                      <PencilIcon className="h-4 w-4" />
-                    </IconButton>
-                  </Tooltip>
-                </td>
-              </tr>
-            );
-          })}
+                      {u_identificacion}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {u_celular}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {u_rol}
+                    </Typography>
+                  </td>
+
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Tooltip content="Editar Usuario">
+                      <IconButton
+                        variant="text"
+                        color="blue-gray"
+                        onClick={() => (
+                          handleOpenArea(),
+                          setUserID(u_id_user),
+                          setIDRealcion(u_relacion)
+                        )}
+                      >
+                        <PencilIcon className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

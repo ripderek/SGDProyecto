@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, Fragment } from "react";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import {
@@ -13,6 +13,8 @@ import {
   Button,
   Dialog,
   Typography,
+  Chip,
+  Input,
 } from "@material-tailwind/react";
 
 import AlcanceProyecto from "./AlcanceProyecto";
@@ -38,70 +40,13 @@ export default function Proyecto({
   adminDELAREA,
   tipop,
 }) {
-  const data = [
-    {
-      label: "Documentos",
-      value: "Documentos",
-    },
-    {
-      label: "Editor de Texto",
-      value: "Editor de Texto",
-    },
-    {
-      label: "Alcance",
-      value: "Alcance",
-    },
-    {
-      label: "Guias",
-      value: "Guias",
-    },
-    {
-      label: "Flujo",
-      value: "Flujo",
-    },
-    {
-      label: "Definir Flujo",
-      value: "Definir Flujo",
-    },
-    {
-      label: "Revisiones",
-      value: "Revisiones",
-    },
-    {
-      label: "Subir Nivel",
-      value: "Subir Nivel",
-    },
-    {
-      label: "Comentarios",
-      value: "Comentarios",
-    },
-    {
-      label: "Participantes",
-      value: "Participantes",
-    },
-    {
-      label: "Historial de borradores",
-      value: "Historial de borradores",
-    },
-    {
-      label: "Configuracion",
-      value: "Configuracion",
-    },
-    {
-      label: "Historial",
-      value: "Historial",
-    },
-    {
-      label: "Html",
-      value: "Html",
-    },
-  ];
+  const [fondo, setFondo] = useState(true);
   const cookies = new Cookies();
   const [areasdata, setAreasData] = useState([]);
   const [openD, setOpenD] = useState(false);
   const [users2, setUsers2] = useState([]);
   const [proyectoEdit, setProyectoEdit] = useState(true);
-  const [RolUser,setRolUser] = useState([]);
+  const [RolUser, setRolUser] = useState([]);
   const [dataUser, setDataUser] = useState({
     correo_institucional_user: "",
     correo_personal_user: "",
@@ -114,11 +59,15 @@ export default function Proyecto({
     tip_iden: "",
     url_foto_user: "",
   });
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     load();
   }, []);
   // cookies.get("id_user")
   const load = async () => {
+    setLoading(true);
+
     //Cargar el rol del usario en ese proyecto
     try {
       const user_data = {
@@ -136,9 +85,9 @@ export default function Proyecto({
       );
       setRolUser(result3.data);
       console.log(result3.data);
-      
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
 
     //Cargar la lista de las areas
@@ -160,8 +109,8 @@ export default function Proyecto({
       //obtener el id mediante cookies
       const result = await axios.get(
         process.env.NEXT_PUBLIC_ACCESLINK +
-        "user/User/" +
-        cookies.get("id_user"),
+          "user/User/" +
+          cookies.get("id_user"),
         {
           withCredentials: true,
         }
@@ -187,13 +136,15 @@ export default function Proyecto({
     } catch (error) {
       //Mostrar algun error por consola
       console.log(error);
+      setLoading(false);
+
       //setLoading(false);
     }
     //obtener los niveles del proyecto
     const result2 = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
-      "proyects/estados_niveles/" +
-      idproyecto,
+        "proyects/estados_niveles/" +
+        idproyecto,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -204,18 +155,233 @@ export default function Proyecto({
     setUsers2(data2);
     //si el proyecto tiene mas de 1 estado nivel no se debe permitir entrar a su configuracion ni dejar subir documentos nuevos.
     setProyectoEdit(data2.length >= 2 ? false : true);
-
-    console.log("asdasdasdasd",RolUser.rol_user);
+    setLoading(false);
   };
 
   const Recargar = (valor) => {
     if (valor) {
       load();
+      //aqui se tiene que habilitar para ver el fondoup xdxd skere modo diablo
+      setOpenDefinir(false);
+      setFondo(true);
+      setOpenConfiguracion(false);
     }
   };
-
+  //todas estan siguientes constantes son para abrir las opciones del submenu xd skere modo diablo;
+  const [openDocumentos, setOpenDocumentos] = useState(false);
+  const HandleDocumentos = () => {
+    setOpenDocumentos(true);
+    setOpenD(false);
+    setOpenAlcance(false);
+    setOpenGuias(false);
+    setOpenFlujo(false);
+    setOpenDefinir(false);
+    setOpenSubir(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenBorradores(false);
+    setOpenParticipantes(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openAlcance, setOpenAlcance] = useState(false);
+  const HandleAlcance = () => {
+    setOpenAlcance(true);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenGuias(false);
+    setOpenFlujo(false);
+    setOpenDefinir(false);
+    setOpenSubir(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openGuias, setOpenGuias] = useState(false);
+  const HandleGuias = () => {
+    setOpenGuias(true);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenFlujo(false);
+    setOpenDefinir(false);
+    setOpenSubir(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openFlujo, setOpenFlujo] = useState(false);
+  const HandleFlujo = () => {
+    setOpenFlujo(true);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenDefinir(false);
+    setOpenSubir(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openDefinir, setOpenDefinir] = useState(false);
+  const HandlerDefinir = () => {
+    setOpenDefinir(true);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenSubir(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openSubir, setOpenSubir] = useState(false);
+  const HandlerSubir = () => {
+    setOpenSubir(true);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenRevisiones(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openRevisiones, setOpenRevisiones] = useState(false);
+  const HandlerRevisiones = () => {
+    setOpenRevisiones(true);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenComentarios(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openComentarios, setOpenComentarios] = useState(false);
+  const HandleComentarios = () => {
+    setOpenComentarios(true);
+    setOpenRevisiones(false);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenParticipantes(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openParticipantes, setOpenParticipantes] = useState(false);
+  const HandleParticipantes = () => {
+    setOpenParticipantes(true);
+    setOpenComentarios(false);
+    setOpenRevisiones(false);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenBorradores(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openBorradores, setOpenBorradores] = useState(false);
+  const HandlerBorradores = () => {
+    setOpenBorradores(true);
+    setOpenParticipantes(false);
+    setOpenComentarios(false);
+    setOpenRevisiones(false);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenConfiguracion(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openConfiguracion, setOpenConfiguracion] = useState(false);
+  const HandlerConfiguracion = () => {
+    setOpenConfiguracion(true);
+    setOpenBorradores(false);
+    setOpenParticipantes(false);
+    setOpenComentarios(false);
+    setOpenRevisiones(false);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setOpenHistorial(false);
+    setFondo(false);
+  };
+  const [openHistorial, setOpenHistorial] = useState(false);
+  const HandlerHistorial = () => {
+    setOpenHistorial(true);
+    setOpenConfiguracion(false);
+    setOpenBorradores(false);
+    setOpenParticipantes(false);
+    setOpenComentarios(false);
+    setOpenRevisiones(false);
+    setOpenSubir(false);
+    setOpenDefinir(false);
+    setOpenFlujo(false);
+    setOpenGuias(false);
+    setOpenAlcance(false);
+    setOpenD(false);
+    setOpenDocumentos(false);
+    setFondo(false);
+  };
   return (
     <div className="bg-white h-full mb-10">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+
       <Dialog
         size="xxl"
         open={openD}
@@ -239,236 +405,229 @@ export default function Proyecto({
         <Editor id_proyecto={idproyecto} nombre={dataUser.nombres_user} />
       </Dialog>
       <DialogHeader className="justify-between">
-        <div className="flex items-center gap-3">
-          <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
+        <div className="w-full text-2xl text-black font-bold overflow-hidden">
+          {areasdata.p_titulo}
         </div>
       </DialogHeader>
+      <div className="ml-6">
+        <div className="flex gap-3 w-max">
+          <div className="-mt-px flex flex-col">
+            <Chip color="green" value={areasdata.p_codigo} />
+          </div>
+          <div className="-mt-px flex flex-col">
+            <Chip color="amber" value={RolUser.rol_user} />
+          </div>
+          {areasdata.p_reforma ? (
+            <div className="-mt-px flex flex-col">
+              <Chip color="blue" value="Reforma" />
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
       <DialogBody className="shadow-none">
-        <Tabs value="Html" orientation="vertical">
-          <TabsHeader className="w-32">
-            {data.map(({ label, value }) => {
-              if (value !== "Html") {
-                if (value == "Flujo") {
-                  if (areasdata.p_flujo) {
-                    if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
-                      return (
-                        <Tab key={label} value={value}>
-                          {label}
-                        </Tab>
-                      );
+        <Fragment>
+          <div className="bg-white">
+            <Tabs orientation="vertical" className="p-3">
+              <TabsHeader className="w-32">
+                <Tab
+                  key={"Documento"}
+                  value={"Documento"}
+                  onClick={HandleDocumentos}
+                >
+                  Documento
+                </Tab>
+                <Tab
+                  key={"Editor de Texto"}
+                  value={"Editor de Texto"}
+                  onClick={() => setOpenD(true)}
+                >
+                  Editor de Texto
+                </Tab>
+                {areasdata.p_reforma ? (
+                  <Tab
+                    key={"Alcance"}
+                    value={"Alcance"}
+                    onClick={HandleAlcance}
+                  >
+                    Alcance
+                  </Tab>
+                ) : (
+                  ""
+                )}
+
+                <Tab key={"Guias"} value={"Guias"} onClick={HandleGuias}>
+                  Guias
+                </Tab>
+                {areasdata.p_flujo ? (
+                  <Tab key={"Flujo"} value={"Flujo"} onClick={HandleFlujo}>
+                    Flujo
+                  </Tab>
+                ) : (
+                  ""
+                )}
+                {areasdata.p_rol === "Admin" && !areasdata.p_flujo ? (
+                  <Tab
+                    key={"Definir Flujo"}
+                    value={"Definir Flujo"}
+                    onClick={HandlerDefinir}
+                  >
+                    Definir Flujo
+                  </Tab>
+                ) : (
+                  ""
+                )}
+                {areasdata.p_rol === "Admin" && users2.length === 1 ? (
+                  <Tab
+                    key={"Subir Nivel"}
+                    value={"Subir Nivel"}
+                    onClick={HandlerSubir}
+                  >
+                    Subir Nivel
+                  </Tab>
+                ) : (
+                  ""
+                )}
+                {areasdata.p_flujo ? (
+                  <Tab
+                    key={"Revisiones"}
+                    value={"Revisiones"}
+                    onClick={HandlerRevisiones}
+                  >
+                    Revisiones
+                  </Tab>
+                ) : (
+                  ""
+                )}
+
+                <Tab
+                  key={"Comentarios"}
+                  value={"Comentarios"}
+                  onClick={HandleComentarios}
+                >
+                  Comentarios
+                </Tab>
+                <Tab
+                  key={"Participantes"}
+                  value={"Participantes"}
+                  onClick={HandleParticipantes}
+                >
+                  Participantes
+                </Tab>
+                <Tab
+                  key={"Historial de borradores"}
+                  value={"Historial de borradores"}
+                  onClick={HandlerBorradores}
+                >
+                  Historial de borradores
+                </Tab>
+                {areasdata.p_rol === "Admin" && proyectoEdit ? (
+                  <Tab
+                    key={"Configuracion"}
+                    value={"Configuracion"}
+                    onClick={HandlerConfiguracion}
+                  >
+                    Configuracion
+                  </Tab>
+                ) : (
+                  ""
+                )}
+
+                <Tab
+                  key={"Historial"}
+                  value={"Historial"}
+                  onClick={HandlerHistorial}
+                >
+                  Historial
+                </Tab>
+              </TabsHeader>
+              <TabsBody className="overflow-x-auto">
+                {openDocumentos ? (
+                  <DocumentosAreas
+                    id={idproyecto}
+                    rol={areasdata.p_rol}
+                    editproyecto={
+                      users2.length >= 2 || RolUser.rol_user === "Revisor"
+                        ? false
+                        : true
                     }
-                  }
-                } else if (value == "Documentos") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Editor de Texto") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Guias") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Definir Flujo") {
-                  if (areasdata.p_rol === "Admin" && !areasdata.p_flujo) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value === "Subir Nivel") {
-                  if (areasdata.p_rol === "Admin" && users2.length === 1)
-                    if (users2[0].r_estado) {
-                      return (
-                        <Tab key={label} value={value}>
-                          {label}
-                        </Tab>
-                      );
+                    TituloProyecto={areasdata.p_titulo}
+                    idarea={idarea}
+                  />
+                ) : (
+                  ""
+                )}
+                {openAlcance ? <AlcanceProyecto id={idproyecto} /> : ""}
+                {openGuias ? (
+                  <GuiasProyecto
+                    id={idproyecto}
+                    rol={areasdata.p_rol}
+                    editproyecto={
+                      users2.length >= 2 && RolUser.rol_user !== "Admin"
+                        ? false
+                        : true
                     }
-                } else if (value == "Revisiones") {
-                  if (areasdata.p_flujo) {
-                    if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" ||RolUser.rol_user === "Revisor"){
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
+                    permitesubir={RolUser.rol_user === "Admin" ? true : false}
+                  />
+                ) : (
+                  ""
+                )}
+                {openFlujo ? <VerFlujo_Proyecto idproyecto={idproyecto} /> : ""}
+                {openDefinir ? (
+                  <CrearFlujoProyecto
+                    idproyecto={idproyecto}
+                    idarea={idarea}
+                    Recargar={Recargar}
+                  />
+                ) : (
+                  ""
+                )}
+                {openSubir ? <SubirNivel id_proyect={idproyecto} /> : ""}
+                {openRevisiones ? <NivelesProyecto id={idproyecto} /> : ""}
+                {openParticipantes ? (
+                  <Participantes
+                    idproyecto={idproyecto}
+                    idarea={idarea}
+                    agregarRevisores={true}
+                    permite_agregar={
+                      RolUser.rol_user === "Admin" ? true : false
                     }
-                  }
-                } else if (value == "Configuracion") {
-                  if (areasdata.p_rol === "Admin" && proyectoEdit) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Alcance") {
-                  if (areasdata.p_reforma && (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor"|| RolUser.rol_user === "Revisor")) {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Historial de borradores") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor" || RolUser.rol_user === "Revisor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Historial") {
-                  if (areasdata.p_rol === "Admin" || RolUser.rol_user === "Editor"|| RolUser.rol_user === "Revisor") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else if (value == "Participantes") {
-                  if (areasdata.p_rol === "Admin") {
-                    return (
-                      <Tab key={label} value={value}>
-                        {label}
-                      </Tab>
-                    );
-                  }
-                } else {
-                  return (
-                    <Tab key={label} value={value}>
-                      {label}
-                    </Tab>
-                  );
-                }
-              }
-            })}
-          </TabsHeader>
-          <TabsBody>
-            {data.map(({ value }) => {
-              if (value === "Documentos") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <DocumentosAreas
-                      id={idproyecto}
-                      rol={areasdata.p_rol}
-                      editproyecto = {(users2.length >= 2 || RolUser.rol_user === "Revisor") ? false : true }
-                    />
-                  </TabPanel>
-                );
-              } else if (value === "Alcance") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    {<AlcanceProyecto
-                      id={idproyecto}
-                    />}
-                  </TabPanel>
-                );
-              } else if (value === "Editor de Texto") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    Aqui debe de abrir una pequena interfaz que sirve como
-                    intermediario para abrir el editor de texto en otra pestana
-                    <Button onClick={() => setOpenD(true)}>Abrir Editor</Button>
-                  </TabPanel>
-                );
-              } else if (value === "Guias") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <GuiasProyecto
-                      id={idproyecto}
-                      rol={areasdata.p_rol}
-                      editproyecto={(users2.length >= 2 || RolUser.rol_user === "Revisor"|| RolUser.rol_user === "Editor") ? false : true}
-                    />
-                  </TabPanel>
-                );
-              } else if (value === "Revisiones") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <NivelesProyecto id={idproyecto} />
-                  </TabPanel>
-                );
-              } else if (value === "Definir Flujo") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <CrearFlujoProyecto
-                      idproyecto={idproyecto}
-                      idarea={idarea}
-                      Recargar={Recargar}
-                    />
-                  </TabPanel>
-                );
-              } else if (value === "Configuracion") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <ConfigurarProyecto
-                      eliminarFlujo={areasdata.p_flujo ? true : false}
-                      id_proyecto={idproyecto}
-                    />
-                  </TabPanel>
-                );
-              } else if (value === "Subir Nivel") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <SubirNivel id_proyect={idproyecto} />
-                  </TabPanel>
-                );
-              } else if (value === "Flujo") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <VerFlujo_Proyecto idproyecto={idproyecto} />
-                  </TabPanel>
-                );
-              } else if (value === "Historial de borradores") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <BorradoresProyecto id={idproyecto} />
-                  </TabPanel>
-                );
-              } else if (value === "Historial") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Historial id={idproyecto} />
-                  </TabPanel>
-                );
-              } else if (value === "Participantes") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Participantes
-                      idproyecto={idproyecto}
-                      idarea={idarea}
-                      agregarRevisores={true}
-                    />
-                  </TabPanel>
-                );
-              } else {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Lottie
-                      animationData={anim_settings}
-                      className="w-80 md:w-2/5 mx-auto"
-                    />
-                  </TabPanel>
-                );
-              }
-            })}
-          </TabsBody>
-        </Tabs>
+                  />
+                ) : (
+                  ""
+                )}
+                {openBorradores ? (
+                  <BorradoresProyecto
+                    id={idproyecto}
+                    TituloProyecto={areasdata.p_titulo}
+                    idarea={idarea}
+                  />
+                ) : (
+                  ""
+                )}
+                {openConfiguracion ? (
+                  <ConfigurarProyecto
+                    eliminarFlujo={areasdata.p_flujo ? true : false}
+                    id_proyecto={idproyecto}
+                    Recargar={Recargar}
+                  />
+                ) : (
+                  ""
+                )}
+                {openHistorial ? <Historial id={idproyecto} /> : ""}
+                {fondo ? (
+                  <Lottie
+                    animationData={anim_settings}
+                    className="w-80 md:w-2/5 mx-auto"
+                  />
+                ) : (
+                  ""
+                )}
+              </TabsBody>
+            </Tabs>
+          </div>
+        </Fragment>
       </DialogBody>
       <DialogFooter className="justify-between"></DialogFooter>
     </div>

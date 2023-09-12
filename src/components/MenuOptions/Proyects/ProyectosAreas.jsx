@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Cookies from "universal-cookie";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
+import Loading from "@/components/loading";
 import {
   Card,
   CardHeader,
@@ -45,6 +45,7 @@ export default function ProyectosAreas({
 }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
@@ -54,21 +55,15 @@ export default function ProyectosAreas({
     //Cargar la lista de las areas
     //aqui tengo que enviar un parametro que indique que el usuario que solicita cargar la lista de los proyectos es administrador del area por ende deben de cargar los proyectos que vienen de areas inferiores para su revision o publicacion
     try {
-
-      const user_data = {
-        idu: cookies.get("id_user"),
-      };
-
-      console.log(user_data.idu);
-
-      const result = await fetch(
-        process.env.NEXT_PUBLIC_ACCESLINK +
+    setLoading(true);
+    const result = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/proyectos_areas/" +
         idarea +
         "/" +
         adminA +
         "/" +
-        user_data.idu,
+        cookies.get("id_user"),
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -79,14 +74,21 @@ export default function ProyectosAreas({
       const data = await result.json();
       setAreasData(data);
       console.log(areasdata);
-
+       setLoading(false);
     } catch (error) {
       console.log(error);
+       setLoading(false);
     }
-
   };
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Card className="h-full w-full p-7 rounded-none shadow-none">
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
