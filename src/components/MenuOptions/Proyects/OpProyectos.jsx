@@ -1,6 +1,10 @@
 import { React, Fragment, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
+
+import Cookies from "universal-cookie";
+
+
 import {
   Button,
   Dialog,
@@ -30,6 +34,8 @@ export default function OpProyectos(id) {
   const handlerOpenUsers = () => setOpenUsers(!openUser);
   const [loading, setLoading] = useState(false);
 
+  const cookies = new Cookies();
+
   //Funcion para cerrar el formulario de crear proyectos
   const [openFOrm, setOpenForm] = useState(false);
 
@@ -45,23 +51,36 @@ export default function OpProyectos(id) {
     setLoading(true);
 
     //Cargar la lista de usuarios
-    const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK +
+    try {
+
+      const user_data = {
+        idu: cookies.get("id_user"),
+      };
+
+      const result = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/proyectos_areas/" +
         id.id +
         "/" +
-        true,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+        true +
+        "/" +
+        user_data.idu,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
 
-    const data = await result.json();
-    setUsers(data);
-    setLoading(false);
-  };
+      const data = await result.json();
+      setUsers(data);
+     setLoading(false);
+    } catch (error) {
+      console.log(error);
+       setLoading(false);
+    }
+
+
   return (
     <div>
       {loading ? (
@@ -193,8 +212,8 @@ export default function OpProyectos(id) {
                           p_tipo_nivel === 1
                             ? "green"
                             : p_tipo_nivel === 2
-                            ? "yellow"
-                            : "cyan"
+                              ? "yellow"
+                              : "cyan"
                         }
                       />
                     </div>

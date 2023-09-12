@@ -54,24 +54,31 @@ export default function ProyectosAreas({
   const load = async () => {
     //Cargar la lista de las areas
     //aqui tengo que enviar un parametro que indique que el usuario que solicita cargar la lista de los proyectos es administrador del area por ende deben de cargar los proyectos que vienen de areas inferiores para su revision o publicacion
+    try {
     setLoading(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/proyectos_areas/" +
         idarea +
         "/" +
-        adminA,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+        adminA +
+        "/" +
+        cookies.get("id_user"),
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
 
-    const data = await result.json();
-    setAreasData(data);
-    console.log(areasdata);
-    setLoading(false);
+      const data = await result.json();
+      setAreasData(data);
+      console.log(areasdata);
+       setLoading(false);
+    } catch (error) {
+      console.log(error);
+       setLoading(false);
+    }
   };
   return (
     <div>
@@ -217,8 +224,8 @@ export default function ProyectosAreas({
                               p_tipo_nivel === 1
                                 ? "green"
                                 : p_tipo_nivel === 2
-                                ? "yellow"
-                                : "cyan"
+                                  ? "yellow"
+                                  : "cyan"
                             }
                           />
                         </div>
