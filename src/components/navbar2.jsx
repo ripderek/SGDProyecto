@@ -26,6 +26,7 @@ import {
   CogIcon,
   Square2StackIcon,
   DocumentCheckIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/solid";
 import axios from "axios";
 import OPArea from "../components/MenuOptions/Areas/OPArea";
@@ -51,9 +52,9 @@ import { comment } from "postcss";
 import RevisarP from "./MenuOptions/Proyects/RevisarP";
 import Publicacion from "./MenuOptions/Proyects/Publicacion";
 import ProyectosPublicados from "./MenuOptions/Proyects/ProyectosPublicados";
-
+import Firmas from "./MenuOptions/Proyects/Firmas";
 import VersionesProyectosPublicados from "./MenuOptions/Proyects/VersionesProyectosPublicados";
-
+import FirmarDocumento from "./MenuOptions/Proyects/FirmarDocumento";
 export default function Navbar2() {
   //Estados para el diseno del layout
   const [open, setOpen] = useState(false);
@@ -81,12 +82,16 @@ export default function Navbar2() {
         setAbrirProyecto(false);
         setOpVersionesProyectosPublicados(false);
         setUserArea1(false);
+        setOpenFirmas(false);
+        setOpenVentanaFirmar(false);
       } else {
         setOpenAreaADmin(true);
         setUserArea(false);
         setAbrirProyecto(false);
         setOpVersionesProyectosPublicados(false);
         setUserArea1(false);
+        setOpenFirmas(false);
+        setOpenVentanaFirmar(false);
       }
     } else {
       setOpenAreaADmin(false);
@@ -94,6 +99,8 @@ export default function Navbar2() {
       setAbrirProyecto(false);
       setOpVersionesProyectosPublicados(false);
       setUserArea1(false);
+      setOpenFirmas(false);
+      setOpenVentanaFirmar(false);
     }
   };
   const [idProyecto, setIdProyecto] = useState("");
@@ -109,6 +116,8 @@ export default function Navbar2() {
       setOpProyectosPublicados(false);
       setOpVersionesProyectosPublicados(false);
       setUserArea1(false);
+      setOpenFirmas(false);
+      setOpenVentanaFirmar(false);
     }
   };
 
@@ -131,9 +140,53 @@ export default function Navbar2() {
       setOpProyectosPublicados(false);
       setOpVersionesProyectosPublicados(true);
       setUserArea1(false);
+      setOpenFirmas(false);
+      setOpenVentanaFirmar(false);
     }
   };
-
+  //variable para almacenar toda la data
+  const [dataFirmar, setDataFirmar] = useState({
+    id_proyecto: "",
+    id_area: "",
+    id_firma_participantes: "",
+    id_firma: "",
+    titulo_proyect: "",
+    codigo_proyect: "",
+  });
+  //funcion para retornar elproyecto seleccionado para poder firmalo
+  const HandlerSubmit = (
+    r_id_proyecto,
+    r_id_area,
+    r_id_firma_participantes,
+    r_id_firma,
+    r_titulo_proyecto,
+    r_codigo_proyecto
+  ) => {
+    if (r_id_proyecto) {
+      //aqui abrir una nueva venta con los datos para poder firmar el documento
+      setDataFirmar({
+        id_proyecto: r_id_proyecto,
+        id_area: r_id_area,
+        id_firma_participantes: r_id_firma_participantes,
+        id_firma: r_id_firma,
+        titulo_proyect: r_titulo_proyecto,
+        codigo_proyect: r_codigo_proyecto,
+      });
+      setOpenVentanaFirmar(true);
+      setOpenAdmin(false);
+      setOpenM(false);
+      setUserArea(false);
+      setOpPerfil(false);
+      setOpenAreaADmin(false);
+      setOpenProyects(false);
+      setOpenProyects1(false);
+      setAbrirProyecto(false);
+      setOpProyectosPublicados(false);
+      setOpVersionesProyectosPublicados(false);
+      setUserArea1(false);
+      setOpenFirmas(false);
+    }
+  };
   //funcion para tomar el tipo de proyecto
   //-->1:Elaboracion
   //-->2:Revision
@@ -167,6 +220,8 @@ export default function Navbar2() {
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
     setUserArea1(false);
+    setOpenFirmas(false);
+    setOpenVentanaFirmar(false);
   };
   //Estado para abrir la opcion de proyectos
   const [opProyects, setOpenProyects] = useState(false);
@@ -187,6 +242,8 @@ export default function Navbar2() {
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
     setUserArea1(false);
+    setOpenFirmas(false);
+    setOpenVentanaFirmar(false);
   };
   const [UserArea1, setUserArea1] = useState(false);
 
@@ -204,6 +261,8 @@ export default function Navbar2() {
     setAbrirProyecto(false);
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
+    setOpenFirmas(false);
+    setOpenVentanaFirmar(false);
   };
   //Estado para abrir la opcion perfil
   const [opPerfil, setOpPerfil] = useState(false);
@@ -219,6 +278,8 @@ export default function Navbar2() {
     setOpProyectosPublicados(false);
     setOpVersionesProyectosPublicados(false);
     setUserArea1(false);
+    setOpenFirmas(false);
+    setOpenVentanaFirmar(false);
   };
   //Estado para abrir la opcion de proyectos publicados para hacer reformas
   const [opProyectosPublicados, setOpProyectosPublicados] = useState(false);
@@ -234,6 +295,25 @@ export default function Navbar2() {
     setAbrirProyecto(false);
     setOpVersionesProyectosPublicados(false);
     setUserArea1(false);
+    setOpenFirmas(false);
+    setOpenVentanaFirmar(false);
+  };
+  //Estado para abrir la opcion de firmas de proyectos skere modo diablo
+  const [openfirmas, setOpenFirmas] = useState(false);
+  const HandleFirmas = () => {
+    setOpenFirmas(true);
+    setOpProyectosPublicados(false);
+    setOpPerfil(false);
+    setUserArea(false);
+    setOpenM(false);
+    setOpenAdmin(false);
+    setOpenAreaADmin(false);
+    setOpenProyects(false);
+    setOpenProyects1(false);
+    setAbrirProyecto(false);
+    setOpVersionesProyectosPublicados(false);
+    setUserArea1(false);
+    setOpenVentanaFirmar(false);
   };
 
   //Estado para almacenar la data del usuario
@@ -249,6 +329,8 @@ export default function Navbar2() {
     tip_iden: "",
     url_foto_user: "",
   });
+  const [openVentanaFirma, setOpenVentanaFirmar] = useState(false);
+
   //loading
   const [loading, setLoading] = useState(false);
   const [a, setA] = useState(false);
@@ -457,6 +539,12 @@ export default function Navbar2() {
               </ListItemPrefix>
               Proyectos
             </ListItem>
+            <ListItem onClick={HandleFirmas}>
+              <ListItemPrefix>
+                <PencilSquareIcon className="h-5 w-5" />
+              </ListItemPrefix>
+              Firmas
+            </ListItem>
             <ListItem onClick={HandlePublicaciones}>
               <ListItemPrefix>
                 <DocumentCheckIcon className="h-5 w-5" />
@@ -585,6 +673,19 @@ export default function Navbar2() {
           <VersionesProyectosPublicados
             idproyecto={idProyectoVersio}
             nombreproyecto={Proyectname}
+          />
+        ) : (
+          ""
+        )}
+        {openfirmas ? <Firmas HandlerSubmit={HandlerSubmit} /> : ""}
+        {openVentanaFirma ? (
+          <FirmarDocumento
+            id_proyecto={dataFirmar.id_proyecto}
+            id_area={dataFirmar.id_area}
+            id_firma_participantes={dataFirmar.id_firma_participantes}
+            id_firma={dataFirmar.id_firma}
+            titulo_proyecto={dataFirmar.titulo_proyect}
+            codigo_proyecto={dataFirmar.codigo_proyect}
           />
         ) : (
           ""
