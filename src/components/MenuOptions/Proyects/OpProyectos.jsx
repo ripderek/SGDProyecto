@@ -1,9 +1,7 @@
 import { React, Fragment, useState, useEffect } from "react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
 import Cookies from "universal-cookie";
-
 
 import {
   Button,
@@ -33,7 +31,6 @@ export default function OpProyectos(id) {
   const [openUser, setOpenUsers] = useState(false);
   const handlerOpenUsers = () => setOpenUsers(!openUser);
   const [loading, setLoading] = useState(false);
-
   const cookies = new Cookies();
 
   //Funcion para cerrar el formulario de crear proyectos
@@ -47,24 +44,23 @@ export default function OpProyectos(id) {
   useEffect(() => {
     load();
   }, []);
+  //setLoading(true);
   const load = async () => {
     setLoading(true);
 
     //Cargar la lista de usuarios
     try {
-
       const user_data = {
         idu: cookies.get("id_user"),
       };
-
       const result = await fetch(
         process.env.NEXT_PUBLIC_ACCESLINK +
-        "proyects/proyectos_areas/" +
-        id.id +
-        "/" +
-        true +
-        "/" +
-        user_data.idu,
+          "proyects/proyectos_areas/" +
+          id.id +
+          "/" +
+          true +
+          "/" +
+          user_data.idu,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -74,12 +70,12 @@ export default function OpProyectos(id) {
 
       const data = await result.json();
       setUsers(data);
-     setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-       setLoading(false);
+      setLoading(false);
     }
-
+  };
 
   return (
     <div>
@@ -212,8 +208,8 @@ export default function OpProyectos(id) {
                           p_tipo_nivel === 1
                             ? "green"
                             : p_tipo_nivel === 2
-                              ? "yellow"
-                              : "cyan"
+                            ? "yellow"
+                            : "cyan"
                         }
                       />
                     </div>

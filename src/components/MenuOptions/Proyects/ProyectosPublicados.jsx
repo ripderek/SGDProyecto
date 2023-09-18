@@ -3,7 +3,6 @@ import Cookies from "universal-cookie";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import CrearReforma from "./CrearReforma";
-import VerVersionesPro from "./VersionesProyectosPublicados";
 import {
   Card,
   CardHeader,

@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, useRef } from "react";
 import { EyeIcon } from "@heroicons/react/24/solid";
 import {
   Dialog,
@@ -15,13 +15,15 @@ import {
   CardBody,
 } from "@material-tailwind/react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
+import { AiOutlineUpload } from "react-icons/ai";
+
 import Loading from "@/components/loading";
 import axios from "axios";
 
-const TABLE_HEAD = ["", "Archivo", "Fecha", "Estado"];
+const TABLE_HEAD = ["", "Ver documento", "Archivo", "Fecha", "Estado"];
 import VerBorradorPDF from "./VerBorradorPDF";
 
-export default function ListDocumentosExtras({ idProyecto }) {
+export default function ListDocumentosExtras({ idProyecto, permite_agregar }) {
   const [users, setUsers] = useState([]);
   const [link, setLink] = useState("");
   const [openD, setOpenD] = useState(false);
@@ -34,7 +36,7 @@ export default function ListDocumentosExtras({ idProyecto }) {
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
   //mensaje de error
-  const [error, setError] = useState([]);
+  const [error, setError] = useState();
   //abrir el pdf
   const [descripcion, setDescripcion] = useState("");
 
@@ -52,6 +54,8 @@ export default function ListDocumentosExtras({ idProyecto }) {
   }, []);
   const load = async () => {
     //Cargar la lista de usuarios
+    setLoading(true);
+
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK +
         "proyects/DocumentosExtras/" +
@@ -65,6 +69,7 @@ export default function ListDocumentosExtras({ idProyecto }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoading(false);
   };
 
   const HandleSUbumit = async (e) => {
@@ -90,22 +95,33 @@ export default function ListDocumentosExtras({ idProyecto }) {
       hadleAlert();
       load();
       setLoading(false);
+      handlerOpenUsers();
       //console.log(result);
     } catch (error) {
       console.log(error);
-      setError(error);
+      setError(error.response.data.message);
       hadleAlerterror();
       setLoading(false);
     }
   };
-  if (loading)
-    return (
-      <div>
-        <Loading />
-      </div>
-    );
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
+    }
+  };
+
   return (
     <div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
+
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row justify-end rounded-none ">
         <Dialog
           size="xxl"
@@ -114,7 +130,7 @@ export default function ListDocumentosExtras({ idProyecto }) {
           className="overflow-y-scroll"
         >
           <DialogHeader className="bg-green-700 text-white">
-            Documentos subidos
+            Documentos extras
             <Button
               color="red"
               variant="text"
@@ -165,7 +181,7 @@ export default function ListDocumentosExtras({ idProyecto }) {
                   onClose={() => setOpenAlerterror(false)}
                   open={openAlerterror}
                 >
-                  {error.message}
+                  {error}
                 </Alert>
                 <CardHeader
                   color="white"
@@ -182,7 +198,25 @@ export default function ListDocumentosExtras({ idProyecto }) {
                       onChange={(e) => setDescripcion(e.target.value)}
                     />
                   </div>
-                  <input type="file" accept=".pdf" onChange={ImagePreview} />
+                  <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                    <label htmlFor="fileInput" className="text-white font-bold">
+                      Subir documento:
+                    </label>
+                    <input
+                      type="file"
+                      id="fileInput"
+                      onChange={ImagePreview}
+                      accept=".pdf"
+                      className="hidden"
+                      ref={fileInputRef}
+                    />
+                    <Button
+                      className="ml-3  rounded-xl  bg-white h-11"
+                      onClick={handleButtonClick}
+                    >
+                      <AiOutlineUpload size="25px" color="black" />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardBody className="text-right">
                   <div>
@@ -202,13 +236,17 @@ export default function ListDocumentosExtras({ idProyecto }) {
         ) : (
           ""
         )}
-        <Button
-          className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
-          onClick={handlerOpenUsers}
-        >
-          <ArrowUpCircleIcon className="h-7 w-7" />
-          <p className="mt-1"> Subir Documento</p>
-        </Button>
+        {permite_agregar ? (
+          <Button
+            className="ml-auto flex gap-1 md:mr-4 rounded-none md:ml-6 bg-yellow-800 h-11"
+            onClick={handlerOpenUsers}
+          >
+            <ArrowUpCircleIcon className="h-7 w-7" />
+            <p className="mt-1"> Subir Documento</p>
+          </Button>
+        ) : (
+          ""
+        )}
       </div>
       <table className="mt-4 w-full min-w-max table-auto text-left">
         <thead>
@@ -237,60 +275,81 @@ export default function ListDocumentosExtras({ idProyecto }) {
           ) : (
             ""
           )}
-          {users.map((user) => {
-            return (
-              <tr key={user.u_id_user} className="cursor-pointer">
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Tooltip content="Ver documento">
-                    <IconButton
-                      variant="text"
-                      color="blue-gray"
-                      onClick={() => (
-                        setLink(
-                          process.env.NEXT_PUBLIC_ACCESLINK +
-                            "proyects/VerpdfUrl/" +
-                            user.r_id_documento_extra
-                        ),
-                        setOpenD(true)
-                      )}
-                    >
-                      <EyeIcon className="h-4 w-4" />
-                    </IconButton>
-                  </Tooltip>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <div className="flex items-center gap-3">
-                    <div className="flex flex-col">
+          {users.map(
+            (
+              {
+                r_id_documento_extra,
+                r_descripcion,
+                r_fecha_creacion,
+                r_estado,
+              },
+              index
+            ) => {
+              return (
+                <tr key={r_id_documento_extra}>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className=" items-center gap-3 text-center">
                       <Typography
                         variant="small"
                         color="blue-gray"
-                        className="font-normal"
+                        className="font-bold"
                       >
-                        {user.r_descripcion}
+                        {index + 1}
                       </Typography>
                     </div>
-                  </div>
-                </td>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Tooltip content="Ver documento">
+                      <IconButton
+                        variant="text"
+                        color="blue-gray"
+                        onClick={() => (
+                          setLink(
+                            process.env.NEXT_PUBLIC_ACCESLINK +
+                              "proyects/VerpdfUrl/" +
+                              r_id_documento_extra
+                          ),
+                          setOpenD(true)
+                        )}
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </IconButton>
+                    </Tooltip>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <div className="flex items-center gap-3">
+                      <div className="flex flex-col">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {r_descripcion}
+                        </Typography>
+                      </div>
+                    </div>
+                  </td>
 
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Typography
-                    variant="small"
-                    color="blue-gray"
-                    className="font-normal"
-                  >
-                    {user.r_fecha_creacion}
-                  </Typography>
-                </td>
-                <td className="p-4 border-b border-blue-gray-50">
-                  <Chip
-                    color={user.r_estado ? "blue" : "red"}
-                    value={user.r_estado ? "Habilitado" : "Deshabilitado"}
-                    className="w-max"
-                  />
-                </td>
-              </tr>
-            );
-          })}
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Typography
+                      variant="small"
+                      color="blue-gray"
+                      className="font-normal"
+                    >
+                      {r_fecha_creacion}
+                    </Typography>
+                  </td>
+                  <td className="p-4 border-b border-blue-gray-50">
+                    <Chip
+                      color={r_estado ? "blue" : "red"}
+                      value={r_estado ? "Habilitado" : "Deshabilitado"}
+                      className="w-max"
+                    />
+                  </td>
+                </tr>
+              );
+            }
+          )}
         </tbody>
       </table>
     </div>

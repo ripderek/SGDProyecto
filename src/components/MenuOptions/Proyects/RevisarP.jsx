@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState, useEffect, Fragment } from "react";
 import Cookies from "universal-cookie";
 import axios from "axios";
 import {
@@ -15,86 +15,96 @@ import {
   Button,
   Dialog,
   Input,
+  Chip,
 } from "@material-tailwind/react";
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/verification_anim.json";
 import ListDocumentosExtras from "./ListDocumentosExtras";
 import Participantes from "./Participantes";
+import Loading from "@/components/loading";
 
-const data = [
-  {
-    label: "Documento",
-    value: "Documento",
-  },
-  {
-    label: "Comentarios",
-    value: "Comentarios",
-  },
-  {
-    label: "Participantes",
-    value: "Participantes",
-  },
-  {
-    label: "Flujo",
-    value: "Flujo",
-  },
-  {
-    label: "Añadir documentos",
-    value: "Añadir documentos",
-  },
-  {
-    label: "Html",
-    value: "Html",
-  },
-];
 export default function RevisarP({ idproyecto, idarea }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
   const [id, setID] = useState(0);
   const [descripcion, setDescripcoin] = useState("");
+  const [RolUser, setRolUser] = useState([]);
+
   //para abrir la alerta de rechazar el documento
   const [openRechazar, setOpenRechazar] = useState(false);
   const handleOpen = () => setOpenRechazar(!openRechazar);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     load();
   }, []);
   // cookies.get("id_user")
   const load = async () => {
-    //Cargar la lista de las areas
-    const user = {
-      p_id_user: cookies.get("id_user"),
-      p_id_proyect: idproyecto,
-    };
-    const result = await axios.post(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/roles_proyecto",
-      user,
-      {
-        withCredentials: true,
-      }
-    );
-    setAreasData(result.data);
-    console.log(result.data);
+    try {
+      setLoading(true);
+      //alert(idproyecto + cookies.get("id_user"));
 
-    //aqui recibir el id del documento que se necesita ver xd
-    const result2 = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/UltimoPDF/" + idproyecto,
-      {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-      }
-    );
+      const resultdata = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "proyects/datos_revision/" +
+          cookies.get("id_user") +
+          "/" +
+          idproyecto,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const dataU = await resultdata.json();
+      setAreasData(dataU);
 
-    const data = await result2.json();
-    //setUsers(data);
-    console.log(data);
-    setID(data.r_id);
+      //setAreasData(result.data);
+      console.log(resultdata);
+
+      //aqui recibir el id del documento que se necesita ver xd
+      const result2 = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/UltimoPDF/" + idproyecto,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      const data = await result2.json();
+      //setUsers(data);
+      console.log(data);
+      setID(data.r_id);
+      const user_data = {
+        idu: cookies.get("id_user"),
+        p_id_proyecto: idproyecto,
+        p_id_area: idarea,
+      };
+      //para el rol del usuario dentro del proyecto
+      const result3 = await axios.post(
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/User_rol",
+        user_data,
+        {
+          withCredentials: true,
+        }
+      );
+      setRolUser(result3.data);
+
+      setLoading(false);
+    } catch (error) {
+      alert("error");
+      console.log(error);
+      setLoading(false);
+    }
+    setLoading(false);
 
     //setLink(process.env.NEXT_PUBLIC_ACCESLINK + "proyects/pdf/" + users.d_id);
   };
   const AceptarDoc = async () => {
+    setLoading(true);
     try {
+      //mostrar el loader y redigir a la paguina principal o regresar al menu de proyectos lo mismo pare rechazar
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "proyects/SubirLevel/" + idproyecto,
         "hola xd",
@@ -102,16 +112,20 @@ export default function RevisarP({ idproyecto, idarea }) {
           withCredentials: true,
         }
       );
-      alert("Se acepto el documento");
+      //alert("Se acepto el documento");
       //console.log(result);
+      setLoading(false);
+      //para refrescar la paguina
+      location.reload();
     } catch (error) {
+      setLoading(false);
       alert("Error");
       console.log(error);
     }
   };
   //funcion para rechazar el level
   const Rechazar = async () => {
-    console.log("Rechazar el documento");
+    setLoading(true);
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "proyects/Rechazar/" + idproyecto,
@@ -121,36 +135,47 @@ export default function RevisarP({ idproyecto, idarea }) {
         }
       );
       handleOpen();
-      alert("Se rechazo el documento el documento");
-
+      setLoading(false);
+      //para refrescar la paguina
+      location.reload();
       //console.log(result);
     } catch (error) {
-      alert("Error");
       console.log(error);
+      setLoading(false);
     }
   };
-  const CombinarPDF = async () => {
-    try {
-      const result = await axios.post(
-        process.env.NEXT_PUBLIC_ACCESLINK +
-          "proyects/Combinar_pdfs/" +
-          idproyecto,
-        { descripcionp: descripcion },
-        {
-          withCredentials: true,
-        }
-      );
-      handleOpen();
-      alert("Se combino los pdf");
-
-      //console.log(result);
-    } catch (error) {
-      alert("Error");
-      console.log(error);
-    }
+  //aqui van los estados y handlers para poder acceder a las opciones xdxd skere modo diablo
+  const [openDocumento, setOpenDocumento] = useState(false);
+  const HandlerOpenDocumento = () => {
+    setOpenDocumento(true);
+    setOpenParticipantes(false);
+    setOpenAnadirDocs(false);
+    setFondo(false);
   };
+  const [openParticipantes, setOpenParticipantes] = useState(false);
+  const HandlerParticipantes = () => {
+    setOpenParticipantes(true);
+    setOpenDocumento(false);
+    setOpenAnadirDocs(false);
+    setFondo(false);
+  };
+  const [openAnadirDocs, setOpenAnadirDocs] = useState(false);
+  const HandlerAnadir = () => {
+    setOpenAnadirDocs(true);
+    setOpenParticipantes(false);
+    setOpenDocumento(false);
+    setFondo(false);
+  };
+  const [fondo, setFondo] = useState(true);
   return (
     <div className="bg-white h-full mb-10">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       <Dialog open={openRechazar} handler={handleOpen}>
         <DialogHeader>Rechazar documento</DialogHeader>
         <DialogBody divider>
@@ -179,30 +204,62 @@ export default function RevisarP({ idproyecto, idarea }) {
         </DialogFooter>
       </Dialog>
       <DialogHeader className="justify-between">
-        <div className="flex items-center gap-3">
-          <div className="-mt-px flex flex-col">{areasdata.p_titulo}</div>
+        <div className="w-full text-2xl text-black font-bold overflow-hidden">
+          {areasdata.r_titulo}
         </div>
       </DialogHeader>
+      <div className="ml-6">
+        <div className="flex gap-3 w-max">
+          <div className="-mt-px flex flex-col">
+            <Chip color="green" value={areasdata.r_codigo} />
+          </div>
+          <div className="-mt-px flex flex-col">
+            <Chip color="amber" value={RolUser.rol_user} />
+          </div>
+          {areasdata.r_reforma ? (
+            <div className="-mt-px flex flex-col">
+              <Chip color="blue" value="Reforma" />
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
       <DialogBody className="shadow-none">
-        <Tabs value="Html" orientation="vertical">
-          <TabsHeader className="w-32">
-            {data.map(({ label, value }) => {
-              if (value !== "Html") {
-                return (
-                  <Tab key={label} value={value}>
-                    {label}
-                  </Tab>
-                );
-              }
-            })}
-          </TabsHeader>
-          <TabsBody>
-            {data.map(({ value }) => {
-              if (value === "Documento") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Card>
-                      <CardBody>
+        <Fragment>
+          <div className="bg-white">
+            <Tabs orientation="vertical" className="p-3">
+              <TabsHeader className="w-32">
+                <Tab
+                  key={"Documento"}
+                  value={"Documento"}
+                  onClick={HandlerOpenDocumento}
+                >
+                  Documento
+                </Tab>
+                <Tab key={"Comentarios"} value={"Comentarios"}>
+                  Comentarios
+                </Tab>
+                <Tab
+                  key={"Participantes"}
+                  value={"Participantes"}
+                  onClick={HandlerParticipantes}
+                >
+                  Participantes
+                </Tab>
+                <Tab
+                  key={"Añadir documentos"}
+                  value={"Añadir documentos"}
+                  onClick={HandlerAnadir}
+                >
+                  Documentos extras
+                </Tab>
+              </TabsHeader>
+              <TabsBody className="overflow-x-auto">
+                {openDocumento ? (
+                  <Card>
+                    <CardBody>
+                      {areasdata.r_rol_user === "Admin" ? (
                         <div className="text-black">
                           <Button
                             className="mb-8 rounded-none p-4"
@@ -219,68 +276,59 @@ export default function RevisarP({ idproyecto, idarea }) {
                             Rechazar documento
                           </Button>
                         </div>
+                      ) : (
+                        ""
+                      )}
 
-                        <iframe
-                          src={
-                            process.env.NEXT_PUBLIC_ACCESLINK +
-                            "proyects/pdf2/" +
-                            id
-                          }
-                          height="100%"
-                          width="100%"
-                          className="h-screen"
-                        />
-                      </CardBody>
-                    </Card>
-                  </TabPanel>
-                );
-              } else if (value === "Comentarios") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    Comentarios
-                  </TabPanel>
-                );
-              } else if (value === "Participantes") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Participantes
-                      idproyecto={idproyecto}
-                      idarea={idarea}
-                      agregarRevisores={false}
-                    />
-                  </TabPanel>
-                );
-              } else if (value === "Flujo") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    Flujo
-                  </TabPanel>
-                );
-              } else if (value === "Accion") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    Accion
-                  </TabPanel>
-                );
-              } else if (value === "Añadir documentos") {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <ListDocumentosExtras idProyecto={idproyecto} />
-                  </TabPanel>
-                );
-              } else {
-                return (
-                  <TabPanel key={value} value={value} className="py-0">
-                    <Lottie
-                      animationData={anim_settings}
-                      className="w-80 md:w-2/5 mx-auto"
-                    />
-                  </TabPanel>
-                );
-              }
-            })}
-          </TabsBody>
-        </Tabs>
+                      <iframe
+                        src={
+                          process.env.NEXT_PUBLIC_ACCESLINK +
+                          "proyects/pdf2/" +
+                          id
+                        }
+                        height="100%"
+                        width="100%"
+                        className="h-screen"
+                      />
+                    </CardBody>
+                  </Card>
+                ) : (
+                  ""
+                )}
+                {openParticipantes ? (
+                  <Participantes
+                    idproyecto={idproyecto}
+                    idarea={idarea}
+                    agregarRevisores={false}
+                    permite_agregar={
+                      areasdata.r_rol_user === "Admin" ? true : false
+                    }
+                  />
+                ) : (
+                  ""
+                )}
+                {openAnadirDocs ? (
+                  <ListDocumentosExtras
+                    idProyecto={idproyecto}
+                    permite_agregar={
+                      areasdata.r_rol_user === "Admin" ? true : false
+                    }
+                  />
+                ) : (
+                  ""
+                )}
+                {fondo ? (
+                  <Lottie
+                    animationData={anim_settings}
+                    className="w-80 md:w-2/5 mx-auto"
+                  />
+                ) : (
+                  ""
+                )}
+              </TabsBody>
+            </Tabs>
+          </div>
+        </Fragment>
       </DialogBody>
       <DialogFooter className="justify-between"></DialogFooter>
     </div>

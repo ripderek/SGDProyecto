@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import Loading from "@/components/loading";
+import Router from "next/router";
 
 import { Button } from "@material-tailwind/react";
 export default function SubirNivel0({ id_proyect }) {
@@ -49,7 +50,9 @@ export default function SubirNivel0({ id_proyect }) {
         }
       );
       console.log(result);
-      alert("Se subio de nivel");
+      //refrescar la pagunia xdxdxd skere modo diablo
+      location.reload();
+
       setLoading(false);
       //console.log(result);
     } catch (error) {
