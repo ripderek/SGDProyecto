@@ -16,6 +16,7 @@ import {
 } from "@material-tailwind/react";
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { AiOutlineUpload } from "react-icons/ai";
+//              {file && file.name}
 
 import Loading from "@/components/loading";
 import axios from "axios";

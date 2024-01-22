@@ -8,6 +8,7 @@ import {
 import { PencilIcon } from "@heroicons/react/24/solid";
 import OP_Empresa from "./OP_Empresa";
 const TABLE_HEAD = ["Direccion", "Celular", "Correo", ""];
+import { Loader } from "@/components/Widgets";
 
 export default function Empresa_Datos() {
   const [users, setUsers] = useState([]);
@@ -21,8 +22,10 @@ export default function Empresa_Datos() {
   useEffect(() => {
     load();
   }, []);
+  const [loading, setLoad] = useState(false);
 
   const load = async () => {
+    setLoad(true);
     //Cargar la lista de guias
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "public/Datos_Empresa",
@@ -37,9 +40,12 @@ export default function Empresa_Datos() {
     setUsers(data);
     setIdEmpresa(data.empresaid);
     console.log(data);
+    setLoad(false);
   };
   return (
     <Card className="h-full w-auto rounded-none mb-7 overflow-x-scroll">
+      {loading && <Loader />}
+
       {openOP ? (
         <OP_Empresa handlerOpen={handlerOpen} id_empresa={id_empresa} />
       ) : (

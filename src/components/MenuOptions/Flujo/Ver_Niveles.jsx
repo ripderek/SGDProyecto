@@ -16,6 +16,7 @@ const TABLE_HEAD = [
   "Editar",
 ];
 import { PencilIcon } from "@heroicons/react/24/solid";
+import { Loader } from "@/components/Widgets";
 
 export default function Ver_Niveles({ handlerNiveles }) {
   const [users, setUsers] = useState([]);
@@ -24,6 +25,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
     load();
   }, []);
   const load = async () => {
+    setLoader(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_niveles",
       {
@@ -35,10 +37,14 @@ export default function Ver_Niveles({ handlerNiveles }) {
 
     const data = await result.json();
     setUsers(data);
+    setLoader(false);
   };
+  const [loading, setLoader] = useState(false);
+
   return (
     <div>
-      <Dialog size="sm" open={true} className="rounded-none">
+      {loading && <Loader />}
+      <Dialog size="xl" open={true} className="rounded-none">
         <DialogHeader className="bg-gray-200">
           Lista de niveles
           <Button
@@ -54,7 +60,7 @@ export default function Ver_Niveles({ handlerNiveles }) {
           </Button>
         </DialogHeader>
         <DialogBody className="overflow-scroll h-96">
-          <table className="mt-4 w-auto table-auto text-left">
+          <table className="w-full">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (

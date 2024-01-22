@@ -11,7 +11,7 @@ import { useState, useEffect, Fragment } from "react";
 import { FaSearch } from "react-icons/fa";
 import Loading from "@/components/loading";
 
-export default function ListaCategorias({
+export default function ListaSeleccionSubCategorias({
   id_categoria,
   nombre_categoria,
   cerrar,
@@ -28,7 +28,7 @@ export default function ListaCategorias({
     setLoading(true);
 
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/categorias_proyecto",
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/list_sub_categorias",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -58,19 +58,19 @@ export default function ListaCategorias({
       </div>
       {areasdata.map((task) => (
         <Card
-          className="mt-6 h-auto bg-blue-gray-50 shadow-2xl cursor-pointer hover:border-4 hover:border-green-600"
+          className="mt-6 h-auto bg-blue-gray-50  cursor-pointer hover:border-4 hover:border-green-600"
           key={task.c_categoria_id}
           onClick={() => (
-            id_categoria(task.c_categoria_id),
-            nombre_categoria(task.c_nombre_categoria),
+            id_categoria(task.t_id_categoria),
+            nombre_categoria(task.t_nombre_categoria),
             cerrar(false)
           )}
         >
           <CardBody>
-            <Typography variant="h5" color="blue-gray" className="mb-1">
-              {task.c_nombre_categoria}
+            <Typography variant="small" color="blue-gray" className="mb-1">
+              {task.t_nombre_categoria}
             </Typography>
-
+            {/* 
             <div className="w-max">
               <Chip
                 variant="ghost"
@@ -79,11 +79,12 @@ export default function ListaCategorias({
                 color="green"
               />
             </div>
+            */}
             {/*
-            <Typography variant="" color="blue-gray" className="mb-1">
-              {task.c_descripcion}
-            </Typography>
-             */}
+              <Typography variant="" color="blue-gray" className="mb-1">
+                {task.c_descripcion}
+              </Typography>
+               */}
           </CardBody>
         </Card>
       ))}

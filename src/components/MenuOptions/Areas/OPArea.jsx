@@ -19,90 +19,35 @@ import CambiarFoto from "./CambiarFoto";
 import CrearUsuarioArea from "./CrearUsuarioArea";
 export default function OPArea(idArea) {
   const [loading, setLoading] = useState(false);
-
-  const [openUsers, setOpenUsers] = useState(false);
-  const handleUsers = () => {
-    setOpenUsers(true);
-    setOpenAreas(false);
-    setOpenJerarquia(false);
-    setOpenEditrArea(false);
-    setOpenCambiarFoto(false);
-    setOpenCrearUsuario(false);
-    setFondo(false);
-
-    setOpenProyectos(false);
-  };
-  //estado para abrir la opcion de areas
-  const [openAreas, setOpenAreas] = useState(false);
-  const handleAreas = () => {
-    setOpenAreas(true);
-    setOpenEditrArea(false);
-    setOpenUsers(false);
-    setOpenCambiarFoto(false);
-    setOpenCrearUsuario(false);
-    setFondo(false);
-  };
-  //estado para abrir la opcion de jerarquia de area
-  const [openJerarquia, setOpenJerarquia] = useState(false);
-  const handleJeraquia = () => {
-    setOpenUsers(false);
-    setOpenAreas(false);
-    setOpenJerarquia(true);
-    setOpenProyectos(false);
-    setOpenEditrArea(false);
-    setOpenCambiarFoto(false);
-    setOpenCrearUsuario(false);
-    setFondo(false);
-  };
-  //estado para abrir la opcion de proyectos de area
-  const [openProyectos, setOpenProyectos] = useState(false);
-  const handleProyectos = () => {
-    setOpenUsers(false);
-    setOpenAreas(false);
-    setOpenProyectos(true);
-    setOpenJerarquia(false);
-    setOpenEditrArea(false);
-    setOpenCrearUsuario(false);
-    setFondo(openProyectos ? true : false);
-    setOpenCambiarFoto(false);
-    setFondo(false);
-  };
-
-  const [openEditarArea, setOpenEditrArea] = useState(false);
-  const handleEditar = () => {
-    setOpenUsers(false);
-    setOpenAreas(false);
-    setOpenProyectos(false);
-    setOpenEditrArea(true);
-    setOpenCambiarFoto(false);
-    setOpenJerarquia(false);
-    setOpenCrearUsuario(false);
-    setFondo(false);
-  };
-  const [openCambiarFoto, setOpenCambiarFoto] = useState(false);
-  const handleCambiarFoto = () => {
-    setOpenUsers(false);
-    setOpenAreas(false);
-    setOpenProyectos(false);
-    setOpenEditrArea(false);
-    setOpenCambiarFoto(true);
-    setOpenJerarquia(false);
-    setOpenCrearUsuario(false);
-    setFondo(false);
-  };
-  const [openCrearUsuario, setOpenCrearUsuario] = useState(false);
-  const handleCrearUsuario = () => {
-    setOpenUsers(false);
-    setOpenAreas(false);
-    setOpenProyectos(false);
-    setOpenEditrArea(false);
-    setOpenCambiarFoto(false);
-    setOpenJerarquia(false);
-    setOpenCrearUsuario(true);
-    setFondo(false);
-  };
-  const [fondo, setFondo] = useState(true);
   const [UserAreaData, setUserAreaData] = useState([]);
+
+  const [state, setState] = useState({
+    openUsers: false,
+    openAreas: false,
+    openJerarquia: false,
+    openProyectos: false,
+    openEditarArea: false,
+    openCambiarFoto: false,
+    openCrearUsuario: false,
+    fondo: true,
+  });
+
+  const handleOption = (option) => {
+    setState({
+      openUsers: option === "openUsers",
+      openAreas: option === "openAreas",
+      openJerarquia: option === "openJerarquia",
+      openProyectos: option === "openProyectos",
+      openEditarArea: option === "openEditarArea",
+      openCambiarFoto: option === "openCambiarFoto",
+      openCrearUsuario: option === "openCrearUsuario",
+      fondo: false,
+    });
+  };
+
+  const resetOptions = () => {
+    setState(initialState);
+  };
 
   useEffect(() => {
     load();
@@ -130,7 +75,7 @@ export default function OPArea(idArea) {
   };
   //funcion que se activa cada vez que se anade un nuevo usuario para ver el listado
   const ver_listado = (valor) => {
-    if (valor) handleUsers();
+    if (valor) handleOption("openUsers");
   };
   return (
     <div className="bg-white h-auto">
@@ -151,39 +96,43 @@ export default function OPArea(idArea) {
           <div className="bg-white">
             <Tabs orientation="vertical" className="p-3">
               <TabsHeader className="w-32">
-                <Tab onClick={handleUsers} key={"Usuarios"} value={"Usuarios"}>
+                <Tab
+                  onClick={() => handleOption("openUsers")}
+                  key={"Usuarios"}
+                  value={"Usuarios"}
+                >
                   Usuarios
                 </Tab>
                 <Tab
-                  onClick={handleCrearUsuario}
+                  onClick={() => handleOption("openCrearUsuario")}
                   key={"Crear Usuario"}
                   value={"Crear Usuario"}
                 >
                   Crear Usuario
                 </Tab>
                 <Tab
-                  onClick={handleProyectos}
+                  onClick={() => handleOption("openProyectos")}
                   key={"Proyectos"}
                   value={"Proyectos"}
                 >
                   Proyectos
                 </Tab>
                 <Tab
-                  onClick={handleJeraquia}
+                  onClick={() => handleOption("openJerarquia")}
                   key={"Jerarquia"}
                   value={"Jerarquia"}
                 >
                   Jerarquia
                 </Tab>
                 <Tab
-                  onClick={handleEditar}
+                  onClick={() => handleOption("openEditarArea")}
                   key={"Editar Datos"}
                   value={"Editar Datos"}
                 >
                   Editar Datos
                 </Tab>
                 <Tab
-                  onClick={handleCambiarFoto}
+                  onClick={() => handleOption("openCambiarFoto")}
                   key={"Cambiar foto"}
                   value={"Cambiar foto"}
                 >
@@ -191,12 +140,20 @@ export default function OPArea(idArea) {
                 </Tab>
               </TabsHeader>
               <TabsBody className="overflow-x-auto">
-                {openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
-                {openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
-                {openProyectos ? <OpProyectos id={idArea.idArea} /> : ""}
-                {openEditarArea ? <EditarArea id_user={idArea.idArea} /> : ""}
-                {openCambiarFoto ? <CambiarFoto id_user={idArea.idArea} /> : ""}
-                {openCrearUsuario ? (
+                {state.openUsers ? <UsersAreas id={idArea.idArea} /> : ""}
+                {state.openJerarquia ? <Arbol idarea={idArea.idArea} /> : ""}
+                {state.openProyectos ? <OpProyectos id={idArea.idArea} /> : ""}
+                {state.openEditarArea ? (
+                  <EditarArea id_user={idArea.idArea} />
+                ) : (
+                  ""
+                )}
+                {state.openCambiarFoto ? (
+                  <CambiarFoto id_user={idArea.idArea} />
+                ) : (
+                  ""
+                )}
+                {state.openCrearUsuario ? (
                   <CrearUsuarioArea
                     id_user={idArea.idArea}
                     ver_listado={ver_listado}
@@ -204,7 +161,7 @@ export default function OPArea(idArea) {
                 ) : (
                   ""
                 )}
-                {fondo ? (
+                {state.fondo ? (
                   <div>
                     <div className="flex justify-center mt-7">
                       <img

@@ -10,6 +10,7 @@ import {
 } from "@material-tailwind/react";
 import axios from "axios";
 import Loading from "@/components/loading";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 
 export default function CambiarContra({ id_user }) {
   const [loading, setLoading] = useState(false);
@@ -115,14 +116,15 @@ export default function CambiarContra({ id_user }) {
             </div>
           </CardHeader>
           <CardBody className="justify-items-end">
-            <div className="justify-end justify-items-end">
+            <div className="flex justify-end">
               <Button
-                className="bg-green-700 p-3 justify-items-end rounded-none"
+                type="submit"
+                color="green"
                 onClick={HandleSUbumit}
+                className="flex gap-1 rounded-none h-11"
               >
-                <Typography variant="h6" color="white">
-                  Guardar Cambios
-                </Typography>
+                <ArrowRightOnRectangleIcon className="h-7 w-7 mx-auto" />
+                <p className="mt-1"> Guardar Cambios</p>
               </Button>
             </div>
           </CardBody>

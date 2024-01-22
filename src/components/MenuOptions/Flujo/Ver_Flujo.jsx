@@ -6,6 +6,7 @@ import {
   DialogBody,
 } from "@material-tailwind/react";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import { Loader } from "@/components/Widgets";
 
 import { useState, useEffect } from "react";
 
@@ -19,14 +20,14 @@ export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
   const [styleF, setStyleF] = useState(
     "flex flex-col gap-1 mb-10 bg-yellow-100"
   );
-  const [users, setUsers] = useState([]);
+  //const [users, setUsers] = useState([]);
   const [espacio, setEspacio] = useState(0);
   const sumar = () => {
     setEspacioFlecha(espacioFlecha + 3), setEspacio(espacio + 300);
   };
   const [posiciones, setPosiciones] = useState([]);
 
-  const verFlujo = () => {
+  const verFlujo = (users) => {
     console.log("dibujando ");
     var x = 0;
     // x += 300;
@@ -72,25 +73,35 @@ export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
     console.log(posicion1);
   };
   useEffect(() => {
-    load();
+    load().then(() => {
+      // Llamar a la función después de obtener la información
+      //tuFuncionDespuesDeCargarDatos();
+    });
   }, []);
-  const load = async () => {
-    //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
-    const result = await fetch(
+  const load = () => {
+    setLoader(true);
+    // Retorna la promesa directamente sin el uso de async/await
+    return fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_flujo/" + idTipoFlujo,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
       }
-    );
-
-    const data = await result.json();
-    setUsers(data);
+    )
+      .then((result) => result.json())
+      .then((data) => {
+        //setUsers(data);
+        setLoader(false);
+        verFlujo(data);
+      });
   };
+  const [loading, setLoader] = useState(false);
+
   //constante para retornar el div con las los names xd
   return (
     <div>
+      {loading && <Loader />}
       <Dialog size="xl" open={true} className="rounded-none">
         <DialogHeader className="bg-gray-200">
           Ver flujo
@@ -107,9 +118,11 @@ export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
           </Button>
         </DialogHeader>
         <DialogBody className=" w-auto">
-          <div className="relative overflow-scroll">
+          <div className="relative overflow-scroll mx-auto items-center text-center ml-7">
             <div className="relative  w-auto h-16 mb-16 ">
+              {/* 
               <button onClick={verFlujo}>Cargar Flujo</button>
+              */}
               {posiciones.map((task) => (
                 <div
                   className="absolute mb-20"
@@ -125,19 +138,19 @@ export default function Ver_Flujo({ handleVerFLujo, idTipoFlujo }) {
                     }
                   >
                     <input
-                      className="w-60 text-center text-lg  font-semibold	text-black"
+                      className="w-60 text-center text-lg  font-semibold	text-black bg-transparent"
                       disabled
                       value={task.titulo}
                     />
                     <input
-                      className="w-60 text-center text-lg 	text-black"
+                      className="w-60 text-center text-lg 	text-black bg-transparent"
                       disabled
                       value={task.cardinalidad}
                     />
                     <input
-                      className="w-60 text-center text-lg  font-semibold	text-black"
+                      className="w-60 text-center text-lg  font-semibold	text-black bg-transparent"
                       disabled
-                      value={task.length - 1 === 0 ? "Inicio" : ""}
+                      value={""}
                     />
                   </div>
                   {task.num === posiciones.length - 1 ? (

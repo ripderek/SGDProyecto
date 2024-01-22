@@ -3,8 +3,16 @@ import { ArrowDownIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import Loading from "@/components/loading";
 import Router from "next/router";
+import {
+  Button,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+} from "@material-tailwind/react";
+import Lottie from "lottie-react";
+import anim_error from "../../../../public/Anim/error_anim.json";
 
-import { Button } from "@material-tailwind/react";
 export default function SubirNivel0({ id_proyect }) {
   const [users, setUsers] = useState([]);
   const bg1 = "items-center flex flex-col gap-1 mb-10 bg-blue-gray-50";
@@ -15,7 +23,8 @@ export default function SubirNivel0({ id_proyect }) {
     "w-60 text-center text-lg  font-semibold	text-black bg-yellow-600";
   const inputSubtitile2 = "w-60 text-center text-lg 	text-black bg-yellow-600";
   const [loading, setLoading] = useState(false);
-
+  const [openAlert, setOpenAlert] = useState(false);
+  const [errorM, setErrorM] = useState("");
   useEffect(() => {
     load();
   }, []);
@@ -42,21 +51,22 @@ export default function SubirNivel0({ id_proyect }) {
     setLoading(true);
     e.preventDefault();
     try {
+      setLoading(true);
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK + "proyects/subir_nivel",
-        { list_niveles: users },
+        { list_niveles: users, id_pro: id_proyect },
         {
           withCredentials: true,
         }
       );
       console.log(result);
       //refrescar la pagunia xdxdxd skere modo diablo
-      location.reload();
-
       setLoading(false);
+      location.reload();
       //console.log(result);
     } catch (error) {
-      alert("error:" + error);
+      setOpenAlert(true);
+      setErrorM(error.response.data.message);
       setLoading(false);
     }
   };
@@ -69,7 +79,23 @@ export default function SubirNivel0({ id_proyect }) {
       ) : (
         ""
       )}
-
+      <Dialog open={openAlert} handler={() => setOpenAlert(false)} size="sm">
+        <DialogBody>
+          <div className="mx-auto text-center font-body text-black text-base">
+            {errorM}
+            <Lottie animationData={anim_error} className="w-24 mx-auto mt-2" />
+          </div>
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="gradient"
+            color="green"
+            onClick={() => setOpenAlert(false)}
+          >
+            <span>Aceptar</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
       <div className="bg-gray-100  mb-3" id="Header">
         <div className="ml-10 text-black font-semibold">
           {users.length != 0 ? " Subir al nivel de " + users[1].nivel : ""}

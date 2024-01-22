@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import Loading from "@/components/loading";
 import { AiOutlineUpload } from "react-icons/ai";
-
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 export default function CambiarFoto({ id_user }) {
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
@@ -103,7 +103,7 @@ export default function CambiarFoto({ id_user }) {
           </div>
           <div className="h-9">
             <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
-              <label htmlFor="fileInput" className="text-black ">
+              <label htmlFor="fileInput" className="text-white font-bold ">
                 Subir Foto:
               </label>
               <input
@@ -124,14 +124,15 @@ export default function CambiarFoto({ id_user }) {
           </div>
         </CardHeader>
         <CardBody className="justify-items-end">
-          <div className="justify-end justify-items-end">
+          <div className="flex justify-end">
             <Button
-              className="bg-green-700 p-3 justify-items-end rounded-none"
+              type="submit"
+              color="green"
+              className="flex gap-1 rounded-none h-11"
               onClick={HandleSUbumit}
             >
-              <Typography variant="h6" color="white">
-                Guardar Cambios
-              </Typography>
+              <ArrowRightOnRectangleIcon className="h-7 w-7 mx-auto" />
+              <p className="mt-1"> Guardar Cambios</p>
             </Button>
           </div>
         </CardBody>

@@ -315,7 +315,11 @@ export default function Navbar2() {
     setUserArea1(false);
     setOpenVentanaFirmar(false);
   };
-
+  const salir_firmador = (valor) => {
+    if (valor) {
+      HandleFirmas();
+    }
+  };
   //Estado para almacenar la data del usuario
   const [dataUser, setDataUser] = useState({
     correo_institucional_user: "",
@@ -686,6 +690,7 @@ export default function Navbar2() {
             id_firma={dataFirmar.id_firma}
             titulo_proyecto={dataFirmar.titulo_proyect}
             codigo_proyecto={dataFirmar.codigo_proyect}
+            salir_firmador={salir_firmador}
           />
         ) : (
           ""

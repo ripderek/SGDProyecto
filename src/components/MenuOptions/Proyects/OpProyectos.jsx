@@ -88,7 +88,7 @@ export default function OpProyectos(id) {
       )}
       <div className="flex shrink-0 flex-col  sm:flex-row justify-end rounded-none">
         {openFOrm ? (
-          <Dialog open={openFOrm} className="overflow-y-scroll rounded-none">
+          <Dialog open={openFOrm} className=" rounded-none">
             <CrearProyecto id={id.id} openDiv={openDiv} />
           </Dialog>
         ) : (
@@ -110,143 +110,149 @@ export default function OpProyectos(id) {
           <p className="mt-1"> Agregar Proyecto</p>
         </Button>
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left ">
-        <thead>
-          <tr>
-            {TABLE_HEAD.map((head) => (
-              <th
-                key={head}
-                className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-              >
-                <Typography
-                  variant="small"
-                  color="blue-gray"
-                  className="font-normal leading-none opacity-70"
+      {users.length === 0 ? (
+        <Typography variant="h3" color="gray" className="mx-auto text-center">
+          "No hay proyectos en esta area"
+        </Typography>
+      ) : (
+        <table className="mt-4 w-full min-w-max table-auto text-left mx-4">
+          <thead>
+            <tr>
+              {TABLE_HEAD.map((head) => (
+                <th
+                  key={head}
+                  className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
                 >
-                  {head}
-                </Typography>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {users.map(
-            (
-              {
-                p_id_proyecto,
-                p_titulo,
-                p_categoria,
-                p_titulo_nivel,
-                p_tipo_nivel,
-                p_reforma,
-                p_codigo,
-                p_estado,
-              },
-              index
-            ) => {
-              const isLast = index === users.length - 1;
-              const classes = isLast
-                ? "p-4"
-                : "p-4 border-b border-blue-gray-50";
-              return (
-                <tr key={p_id_proyecto}>
-                  <td className={classes}>
-                    <div className="flex items-center gap-3">
+                  <Typography
+                    variant="small"
+                    color="blue-gray"
+                    className="font-normal leading-none opacity-70"
+                  >
+                    {head}
+                  </Typography>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(
+              (
+                {
+                  p_id_proyecto,
+                  p_titulo,
+                  p_categoria,
+                  p_titulo_nivel,
+                  p_tipo_nivel,
+                  p_reforma,
+                  p_codigo,
+                  p_estado,
+                },
+                index
+              ) => {
+                const isLast = index === users.length - 1;
+                const classes = isLast
+                  ? "p-4"
+                  : "p-4 border-b border-blue-gray-50";
+                return (
+                  <tr key={p_id_proyecto}>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {index + 1}
+                          </Typography>
+                        </div>
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <Typography
+                            variant="small"
+                            color="blue-gray"
+                            className="font-normal"
+                          >
+                            {p_titulo}
+                          </Typography>
+                        </div>
+                      </div>
+                      {p_reforma ? (
+                        <Chip
+                          size="sm"
+                          variant="ghost"
+                          value="Reforma"
+                          color="yellow"
+                          className="w-max"
+                        />
+                      ) : (
+                        ""
+                      )}
+                    </td>
+                    <td className={classes}>
                       <div className="flex flex-col">
                         <Typography
                           variant="small"
                           color="blue-gray"
                           className="font-normal"
                         >
-                          {index + 1}
+                          {p_categoria}
                         </Typography>
                       </div>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div className="flex items-center gap-3">
-                      <div className="flex flex-col">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {p_titulo}
-                        </Typography>
+                    </td>
+                    <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          size="sm"
+                          variant="ghost"
+                          value={p_titulo_nivel}
+                          color={
+                            p_tipo_nivel === 1
+                              ? "green"
+                              : p_tipo_nivel === 2
+                              ? "yellow"
+                              : "cyan"
+                          }
+                        />
                       </div>
-                    </div>
-                    {p_reforma ? (
-                      <Chip
-                        size="sm"
-                        variant="ghost"
-                        value="Reforma"
-                        color="yellow"
-                        className="w-max"
-                      />
-                    ) : (
-                      ""
-                    )}
-                  </td>
-                  <td className={classes}>
-                    <div className="flex flex-col">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {p_categoria}
-                      </Typography>
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div className="w-max">
-                      <Chip
-                        size="sm"
-                        variant="ghost"
-                        value={p_titulo_nivel}
-                        color={
-                          p_tipo_nivel === 1
-                            ? "green"
-                            : p_tipo_nivel === 2
-                            ? "yellow"
-                            : "cyan"
-                        }
-                      />
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div className="w-max">
-                      <Chip
-                        size="sm"
-                        variant="ghost"
-                        value={p_codigo}
-                        color={"cyan"}
-                      />
-                    </div>
-                  </td>
-                  <td className={classes}>
-                    <div className="w-max">
-                      <Chip
-                        size="sm"
-                        variant="ghost"
-                        value={p_estado ? "Habilitado" : "Deshabilitado"}
-                        color={p_estado ? "green" : "cyan"}
-                      />
-                    </div>
-                  </td>
-                  <td className="p-4 border-b border-blue-gray-50">
-                    <Tooltip content="Configurar proyecto">
-                      <IconButton variant="text" color="blue-gray">
-                        <PencilIcon className="h-4 w-4" />
-                      </IconButton>
-                    </Tooltip>
-                  </td>
-                </tr>
-              );
-            }
-          )}
-        </tbody>
-      </table>
+                    </td>
+                    <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          size="sm"
+                          variant="ghost"
+                          value={p_codigo}
+                          color={"cyan"}
+                        />
+                      </div>
+                    </td>
+                    <td className={classes}>
+                      <div className="w-max">
+                        <Chip
+                          size="sm"
+                          variant="ghost"
+                          value={p_estado ? "Habilitado" : "Deshabilitado"}
+                          color={p_estado ? "green" : "cyan"}
+                        />
+                      </div>
+                    </td>
+                    <td className="p-4 border-b border-blue-gray-50">
+                      <Tooltip content="Configurar proyecto">
+                        <IconButton variant="text" color="blue-gray">
+                          <PencilIcon className="h-4 w-4" />
+                        </IconButton>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                );
+              }
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

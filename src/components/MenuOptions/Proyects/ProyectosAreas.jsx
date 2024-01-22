@@ -55,15 +55,15 @@ export default function ProyectosAreas({
     //Cargar la lista de las areas
     //aqui tengo que enviar un parametro que indique que el usuario que solicita cargar la lista de los proyectos es administrador del area por ende deben de cargar los proyectos que vienen de areas inferiores para su revision o publicacion
     try {
-    setLoading(true);
-    const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK +
-        "proyects/proyectos_areas/" +
-        idarea +
-        "/" +
-        adminA +
-        "/" +
-        cookies.get("id_user"),
+      setLoading(true);
+      const result = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "proyects/proyectos_areas/" +
+          idarea +
+          "/" +
+          adminA +
+          "/" +
+          cookies.get("id_user"),
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -74,10 +74,10 @@ export default function ProyectosAreas({
       const data = await result.json();
       setAreasData(data);
       console.log(areasdata);
-       setLoading(false);
+      setLoading(false);
     } catch (error) {
       console.log(error);
-       setLoading(false);
+      setLoading(false);
     }
   };
   return (
@@ -101,151 +101,163 @@ export default function ProyectosAreas({
               </Typography>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <Tabs value="all" className="w-full md:w-max">
-              <TabsHeader>
-                {TABS.map(({ label, value }) => (
-                  <Tab key={value} value={value}>
-                    &nbsp;&nbsp;{label}&nbsp;&nbsp;
-                  </Tab>
-                ))}
-              </TabsHeader>
-            </Tabs>
-            <div className="w-full md:w-72">
-              <Input
-                label="Buscar"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
-              />
+          {areasdata.length > 0 && (
+            <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
+              <Tabs value="all" className="w-full md:w-max">
+                <TabsHeader>
+                  {TABS.map(({ label, value }) => (
+                    <Tab key={value} value={value}>
+                      &nbsp;&nbsp;{label}&nbsp;&nbsp;
+                    </Tab>
+                  ))}
+                </TabsHeader>
+              </Tabs>
+              <div className="w-full md:w-72">
+                <Input
+                  label="Buscar"
+                  icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                />
+              </div>
             </div>
-          </div>
+          )}
         </CardHeader>
         <CardBody className="overflow-scroll px-24">
-          <table className="mt-4 w-full min-w-max table-auto text-left ">
-            <thead>
-              <tr>
-                {TABLE_HEAD.map((head) => (
-                  <th
-                    key={head}
-                    className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
-                  >
-                    <Typography
-                      variant="small"
-                      color="blue-gray"
-                      className="font-normal leading-none opacity-70"
+          {areasdata.length === 0 ? (
+            <Typography
+              variant="h3"
+              color="gray"
+              className="text-center mx-auto"
+            >
+              No hay proyectos en esta area
+            </Typography>
+          ) : (
+            <table className="mt-4 w-full min-w-max table-auto text-left ">
+              <thead>
+                <tr>
+                  {TABLE_HEAD.map((head) => (
+                    <th
+                      key={head}
+                      className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
                     >
-                      {head}
-                    </Typography>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {areasdata.map(
-                (
-                  {
-                    p_id_proyecto,
-                    p_titulo,
-                    p_categoria,
-                    p_titulo_nivel,
-                    p_tipo_nivel,
-                    p_reforma,
-                    p_codigo,
-                  },
-                  index
-                ) => {
-                  const isLast = index === areasdata.length - 1;
-                  const classes = isLast
-                    ? "p-4"
-                    : "p-4 border-b border-blue-gray-50";
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="font-normal leading-none opacity-70"
+                      >
+                        {head}
+                      </Typography>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {areasdata.map(
+                  (
+                    {
+                      p_id_proyecto,
+                      p_titulo,
+                      p_categoria,
+                      p_titulo_nivel,
+                      p_tipo_nivel,
+                      p_reforma,
+                      p_codigo,
+                    },
+                    index
+                  ) => {
+                    const isLast = index === areasdata.length - 1;
+                    const classes = isLast
+                      ? "p-4"
+                      : "p-4 border-b border-blue-gray-50";
 
-                  return (
-                    <tr
-                      key={p_id_proyecto}
-                      onClick={() => (
-                        addIDP(p_id_proyecto), tipo_proyecto(p_tipo_nivel)
-                      )}
-                      className="cursor-pointer"
-                    >
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {index + 1}
-                            </Typography>
-                          </div>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="flex items-center gap-3">
-                          <div className="flex flex-col">
-                            <Typography
-                              variant="small"
-                              color="blue-gray"
-                              className="font-normal"
-                            >
-                              {p_titulo}
-                            </Typography>
-                          </div>
-                        </div>
-                        {p_reforma ? (
-                          <Chip
-                            size="sm"
-                            variant="ghost"
-                            value="Reforma"
-                            color="yellow"
-                            className="w-max"
-                          />
-                        ) : (
-                          ""
+                    return (
+                      <tr
+                        key={p_id_proyecto}
+                        onClick={() => (
+                          addIDP(p_id_proyecto), tipo_proyecto(p_tipo_nivel)
                         )}
-                      </td>
-                      <td className={classes}>
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {p_categoria}
-                          </Typography>
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="w-max">
-                          <Chip
-                            size="sm"
-                            variant="ghost"
-                            value={p_titulo_nivel}
-                            color={
-                              p_tipo_nivel === 1
-                                ? "green"
-                                : p_tipo_nivel === 2
+                        className="cursor-pointer hover:bg-yellow-200"
+                      >
+                        <td className={classes}>
+                          <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {index + 1}
+                              </Typography>
+                            </div>
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                              <Typography
+                                variant="small"
+                                color="blue-gray"
+                                className="font-normal"
+                              >
+                                {p_titulo}
+                              </Typography>
+                            </div>
+                          </div>
+                          {p_reforma ? (
+                            <Chip
+                              size="sm"
+                              variant="ghost"
+                              value="Reforma"
+                              color="yellow"
+                              className="w-max"
+                            />
+                          ) : (
+                            ""
+                          )}
+                        </td>
+                        <td className={classes}>
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {p_categoria}
+                            </Typography>
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <div className="w-max">
+                            <Chip
+                              size="sm"
+                              variant="ghost"
+                              value={p_titulo_nivel}
+                              color={
+                                p_tipo_nivel === 1
+                                  ? "green"
+                                  : p_tipo_nivel === 2
                                   ? "yellow"
                                   : "cyan"
-                            }
-                          />
-                        </div>
-                      </td>
-                      <td className={classes}>
-                        <div className="w-max">
-                          <Chip
-                            size="sm"
-                            variant="ghost"
-                            value={p_codigo}
-                            color={"cyan"}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
+                              }
+                            />
+                          </div>
+                        </td>
+                        <td className={classes}>
+                          <div className="w-max">
+                            <Chip
+                              size="sm"
+                              variant="ghost"
+                              value={p_codigo}
+                              color={"cyan"}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  }
+                )}
+              </tbody>
+            </table>
+          )}
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
           <Typography variant="small" color="blue-gray" className="font-normal">

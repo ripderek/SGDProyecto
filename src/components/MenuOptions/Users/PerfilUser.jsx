@@ -201,7 +201,7 @@ export default function PerfilUser({
             <Button
               variant="text"
               color="red"
-              onClick={handleCambiarEstadoAPP}
+              onClick={() => setOpenCambiarEstadoAPP(false)}
               className="mr-1"
             >
               <span>Cancelar</span>

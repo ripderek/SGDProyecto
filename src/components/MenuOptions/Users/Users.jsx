@@ -1,6 +1,7 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { UserPlusIcon, PencilIcon } from "@heroicons/react/24/solid";
-
+import { useRef } from "react";
+import { AiOutlineUpload } from "react-icons/ai";
 import {
   CardHeader,
   Input,
@@ -31,6 +32,8 @@ import { Fragment, useState, useEffect } from "react";
 import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import PerfilUser from "../Users/PerfilUser";
+import Loading from "@/components/loading";
+
 const TABS = [
   {
     label: "Todos",
@@ -46,15 +49,21 @@ const TABS = [
   },
 ];
 
-const TABLE_HEAD = ["Datos", "Identificacion", "Celular", "Estado", "Editar"];
+const TABLE_HEAD = [
+  "",
+  "Datos",
+  "Identificacion",
+  "Celular",
+  "Estado",
+  "Editar",
+];
 
 export default function Users() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
   const [users, setUsers] = useState([]);
-
+  const [loading, setLoading] = useState(false);
   const [TotalPag, setTotalPag] = useState([]);
-
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
@@ -63,7 +72,6 @@ export default function Users() {
   const [file, setFile] = useState(null);
   //img preview
   const [fileP, setFileP] = useState();
-
   //mensaje de error
   const [error, setError] = useState();
   ///constante para guardar el id del usuario a editar
@@ -71,7 +79,7 @@ export default function Users() {
   //abrir la modal para editar el user
   const [openArea, setOpenArea] = useState(false);
   const handleOpenArea = () => setOpenArea(!openArea);
-
+  const [clave, setClave] = useState("");
   useEffect(() => {
     load();
   }, []);
@@ -79,6 +87,7 @@ export default function Users() {
   const pag = 1;
 
   const load = async () => {
+    setLoading(true);
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "user/Userdata/" + pag,
       {
@@ -101,9 +110,10 @@ export default function Users() {
     const totalPag = data2.totalPaginas;
     console.log(totalPag);
     setTotalPag(totalPag);
-
     const data = await result.json();
     setUsers(data);
+
+    setLoading(false);
   };
   const [open1, setOpen1] = useState(false);
 
@@ -146,9 +156,9 @@ export default function Users() {
       //setUser({ tipo_identificacion: tipoidentificacion });
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
 
-      console.log("datos del usuario para enviar");
-      console.log(user);
-
+      //console.log("datos del usuario para enviar");
+      //console.log(user);
+      setLoading(true);
       //Verificar si no se esta enviando lo mismo que esta en el combobox xd
       if (tipoidentificacion === "Tipo identificacion") {
         setError("Escoja un tipo de identificacion");
@@ -173,6 +183,7 @@ export default function Users() {
         console.log(result);
         hadleAlert();
         handleOpen();
+        setLoading(false);
         load();
       }
     } catch (error) {
@@ -187,8 +198,6 @@ export default function Users() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const buttonsPerPage = 5; // Número de botones a mostrar por página
-
-  const totalPages = TotalPag;
 
   const handlePageChange = async (newPage) => {
     setCurrentPage(newPage);
@@ -207,24 +216,76 @@ export default function Users() {
     const data = await result.json();
     setUsers(data);
   };
+  //esto es para activar el boton de tipo file personalizado xdxd skere modo diablo
+  const fileInputRef = useRef(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
+    }
+  };
+  //para filtrar en las listas
+  const Buscar = async () => {
+    //primero verificar si la palabra clave esta vacia
+    //si esta vacia entonces mostrar todo
+    if (clave.trim().length === 0) {
+      load();
+    } //de lo contrario mostrar solo lo filtrado
+    else {
+      setLoading(true);
+      //primero filtrar la lista
+      const result = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "user/UserdataBusqueda/" +
+          pag +
+          "/" +
+          clave,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data = await result.json();
+      setUsers(data);
+
+      //los botones de las listas
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK + "user/UserdatapagBusqueda/" + clave,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data2 = await response.json();
+      const totalPag = data2.totalPaginas;
+      setTotalPag(totalPag);
+      generatePaginationButtons();
+      setLoading(false);
+    }
+  };
 
   const generatePaginationButtons = () => {
     const buttons = [];
-    const numButtons = Math.ceil(totalPages / buttonsPerPage);
+    const numButtons = Math.ceil(TotalPag / buttonsPerPage);
 
     // Calcula el grupo de botones actual
     const currentGroup = Math.ceil(currentPage / buttonsPerPage);
 
     // Calcula el rango de botones a mostrar en el grupo actual
     const startButton = (currentGroup - 1) * buttonsPerPage + 1;
-    const endButton = Math.min(currentGroup * buttonsPerPage, totalPages);
+    const endButton = Math.min(currentGroup * buttonsPerPage, TotalPag);
 
     // Botón "Inicio"
     buttons.push(
-      <Button variant="outlined" color="blue-gray" size="sm"
+      <Button
+        variant="outlined"
+        color="blue-gray"
+        size="sm"
         key="start"
         onClick={() => handlePageChange(1)}
-        className={1 === currentPage ? 'active' : ''}
+        className={1 === currentPage ? "active" : ""}
       >
         Inicio
       </Button>
@@ -233,10 +294,13 @@ export default function Users() {
     // Botones numerados
     for (let i = startButton; i <= endButton; i++) {
       buttons.push(
-        <Button variant="outlined" color="blue-gray" size="sm"
+        <Button
+          variant="outlined"
+          color="blue-gray"
+          size="sm"
           key={i}
           onClick={() => handlePageChange(i)}
-          className={i === currentPage ? 'active' : ''}
+          className={i === currentPage ? "active" : ""}
         >
           {i}
         </Button>
@@ -245,7 +309,10 @@ export default function Users() {
 
     if (currentGroup < numButtons) {
       buttons.push(
-        <Button variant="outlined" color="blue-gray" size="sm"
+        <Button
+          variant="outlined"
+          color="blue-gray"
+          size="sm"
           key="next"
           onClick={() => handlePageChange(endButton + 1)}
         >
@@ -255,12 +322,15 @@ export default function Users() {
     }
 
     // Botón "Fin"
-    if (totalPages > 0) {
+    if (TotalPag > 0) {
       buttons.push(
-        <Button variant="outlined" color="blue-gray" size="sm"
+        <Button
+          variant="outlined"
+          color="blue-gray"
+          size="sm"
           key="end"
-          onClick={() => handlePageChange(totalPages)}
-          className={totalPages === currentPage ? 'active' : ''}
+          onClick={() => handlePageChange(TotalPag)}
+          className={TotalPag === currentPage ? "active" : ""}
         >
           Fin
         </Button>
@@ -270,9 +340,15 @@ export default function Users() {
     return buttons;
   };
 
-
   return (
     <Fragment>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        ""
+      )}
       {openArea ? (
         <Dialog
           size="xxl"
@@ -354,11 +430,28 @@ export default function Users() {
               >
                 <form className=" sm:w-full" onSubmit={HandleSUbumit}>
                   <div className="mb-4 flex flex-col gap-6">
-                    <input
-                      type="file"
-                      onChange={ImagePreview}
-                      accept="image/png, .jpeg"
-                    />
+                    <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                      <label
+                        htmlFor="fileInput"
+                        className="text-white font-bold"
+                      >
+                        Subir Foto:
+                      </label>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        onChange={ImagePreview}
+                        accept="image/png, .jpeg"
+                        className="hidden"
+                        ref={fileInputRef}
+                      />
+                      <Button
+                        className="ml-3  rounded-xl  bg-white h-11"
+                        onClick={handleButtonClick}
+                      >
+                        <AiOutlineUpload size="25px" color="black" />
+                      </Button>
+                    </div>
                     <Input
                       size="lg"
                       name="nombres"
@@ -374,8 +467,9 @@ export default function Users() {
                         icon={
                           <ChevronDownIcon
                             strokeWidth={2.5}
-                            className={`mx-auto h-4 w-4 transition-transform ${open === 1 ? "rotate-180" : ""
-                              }`}
+                            className={`mx-auto h-4 w-4 transition-transform ${
+                              open === 1 ? "rotate-180" : ""
+                            }`}
                           />
                         }
                       >
@@ -532,16 +626,23 @@ export default function Users() {
             </Tabs>
             <div className="w-full md:w-72 mr-5">
               <Input
+                name="clave"
                 label=""
                 placeholder="Buscar usuarios"
                 color="black"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                onChange={(e) => setClave(e.target.value)}
+                icon={
+                  <MagnifyingGlassIcon
+                    className="h-5 w-5 cursor-pointer"
+                    onClick={() => Buscar()}
+                  />
+                }
               />
             </div>
           </div>
         </CardHeader>
         <CardBody className="overflow-scroll px-0">
-          <table className="mt-4 w-full min-w-max table-auto text-left">
+          <table className="mt-4 w-full min-w-max table-auto text-left mx-4">
             <thead>
               <tr>
                 {TABLE_HEAD.map((head) => (
@@ -561,111 +662,141 @@ export default function Users() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => {
-                return (
-                  <tr key={user.userid}>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="flex items-center gap-3">
-                        <Avatar
-                          src={
-                            process.env.NEXT_PUBLIC_ACCESLINK +
-                            "user/foto/" +
-                            user.userid
-                          }
-                          alt={user.nombres_user}
-                          size="sm"
-                        />
-                        <div className="flex flex-col">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal"
-                          >
-                            {user.nombres_user}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.correo_personal_user}
-                          </Typography>
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.correo_institucional_user}
-                          </Typography>
-
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="font-normal opacity-70"
-                          >
-                            {user.nombre_firma_user}
-                          </Typography>
+              {users.map(
+                (
+                  {
+                    userid,
+                    nombres_user,
+                    correo_personal_user,
+                    correo_institucional_user,
+                    nombre_firma_user,
+                    identi,
+                    numero_celular_user,
+                    estadou,
+                    estado_user,
+                  },
+                  index
+                ) => {
+                  return (
+                    <tr key={userid}>
+                      <td>
+                        <div className="flex items-center gap-3 text-center">
+                          <div className="flex flex-col text-center">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal text-center"
+                            >
+                              {index + 1}
+                            </Typography>
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <div className="flex items-center gap-3">
+                          <Avatar
+                            src={
+                              process.env.NEXT_PUBLIC_ACCESLINK +
+                              "user/foto/" +
+                              userid
+                            }
+                            alt={nombres_user}
+                            size="sm"
+                          />
+                          <div className="flex flex-col">
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal"
+                            >
+                              {nombres_user}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {correo_personal_user}
+                            </Typography>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {correo_institucional_user}
+                            </Typography>
 
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.identi}
-                      </Typography>
-                    </td>
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="font-normal"
-                      >
-                        {user.numero_celular_user}
-                      </Typography>
-                    </td>
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal opacity-70"
+                            >
+                              {nombre_firma_user}
+                            </Typography>
+                          </div>
+                        </div>
+                      </td>
 
-                    <td className="p-4 border-b border-blue-gray-50">
-                      <div className="w-max">
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={user.estadou}
-                          color={user.estado_user ? "green" : "blue-gray"}
-                        />
-                      </div>
-                    </td>
-                    <td
-                      className="p-4 border-b border-blue-gray-50"
-                      onClick={() => (handleOpenArea(), setUserID(user.userid))}
-                    >
-                      <Tooltip content="Editar usuarios">
-                        <IconButton
-                          variant="text"
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <Typography
+                          variant="small"
                           color="blue-gray"
-                          onClick={() => setOpenModificarUsuario(true)}
+                          className="font-normal"
                         >
-                          <PencilIcon className="h-4 w-4" />
-                        </IconButton>
-                      </Tooltip>
-                    </td>
-                  </tr>
-                );
-              })}
+                          {identi}
+                        </Typography>
+                      </td>
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <Typography
+                          variant="small"
+                          color="blue-gray"
+                          className="font-normal"
+                        >
+                          {numero_celular_user}
+                        </Typography>
+                      </td>
+
+                      <td className="p-4 border-b border-blue-gray-50">
+                        <div className="w-max">
+                          <Chip
+                            variant="ghost"
+                            size="sm"
+                            value={estadou}
+                            color={estado_user ? "green" : "blue-gray"}
+                          />
+                        </div>
+                      </td>
+                      <td
+                        className="p-4 border-b border-blue-gray-50"
+                        onClick={() => (handleOpenArea(), setUserID(userid))}
+                      >
+                        <Tooltip content="Editar usuarios">
+                          <IconButton
+                            variant="text"
+                            color="blue-gray"
+                            onClick={() => setOpenModificarUsuario(true)}
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </IconButton>
+                        </Tooltip>
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </table>
         </CardBody>
         <CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
-          <Typography variant="small" color="blue-gray" className="font-normal">
-          </Typography>
+          <Typography
+            variant="small"
+            color="blue-gray"
+            className="font-normal"
+          ></Typography>
           <div className="pagination-buttons">
             {generatePaginationButtons()}
           </div>
-          <div className="flex gap-2">
-          </div>
+          <div className="flex gap-2"></div>
         </CardFooter>
       </Card>
     </Fragment>

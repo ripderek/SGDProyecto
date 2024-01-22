@@ -1,5 +1,10 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { ArchiveBoxIcon } from "@heroicons/react/24/solid";
+import {
+  ArchiveBoxIcon,
+  ArrowRightOnRectangleIcon,
+} from "@heroicons/react/24/solid";
+import { useRef } from "react";
+import { AiOutlineUpload } from "react-icons/ai";
 import {
   Card,
   CardHeader,
@@ -24,6 +29,9 @@ import axios from "axios";
 import OPArea from "../Areas/OPArea";
 import { useState, useEffect, Fragment } from "react";
 import { FaSearch } from "react-icons/fa";
+const TABLE_HEAD = ["", "Area", ""];
+
+import Loading from "@/components/loading";
 
 const TABS = [
   {
@@ -35,14 +43,18 @@ const TABS = [
     value: "Inhabilitadas",
   },
 ];
+import { Loader } from "@/components/Widgets";
 
 export default function Areas() {
+  const [loading, setLoading] = useState(false);
+
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+  const handleOpen = () => (setOpen(!open), load());
   const [openAlert, setOpenAlert] = useState(false);
   const hadleAlert = () => setOpenAlert(!openAlert);
   const [openAlerterror, setOpenAlerterror] = useState(false);
   const hadleAlerterror = () => setOpenAlerterror(!openAlert);
+  const fileInputRef = useRef(null);
   //mensaje de error
   const [error, setError] = useState();
   //variables para almacenar todas las areas
@@ -65,14 +77,17 @@ export default function Areas() {
 
   //Estado para almacenar al padre del area xd
   const [areaPadre, setAreaPadre] = useState("None");
-  const [areaPadreN, setAreaPadreN] = useState(null);
+  const [areaPadreN, setAreaPadreN] = useState("");
 
+  //Estado para almacenar la palabra clave para la busqueda
+  const [clave, setClave] = useState("");
   useEffect(() => {
     load();
   }, []);
 
   const load = async () => {
     //Cargar la lista de las areas
+    setLoading(true);
 
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "area/all_area",
@@ -82,10 +97,16 @@ export default function Areas() {
         credentials: "include",
       }
     );
-
     const data = await result.json();
     setAreasData(data);
-    console.log(areasdata);
+    setLoading(false);
+    setAreaPadre("None");
+    setAreaPadreN("");
+  };
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click(); // Activa el input de tipo "file"
+    }
   };
   //Dataos del area que se va a crear
   const [area, setArea] = useState({
@@ -106,8 +127,28 @@ export default function Areas() {
       console.log(error);
     }
   };
-
+  //funcion para buscar y filtrar areas mediante una palabra clave
+  const Buscar = async () => {
+    if (clave.trim().length === 0) {
+      load();
+    } //de lo contrario mostrar solo lo filtrado
+    else {
+      setLoading(true);
+      const result = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK + "area/all_area_busqueda/" + clave,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+      const data = await result.json();
+      setAreasData(data);
+      setLoading(false);
+    }
+  };
   const HandleSUbumit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       console.log("datos del usuario para enviar");
@@ -129,22 +170,26 @@ export default function Areas() {
         }
       );
 
-      console.log(area);
-      console.log(result);
       hadleAlert();
       handleOpen();
       load();
+      setAreaPadre("None");
+      setAreaPadreN("");
+
+      setLoading(false);
       //console.log(result);
     } catch (error) {
       let error1 = error.response.data.message;
-      console.log(error);
       setError(error1);
       hadleAlerterror();
+      setLoading(false);
     }
   };
 
   return (
     <Fragment>
+      {loading && <Loader />}
+
       {openArea ? (
         <Dialog
           size="xxl"
@@ -184,87 +229,154 @@ export default function Areas() {
         >
           Se creo una nueva area
         </Alert>
-        <div className="w-auto">
+        <div className="w-auto overflow-auto">
           <Dialog
             open={open}
             handler={handleOpen}
-            className="w-auto h-auto mt-5  overflow-y-scroll rounded-none"
+            className="w-auto h-4/5 mt-5  overflow-y-scroll rounded-none"
           >
-            <DialogHeader>
+            <DialogHeader className="bg-blue-gray-100">
               Crear Area
               <Button
                 color="red"
                 variant="text"
                 size="md"
                 className="!absolute top-3 right-3"
-                onClick={() => (setOpen(false), setAreaPadre(null))}
+                onClick={() => (
+                  setOpen(false), setAreaPadre(null), setAreaPadreN("")
+                )}
               >
                 <Typography variant="h5" color="blue-gray">
                   X
                 </Typography>
               </Button>
-              <Fragment>
-                <Drawer
-                  open={openModalArea}
-                  onClose={HandleModalArea}
-                  className="p-4 overflow-y-scroll"
-                  placement="right"
-                >
-                  <div className="mb-6  items-center justify-between mt-6">
-                    <Typography variant="h3" color="blue-gray">
-                      Seleccionar área
+              <Dialog
+                open={openModalArea}
+                handler={HandleModalArea}
+                className="w-auto h-4/5   overflow-y-scroll rounded-none"
+                size="xl"
+              >
+                <DialogHeader>
+                  Seleccione un area Padre
+                  <Button
+                    color="red"
+                    variant="text"
+                    size="md"
+                    className="!absolute top-3 right-3"
+                    onClick={HandleModalArea}
+                  >
+                    <Typography variant="h5" color="blue-gray">
+                      X
                     </Typography>
-                    <div className="flex w-auto">
+                  </Button>
+                </DialogHeader>
+                <DialogBody>
+                  <div className="flex items-center justify-between gap-4 md:flex-row-reverse">
+                    <div className="w-full md:w-72 items-center">
                       <Input
+                        name="clave"
                         label=""
-                        variant="standard"
-                        placeholder="Buscar"
+                        placeholder="Buscar usuarios"
                         color="black"
+                        onChange={(e) => setClave(e.target.value)}
+                        icon={
+                          <MagnifyingGlassIcon
+                            className="h-5 w-5 cursor-pointer"
+                            onClick={() => Buscar()}
+                          />
+                        }
                       />
-                      <Button className="flex gap-1 rounded-none bg-light-green-900 h-auto w-auto">
-                        <FaSearch size="1.9em" />
-                      </Button>
                     </div>
                   </div>
-                  {areasdata.map((task) => (
-                    <Card className="mt-6 w- h-auto bg-blue-gray-50 shadow-2xl">
-                      <CardBody>
-                        <Typography
-                          variant="h5"
-                          color="blue-gray"
-                          className="mb-2"
-                        >
-                          {task.nombrearea}
-                        </Typography>
-                        <div className="text-center">
-                          <Avatar
-                            src={
-                              process.env.NEXT_PUBLIC_ACCESLINK +
-                              "area/Areaimagen/" +
-                              task.area_id
-                            }
-                            alt={task.logoarea}
-                            size="xl"
-                            className="mt-3"
-                          />
-                        </div>
-                      </CardBody>
-                      <CardFooter className="pt-0">
-                        <Button
-                          className="bg-yellow-900"
-                          onClick={() => (
-                            HandleModalArea(),
-                            setAreaPadre(task.area_id),
-                            setAreaPadreN(task.nombrearea)
-                          )}
-                        >
-                          Seleccionar 2
-                        </Button>
-                      </CardFooter>
-                    </Card>
-                  ))}
-                </Drawer>
-              </Fragment>
+
+                  <table className="mt-4 w-full min-w-max table-auto text-left mx-3">
+                    <thead>
+                      <tr>
+                        {TABLE_HEAD.map((head) => (
+                          <th
+                            key={head}
+                            className="border-y border-blue-gray-100 bg-blue-gray-50/50 p-4"
+                          >
+                            <Typography
+                              variant="small"
+                              color="blue-gray"
+                              className="font-normal leading-none opacity-70"
+                            >
+                              {head}
+                            </Typography>
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {areasdata.map(
+                        ({ area_id, nombrearea, logoarea, prefijo }, index) => {
+                          return (
+                            <tr key={area_id}>
+                              <td>
+                                <div className="flex items-center gap-3 text-center">
+                                  <div className="flex flex-col text-center">
+                                    <Typography
+                                      variant="small"
+                                      color="blue-gray"
+                                      className="font-normal text-center"
+                                    >
+                                      {index + 1}
+                                    </Typography>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4 border-b border-blue-gray-50">
+                                <div className="flex items-center gap-3">
+                                  <Avatar
+                                    src={
+                                      process.env.NEXT_PUBLIC_ACCESLINK +
+                                      "area/Areaimagen/" +
+                                      area_id
+                                    }
+                                    alt={logoarea}
+                                    className="mt-3"
+                                  />
+                                  <div className="flex flex-col">
+                                    <Typography
+                                      variant="h5"
+                                      color="blue-gray"
+                                      className="mr-auto font-normal mb-2 text-sm"
+                                    >
+                                      {nombrearea}
+                                    </Typography>
+                                    <div className="w-auto flex ml-2 mb-2">
+                                      <Chip
+                                        variant="ghost"
+                                        size="sm"
+                                        value={prefijo}
+                                        color="blue-gray"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-4 border-b border-blue-gray-50">
+                                <Button
+                                  className="bg-yellow-900"
+                                  size="sm"
+                                  onClick={() => (
+                                    HandleModalArea(),
+                                    setAreaPadre(area_id),
+                                    setAreaPadreN(nombrearea)
+                                  )}
+                                >
+                                  Seleccionar
+                                </Button>
+                              </td>
+                            </tr>
+                          );
+                        }
+                      )}
+                    </tbody>
+                  </table>
+                </DialogBody>
+              </Dialog>
             </DialogHeader>
             <DialogBody>
               <Alert
@@ -277,11 +389,7 @@ export default function Areas() {
               <div className="flex justify-center mb-5">
                 <img
                   className="ml-5 h-40 w-40 rounded-full border-4 border-yellow-600 cursor-pointer"
-                  src={
-                    !fileP
-                      ? "/img/Home/photo-1633332755192-727a05c4013d.jpg"
-                      : fileP
-                  }
+                  src={!fileP ? "/img/Home/area_icon.png" : fileP}
                   alt="User image"
                 />
               </div>
@@ -292,11 +400,28 @@ export default function Areas() {
               >
                 <form className=" sm:w-full" onSubmit={HandleSUbumit}>
                   <div className="mb-4 flex flex-col gap-6">
-                    <input
-                      type="file"
-                      accept="image/png, .jpeg"
-                      onChange={ImagePreview}
-                    />
+                    <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
+                      <label
+                        htmlFor="fileInput"
+                        className="text-white font-bold"
+                      >
+                        Subir Foto:
+                      </label>
+                      <input
+                        type="file"
+                        id="fileInput"
+                        onChange={ImagePreview}
+                        accept="image/png, .jpeg"
+                        className="hidden"
+                        ref={fileInputRef}
+                      />
+                      <Button
+                        className="ml-3  rounded-xl  bg-white h-11"
+                        onClick={handleButtonClick}
+                      >
+                        <AiOutlineUpload size="25px" color="black" />
+                      </Button>
+                    </div>
                     <Input
                       size="lg"
                       name="nombre_area"
@@ -310,6 +435,7 @@ export default function Areas() {
                       size="lg"
                       name="prefijo"
                       variant="standard"
+                      maxLength={5}
                       color="black"
                       placeholder="Prefijo de 5 caracteres"
                       onChange={HandleChange}
@@ -317,7 +443,9 @@ export default function Areas() {
                     />
                     {areaPadre != "None" ? (
                       <div className="text-center text-black font-black ">
-                        {"Esta Area será hija de: " + areaPadreN}
+                        {areaPadreN.trim().length === 0
+                          ? ""
+                          : "Esta Area será hija de: " + areaPadreN}
                       </div>
                     ) : (
                       ""
@@ -332,14 +460,16 @@ export default function Areas() {
                     </Button>
                   </div>
 
-                  <Button
-                    className="mt-6 rounded-none"
-                    fullWidth
-                    color="green"
-                    type="submit"
-                  >
-                    Crear
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button
+                      type="submit"
+                      color="green"
+                      className="flex gap-1 rounded-none h-11"
+                    >
+                      <ArrowRightOnRectangleIcon className="h-7 w-7 mx-auto" />
+                      <p className="mt-1"> Crear</p>
+                    </Button>
+                  </div>
                 </form>
               </Card>
             </DialogBody>
@@ -381,7 +511,13 @@ export default function Areas() {
                 label=""
                 placeholder="Buscar areas"
                 color="black"
-                icon={<MagnifyingGlassIcon className="h-5 w-5" />}
+                onChange={(e) => setClave(e.target.value)}
+                icon={
+                  <MagnifyingGlassIcon
+                    className="h-5 w-5 cursor-pointer"
+                    onClick={() => Buscar()}
+                  />
+                }
               />
             </div>
           </div>
@@ -402,61 +538,49 @@ export default function Areas() {
               <div
                 key={task.area_id}
                 task={task}
-                className="bg-blue-gray-50 shadow-2xl"
+                className="bg-blue-gray-50 shadow-2xl border-2 border-orange-300 cursor-pointer hover:border-4 hover:border-green-600"
+                onClick={() => {
+                  setIdArea(task.area_id),
+                    setNameArea(task.nombrearea),
+                    handleOpenArea();
+                }}
               >
-                <div className="bg-zinc-900 text-black shadow-2xl ">
-                  <div className="mx-auto">
-                    <div className="text-center">
-                      <Avatar
-                        src={
-                          process.env.NEXT_PUBLIC_ACCESLINK +
-                          "area/Areaimagen/" +
-                          task.area_id
-                        }
-                        alt={task.logoarea}
-                        size="xl"
-                        className="mt-3"
-                      />
-                    </div>
-                    <div className="w-full p-4">
-                      <input
-                        className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
-                        disabled
-                        value={task.nombrearea}
-                      />
-                    </div>
-
-                    <div className="w-auto flex ml-2 mb-2">
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={task.estadoarea ? "Habilitada" : "Inhabilitada"}
-                        color={task.estadoarea ? "green" : "red"}
-                      />
-                    </div>
-                    <div className="w-auto flex ml-2 mb-2">
-                      <Chip
-                        variant="ghost"
-                        size="sm"
-                        value={task.prefijo}
-                        color="blue-gray"
-                      />
-                    </div>
+                <div className="mx-auto">
+                  <div className="text-center">
+                    <Avatar
+                      src={
+                        process.env.NEXT_PUBLIC_ACCESLINK +
+                        "area/Areaimagen/" +
+                        task.area_id
+                      }
+                      alt={task.logoarea}
+                      size="xl"
+                      className="mt-3"
+                    />
                   </div>
-                  <div className="p-2  bg-green-400">
-                    <button
-                      className="bg-zinc-50 p-2 hover:bg-blue-700 
-        bg-yellow-900"
-                      onClick={() => {
-                        setIdArea(task.area_id),
-                          setNameArea(task.nombrearea),
-                          handleOpenArea();
-                      }}
-                    >
-                      <p className="text-lg font-semibold items-center text-white">
-                        Ver area
-                      </p>
-                    </button>
+                  <div className="w-full p-4">
+                    <input
+                      className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
+                      disabled
+                      value={task.nombrearea}
+                    />
+                  </div>
+
+                  <div className="w-auto flex ml-2 mb-2">
+                    <Chip
+                      variant="ghost"
+                      size="sm"
+                      value={task.estadoarea ? "Habilitada" : "Inhabilitada"}
+                      color={task.estadoarea ? "green" : "red"}
+                    />
+                  </div>
+                  <div className="w-auto flex ml-2 mb-4">
+                    <Chip
+                      variant="ghost"
+                      size="sm"
+                      value={task.prefijo}
+                      color="blue-gray"
+                    />
                   </div>
                 </div>
               </div>
