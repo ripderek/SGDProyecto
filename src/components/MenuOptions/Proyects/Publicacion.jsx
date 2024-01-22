@@ -16,6 +16,7 @@ import {
   Dialog,
   Input,
   Chip,
+  Tooltip,
 } from "@material-tailwind/react";
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/verification_anim.json";
@@ -23,7 +24,7 @@ import ListDocumentosExtras from "./ListDocumentosExtras";
 import Participantes from "./Participantes";
 import Loading from "@/components/loading";
 import LisDocumentosContraportadas from "./LisDocumentosContraportadas";
-
+import Firmas_participantes from "./Firmas_participantes";
 export default function Publicacion({ idproyecto, idarea }) {
   const [areasdata, setAreasData] = useState([]);
   const cookies = new Cookies();
@@ -35,7 +36,7 @@ export default function Publicacion({ idproyecto, idarea }) {
   const [openRechazar, setOpenRechazar] = useState(false);
   const handleOpen = () => setOpenRechazar(!openRechazar);
   const [loading, setLoading] = useState(false);
-
+  const [verificarFirmas, setVerificarFirmas] = useState(false);
   useEffect(() => {
     load();
   }, []);
@@ -90,6 +91,22 @@ export default function Publicacion({ idproyecto, idarea }) {
       );
       setRolUser(result3.data);
 
+      //obtener la verificacion si todas las firmas estan completas para activar el boton
+      const resultVer = await fetch(
+        process.env.NEXT_PUBLIC_ACCESLINK +
+          "proyects/Verificarfirmas/" +
+          idproyecto,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      const dataV = await resultVer.json();
+      //setUsers(data);
+      setVerificarFirmas(dataV.r_verificador);
+
       setLoading(false);
     } catch (error) {
       alert("error");
@@ -110,7 +127,7 @@ export default function Publicacion({ idproyecto, idarea }) {
           withCredentials: true,
         }
       );
-      alert("Se acepto el documento");
+      location.reload();
       //console.log(result);
     } catch (error) {
       alert("Error");
@@ -140,7 +157,6 @@ export default function Publicacion({ idproyecto, idarea }) {
   };
   const Preparar = async () => {
     setLoading(true);
-
     try {
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK +
@@ -163,11 +179,13 @@ export default function Publicacion({ idproyecto, idarea }) {
   //aqui van los estados y handlers para poder acceder a las opciones xdxd skere modo diablo
   const [openDocumento, setOpenDocumento] = useState(false);
   const HandlerOpenDocumento = () => {
+    load();
     setOpenDocumento(true);
     setOpenParticipantes(false);
     setOpenAnadirDocs(false);
     setFondo(false);
     setOpenContraportada(false);
+    setOpenFirmas(false);
   };
   const [openParticipantes, setOpenParticipantes] = useState(false);
   const HandlerParticipantes = () => {
@@ -176,6 +194,7 @@ export default function Publicacion({ idproyecto, idarea }) {
     setOpenAnadirDocs(false);
     setFondo(false);
     setOpenContraportada(false);
+    setOpenFirmas(false);
   };
   const [openAnadirDocs, setOpenAnadirDocs] = useState(false);
   const HandlerAnadir = () => {
@@ -184,10 +203,22 @@ export default function Publicacion({ idproyecto, idarea }) {
     setOpenDocumento(false);
     setFondo(false);
     setOpenContraportada(false);
+    setOpenFirmas(false);
   };
   const [openContraportada, setOpenContraportada] = useState(false);
   const handlerContraportada = () => {
     setOpenContraportada(true);
+    setOpenAnadirDocs(false);
+    setOpenParticipantes(false);
+    setOpenDocumento(false);
+    setFondo(false);
+    setOpenFirmas(false);
+  };
+  //para abrir la ventana de firmas
+  const [openFirmas, setOpenFirmas] = useState(false);
+  const HandlerFirmas = () => {
+    setOpenFirmas(true);
+    setOpenContraportada(false);
     setOpenAnadirDocs(false);
     setOpenParticipantes(false);
     setOpenDocumento(false);
@@ -299,27 +330,44 @@ export default function Publicacion({ idproyecto, idarea }) {
                 >
                   Participantes
                 </Tab>
-                <Tab
-                  key={"Añadir contraportada"}
-                  value={"Añadir contraportada"}
-                  onClick={handlerContraportada}
-                >
-                  Añadir contraportada
-                </Tab>
-                <Tab
-                  key={"Añadir documentos"}
-                  value={"Añadir documentos"}
-                  onClick={HandlerAnadir}
-                >
-                  Documentos extras
-                </Tab>
+                {!areasdata.r_documento_preparado ? (
+                  <Tab
+                    key={"Añadir contraportada"}
+                    value={"Añadir contraportada"}
+                    onClick={handlerContraportada}
+                  >
+                    Añadir contraportada
+                  </Tab>
+                ) : (
+                  ""
+                )}
+
+                {!areasdata.r_documento_preparado ? (
+                  <Tab
+                    key={"Añadir documentos"}
+                    value={"Añadir documentos"}
+                    onClick={HandlerAnadir}
+                  >
+                    Documentos extras
+                  </Tab>
+                ) : (
+                  ""
+                )}
+
+                {areasdata.r_documento_preparado ? (
+                  <Tab key={"Firmas"} value={"Firmas"} onClick={HandlerFirmas}>
+                    Firmas
+                  </Tab>
+                ) : (
+                  ""
+                )}
               </TabsHeader>
               <TabsBody className="overflow-x-auto">
                 {openDocumento ? (
                   <Card>
                     <CardBody>
                       <div className="text-black">
-                        {areasdata.r_documento_preparado ? (
+                        {areasdata.r_documento_preparado && verificarFirmas ? (
                           <Button
                             className="mb-8 rounded-none p-4"
                             color="green"
@@ -330,7 +378,18 @@ export default function Publicacion({ idproyecto, idarea }) {
                         ) : (
                           ""
                         )}
-
+                        {!verificarFirmas ? (
+                          <Tooltip content="Faltan firmas para poder publicar">
+                            <Button
+                              className="mb-8 rounded-none p-4"
+                              color="gray"
+                            >
+                              Publicar Documento
+                            </Button>
+                          </Tooltip>
+                        ) : (
+                          ""
+                        )}
                         <Button
                           className="mb-8 rounded-none p-4 ml-6"
                           color="red"
@@ -372,7 +431,10 @@ export default function Publicacion({ idproyecto, idarea }) {
                     idarea={idarea}
                     agregarRevisores={false}
                     permite_agregar={
-                      areasdata.r_rol_user === "Admin" ? true : false
+                      areasdata.r_rol_user === "Admin" &&
+                      !areasdata.r_documento_preparado
+                        ? true
+                        : false
                     }
                   />
                 ) : (
@@ -398,6 +460,11 @@ export default function Publicacion({ idproyecto, idarea }) {
                 )}
                 {openContraportada ? (
                   <LisDocumentosContraportadas idProyecto={idproyecto} />
+                ) : (
+                  ""
+                )}
+                {openFirmas ? (
+                  <Firmas_participantes id_proyecto={idproyecto} />
                 ) : (
                   ""
                 )}

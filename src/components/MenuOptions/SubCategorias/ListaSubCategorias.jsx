@@ -1,11 +1,7 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, PlusIcon } from "@heroicons/react/24/solid";
 //importar los compoonentes desdel index y ya no por separador
-import {
-  Crear,
-  Ediatr,
-  DefinirFlujo,
-} from "@/components/MenuOptions/Categorias";
+import { Crear, Editar } from "@/components/MenuOptions/SubCategorias";
 import {
   CardHeader,
   Input,
@@ -40,16 +36,9 @@ const TABS = [
   },
 ];
 
-const TABLE_HEAD = [
-  "Nombre categoria",
-  "Prefijo",
-  "Descripcion",
-  "Estado",
-  "Flujo",
-  "Editar",
-];
+const TABLE_HEAD = ["Nombre categoria", "Prefijo", "Estado", "Editar"];
 import { Loader } from "@/components/Widgets";
-export default function OpCategorias() {
+export default function ListaSubCategorias() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
   const [users, setUsers] = useState([]);
@@ -93,7 +82,7 @@ export default function OpCategorias() {
   const load = async () => {
     setLoad(true);
     const result = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/list_categorias",
+      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/list_sub_categorias",
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -116,7 +105,7 @@ export default function OpCategorias() {
       //setUser({ ...user, tipo_identificacion: tipoidentificacion });
 
       const result = await axios.post(
-        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/estado/" + editCat,
+        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/estado_sub/" + editCat,
         {},
         {
           withCredentials: true,
@@ -133,36 +122,7 @@ export default function OpCategorias() {
       console.log(error);
     }
   };
-  const HandleSUbumitEDIT = async (e) => {
-    e.preventDefault();
-    try {
-      //setUser({ tipo_identificacion: tipoidentificacion });
-      //setUser({ ...user, tipo_identificacion: tipoidentificacion });
-      console.log(editCat);
-      const result = await axios.post(
-        process.env.NEXT_PUBLIC_ACCESLINK + "proyects/editar_categoria",
-        {
-          p_nombres: nombreEdit,
-          p_prefijo: preEdit,
-          p_descripcion: descripcionEdit,
-          p_id_categoria: editCat,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(result);
-      setMensajeAlert("Se edito la categoria");
 
-      hadleAlert();
-      handleOpenArea();
-      load();
-    } catch (error) {
-      setError(error.response.data.message);
-      setOpenAlerterror(true);
-      console.log(error);
-    }
-  };
   //constante para abrir el creador de categorias
   const [openCrear, setOpenCrear] = useState(false);
   const cerrar = () => {
@@ -174,19 +134,13 @@ export default function OpCategorias() {
     setOpenEditar(false);
     load();
   };
-  //const para abrir el editor de flujo
-  const [openFlujo, SetOpenFlujo] = useState(false);
-  const cerrarDefinir = () => {
-    SetOpenFlujo(false);
-  };
   return (
     <div>
-      {openFlujo && <DefinirFlujo cerrar={cerrarDefinir} />}
       {loading && <Loader />}
       {/* NUEVO METODO PARA CREAR PARA SEPARARLO DEL COMPONENTE PRINCIPAL */}
       {openCrear && <Crear cerrar={cerrar} />}
       {openEditar && (
-        <Ediatr cerrar={cerrarEditar} categoriaEdit={categoriaEdit} />
+        <Editar cerrar={cerrarEditar} categoriaEdit={categoriaEdit} />
       )}
 
       <Fragment>
@@ -233,10 +187,10 @@ export default function OpCategorias() {
             <div className="mb-8 flex items-center justify-between gap-8">
               <div>
                 <Typography variant="h5" color="blue-gray">
-                  Lista de Categorias
+                  Lista de Sub-Categorias
                 </Typography>
                 <Typography color="gray" className="mt-1 font-normal">
-                  Administra las categorias
+                  Administra las Sub-Categorias
                 </Typography>
               </div>
               <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
@@ -302,15 +256,7 @@ export default function OpCategorias() {
                           {user.t_nombre_categoria}
                         </Typography>
                       </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="font-normal"
-                        >
-                          {user.t_prefijo_categoria}
-                        </Typography>
-                      </td>
+
                       <td className="p-4 border-b border-blue-gray-50">
                         <Typography
                           variant="small"
@@ -330,24 +276,11 @@ export default function OpCategorias() {
                           <Chip
                             variant="ghost"
                             size="sm"
-                            value={user.t_est}
+                            value={
+                              user.t_estado ? "Habilitado" : "Deshabilitado"
+                            }
                             color={user.t_estado ? "green" : "blue-gray"}
                           />
-                        </div>
-                      </td>
-                      <td className="p-4 border-b border-blue-gray-50">
-                        <div className="w-max cursor-pointer">
-                          <Button onClick={() => SetOpenFlujo(true)}>
-                            Definir Flujo
-                          </Button>
-                          {/* 
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value={user.t_est}
-                            color={user.t_estado ? "green" : "blue-gray"}
-                          />
-                          */}
                         </div>
                       </td>
                       <td
@@ -358,7 +291,6 @@ export default function OpCategorias() {
                           setCategoriaEDit({
                             cat_id: user.t_id_categoria,
                             cat_nombre: user.t_nombre_categoria,
-                            catPrefijo: user.t_prefijo_categoria,
                             catDescripcion: user.t_descripcion,
                           }),
                           //setEditCat(user.t_id_categoria)

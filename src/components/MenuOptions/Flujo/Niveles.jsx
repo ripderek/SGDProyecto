@@ -42,6 +42,7 @@ const TABLE_HEAD = [
   "Estado",
   "Editar",
 ];
+import { Loader } from "@/components/Widgets";
 
 export default function Niveles() {
   const [openOP, setOpenOP] = useState(false);
@@ -70,7 +71,10 @@ export default function Niveles() {
   useEffect(() => {
     load();
   }, []);
+  const [loading, setLoader] = useState(false);
+
   const load = async () => {
+    setLoader(true);
     //ojito aqui hay que realizar un cambio  ya que solo deben mostrarle los niveles que tienen estado true
     const result = await fetch(
       process.env.NEXT_PUBLIC_ACCESLINK + "flujo/Ver_tipos_jerarquias",
@@ -83,9 +87,11 @@ export default function Niveles() {
 
     const data = await result.json();
     setUsers(data);
+    setLoader(false);
   };
   return (
     <div>
+      {loading && <Loader />}
       <Card className="h-full w-full rounded-none shadow-none">
         {openOP ? <Crear_Nivel handlerOpen={handlerOpen} /> : ""}
         {openVerNiveles ? <Ver_Niveles handlerNiveles={handlerNiveles} /> : ""}
@@ -98,7 +104,6 @@ export default function Niveles() {
         ) : (
           ""
         )}
-
         <CardHeader floated={false} shadow={false} className="rounded-none">
           <div className="mb-8 flex items-center justify-between gap-8">
             <div>

@@ -18,6 +18,9 @@ import {
   CardBody,
 } from "@material-tailwind/react";
 import Loading from "@/components/loading";
+import fileDownload from "js-file-download";
+import Cookies from "universal-cookie";
+
 import { AiOutlineUpload } from "react-icons/ai";
 
 import axios from "axios";
@@ -29,6 +32,7 @@ export default function FirmarDocumento({
   id_firma,
   titulo_proyecto,
   codigo_proyecto,
+  salir_firmador,
 }) {
   //hacer una funcion que cargue informacion sobre el proyecto como el titulo, codigo, etc
   const [loading, setLoading] = useState(false);
@@ -43,6 +47,8 @@ export default function FirmarDocumento({
   const [descripcion, setDescripcion] = useState("");
 
   const [file, setFile] = useState(null);
+  const [filePDF, setFilePDF] = useState(null);
+  const [coordernadas, setCoordenadas] = useState([]);
   const ImagePreview = (e) => {
     try {
       setFile(e.target.files[0]);
@@ -64,25 +70,172 @@ export default function FirmarDocumento({
         credentials: "include",
       }
     );
-
     const data = await result2.json();
-    //setUsers(data);
-    //console.log(data);
     setID(data.r_id);
-
-    //guardar el pdf en una variable de tipo file xd
-    const resultpdf = await fetch(
-      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/pdf2/" + data.r_id,
+    console.log("Enviar los datos");
+    //coordenadas para firmar el documento
+    const result_coordenas = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/Calcularcoordenadas/" +
+        id_proyecto +
+        "/" +
+        cookies.get("id_user"),
       {
         method: "GET",
-        headers: { "Content-Type": "application/pdf" },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
       }
     );
-    console.log("Datos del pdf revisido");
-    console.log(resultpdf);
-
+    const data2 = await result_coordenas.json();
+    setCoordenadas(data2);
     setLoading(false);
+  };
+  //fucnion para calcular las coordenas esto debe de cargarse en el load
+  const cookies = new Cookies();
+
+  const calcular = async () => {
+    //obtener las coordenadas de donde va firmar el usuario para enviarlo al firmador
+    const result_coordenas = await fetch(
+      process.env.NEXT_PUBLIC_ACCESLINK +
+        "proyects/Calcularcoordenadas/" +
+        id_proyecto +
+        "/" +
+        cookies.get("id_user"),
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+      }
+    );
+    const data = await result_coordenas.json();
+    setCoordenadas(data);
+    alert("Calculad");
+  };
+  //funcion para enviar a firmar el pdf
+  const HandleSUbumit = async (e) => {
+    setLoading(true);
+
+    await axios({
+      method: "post",
+      url: process.env.NEXT_PUBLIC_ACCESLINK + "proyects/PDF_para_firmar/" + id,
+      responseType: "blob",
+      withCredentials: true,
+    })
+      .then(async (res) => {
+        const pdfBlob = new Blob([res.data], { type: "application/pdf" });
+        // Crear un archivo File a partir del Blob
+        const pdfFile = new File([pdfBlob], "archivo.pdf", {
+          type: "application/pdf",
+        });
+        console.log(pdfFile);
+
+        const form = new FormData();
+        form.append("pdf", pdfFile);
+        form.append("firma", file);
+        form.append("palabra_secreta", descripcion);
+        form.append("posicion_x", coordernadas.coordenadaX);
+        form.append("posicion_y", coordernadas.coordenadaY);
+        form.append("numero_paguina", coordernadas.numPag);
+
+        //enviar a firmar
+        try {
+          await axios({
+            method: "post",
+            url: "http://192.168.1.22:81/procesar",
+            data: form,
+            responseType: "blob",
+            withCredentials: false,
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          })
+            .then(async (res) => {
+              console.log("descargando el archivo");
+              //este es el que descarga
+              //si se necesitan hacer pruebas descomentar fileDownload(res.data, "archiv.pdf");
+              //fileDownload(res.data, "archiv.pdf");
+              ///
+              ///
+              ///
+              ///
+              //
+              //aqui invocar la otra parte de la funcion para enviar el pdf a la API en lugar de descargarlo
+              //si se necesitan hacer pruebas sin enviar a la api o registrar la firma (osea para ver el documento pdf firmado)
+              //comentar todo lo siguiente hasta .catch((err)=>{})
+
+              // Convertir el Blob del PDF en un archivo File
+              console.log(res.data);
+              const pdfBlob2 = new Blob([res.data], {
+                type: "application/pdf",
+              });
+              console.log(pdfBlob2);
+              var nombre_documento = "DocumentoFirmado-" + Date.now() + ".pdf";
+              //const pdfFile = new File([pdfBlob], 'archivo.pdf');
+              // Crear un archivo File a partir del Blob
+              const pdfFile2 = new File([pdfBlob2], nombre_documento, {
+                type: "application/pdf",
+              });
+
+              // Crear un objeto FormData para adjuntar el archivo PDF
+              const formData = new FormData();
+              formData.append("file", pdfFile2);
+              formData.append("id_user", cookies.get("id_user"));
+              formData.append("id", id_proyecto);
+
+              // Realizar la solicitud POST al servidor
+              await axios({
+                method: "post",
+                url:
+                  process.env.NEXT_PUBLIC_ACCESLINK +
+                  "proyects/DocumentoFirmado",
+                data: formData,
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+                withCredentials: true,
+              })
+                .then(async (response) => {
+                  console.log(response);
+                  salir_firmador(true);
+                  setLoading(false);
+                })
+                .catch((error) => {
+                  // Maneja los errores de la solicitud aquí
+                  setLoading(false);
+                  alert("Error");
+                  console.error("Error en la solicitud:", error);
+                });
+              ///
+
+              ////
+
+              ///
+              ///
+
+              ///
+
+              ///
+              //regresar a la pantalla principal de documentos por firmar
+              //salir_firmador(true);
+              //setLoading(false);
+            })
+            .catch((err) => {
+              // Manejar el error aquí
+              console.log(err.message);
+              alert(err.message);
+              setLoading(false);
+            });
+        } catch (error) {
+          setLoading(false);
+          console.log(error);
+        }
+      })
+      .catch((err) => {
+        // Manejar el error aquí
+        console.log(err.message);
+        alert(err.message);
+        setLoading(false);
+      });
   };
   return (
     <div className="bg-white h-full mb-10">
@@ -106,6 +259,7 @@ export default function FirmarDocumento({
             </Typography>
           </Button>
         </DialogHeader>
+
         <form className=" sm:w-full">
           <Card className="w-full  mx-auto bg-blue-gray-100 rounded-none shadow-2xl">
             <CardHeader
@@ -121,6 +275,7 @@ export default function FirmarDocumento({
                   label="Contraseña del .p12"
                   name="contra_nueva"
                   onChange={(e) => setDescripcion(e.target.value)}
+                  type="password"
                 />
               </div>
               <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
@@ -146,7 +301,11 @@ export default function FirmarDocumento({
             <CardBody className="text-right">
               <div>
                 <Button className="bg-green-700 p-3 justify-items-end rounded-none">
-                  <Typography variant="h6" color="white">
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    onClick={HandleSUbumit}
+                  >
                     Aceptar
                   </Typography>
                 </Button>
@@ -186,6 +345,7 @@ export default function FirmarDocumento({
               <p className="mt-1">Firmar</p>
             </Button>
           </div>
+
           <iframe
             src={process.env.NEXT_PUBLIC_ACCESLINK + "proyects/pdf2/" + id}
             height="100%"

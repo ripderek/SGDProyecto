@@ -21,6 +21,7 @@ import { useState, useRef } from "react";
 import axios from "axios";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { AiOutlineUpload } from "react-icons/ai";
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 import Loading from "@/components/loading";
 import Lottie from "lottie-react";
 import anim_error from "../../../../public/Anim/error_anim.json";
@@ -158,7 +159,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
         </DialogFooter>
       </Dialog>
 
-      <Card className="w-full max-w-[40rem] mx-auto bg-white shadow-none rounded-none">
+      <Card className="w-full max-w-[40rem] mx-auto bg-white shadow-2xl shadow-blue-gray-900 rounded-none mb-16">
         <CardHeader></CardHeader>
         <CardBody>
           <div className="flex justify-center mb-5">
@@ -180,7 +181,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
             <form className=" sm:w-full" onSubmit={HandleSUbumit}>
               <div className="mb-4 flex flex-col gap-6">
                 <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
-                  <label htmlFor="fileInput" className="text-black ">
+                  <label htmlFor="fileInput" className="text-white font-bold ">
                     Subir Foto:
                   </label>
                   <input
@@ -203,7 +204,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                   name="nombres"
                   variant="standard"
                   color="black"
-                  placeholder="Nombres y Apellidos"
+                  label="Nombres y Apellidos"
                   onChange={HandleChange}
                   required
                 />
@@ -284,7 +285,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                     variant="standard"
                     maxLength={13}
                     color="black"
-                    placeholder="Numero de identificacion"
+                    label="Numero de identificacion"
                     onChange={HandleChange}
                     required
                   />
@@ -294,7 +295,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                   name="correo1"
                   variant="standard"
                   color="black"
-                  placeholder="Correo Personal"
+                  label="Correo Personal"
                   onChange={HandleChange}
                   required
                 />
@@ -303,7 +304,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                   name="correo2"
                   variant="standard"
                   color="black"
-                  placeholder="Correo Institucional"
+                  label="Correo Institucional"
                   onChange={HandleChange}
                   required
                 />
@@ -313,7 +314,7 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                   variant="standard"
                   maxLength={10}
                   color="black"
-                  placeholder="Numero Celular"
+                  label="Numero Celular"
                   onChange={HandleChange}
                   required
                 />
@@ -322,19 +323,21 @@ export default function CrearUsuarioArea({ id_user, ver_listado }) {
                   name="firma"
                   variant="standard"
                   color="black"
-                  placeholder="Nombres para la firma"
+                  label="Nombres para la firma"
                   onChange={HandleChange}
                   required
                 />
               </div>
-              <Button
-                className="mt-6 rounded-none"
-                fullWidth
-                color="green"
-                type="submit"
-              >
-                Crear
-              </Button>
+              <div className="flex justify-end">
+                <Button
+                  type="submit"
+                  color="green"
+                  className="flex gap-1 rounded-none h-11"
+                >
+                  <ArrowRightOnRectangleIcon className="h-7 w-7 mx-auto" />
+                  <p className="mt-1"> Crear</p>
+                </Button>
+              </div>
             </form>
           </Card>
         </CardBody>

@@ -14,6 +14,8 @@ import Editar_Empresa from "./Editar_Empresa";
 import Cambiar_foto_empresa from "./Cambiar_foto_empresa";
 import Lottie from "lottie-react";
 import anim_settings from "../../../../public/Anim/settings_empresa.json";
+import { Loader } from "@/components/Widgets";
+
 function OP_Empresa({ handlerOpen, id_empresa }) {
   const data = [
     {

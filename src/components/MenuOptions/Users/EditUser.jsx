@@ -19,7 +19,7 @@ import { useState, useEffect } from "react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import Loading from "@/components/loading";
 import { data } from "jquery";
-
+import { ArrowRightOnRectangleIcon } from "@heroicons/react/24/solid";
 export default function EditUser({ openEditUser, userID }) {
   //Estado para cargar los datos que se van a editar segun el id que se recibe xd jijiij ja
   const [UserData, setUserData] = useState([]);
@@ -171,7 +171,7 @@ export default function EditUser({ openEditUser, userID }) {
                     name="nombres"
                     variant="standard"
                     color="black"
-                    placeholder="Nombres"
+                    label="Nombres"
                     value={user.nombres}
                     onChange={HandleChange}
                     required
@@ -252,7 +252,7 @@ export default function EditUser({ openEditUser, userID }) {
                       name="identificacion"
                       variant="standard"
                       color="black"
-                      placeholder="Identificacion"
+                      label="Identificacion"
                       value={user.identificacion}
                       onChange={HandleChange}
                       maxLength={13}
@@ -265,7 +265,7 @@ export default function EditUser({ openEditUser, userID }) {
                     name="correo1"
                     variant="standard"
                     color="black"
-                    placeholder="Correo Personal"
+                    label="Correo Personal"
                     value={user.correo1}
                     onChange={HandleChange}
                     required
@@ -275,7 +275,7 @@ export default function EditUser({ openEditUser, userID }) {
                     name="correo2"
                     variant="standard"
                     color="black"
-                    placeholder="Correo Institucional"
+                    label="Correo Institucional"
                     value={user.correo2}
                     onChange={HandleChange}
                     required
@@ -285,7 +285,7 @@ export default function EditUser({ openEditUser, userID }) {
                     name="celular"
                     variant="standard"
                     color="black"
-                    placeholder="Celular"
+                    label="Celular"
                     value={user.celular}
                     onChange={HandleChange}
                     maxLength={10}
@@ -296,21 +296,23 @@ export default function EditUser({ openEditUser, userID }) {
                     name="firma"
                     variant="standard"
                     color="black"
-                    placeholder="Firma"
+                    label="Firma"
                     value={user.firma}
                     onChange={HandleChange}
                     required
                   />
                 </div>
 
-                <Button
-                  className="mt-6 rounded-none"
-                  fullWidth
-                  color="green"
-                  type="submit"
-                >
-                  Aceptar
-                </Button>
+                <div className="flex justify-end">
+                  <Button
+                    type="submit"
+                    color="green"
+                    className="flex gap-1 rounded-none h-11"
+                  >
+                    <ArrowRightOnRectangleIcon className="h-7 w-7 mx-auto" />
+                    <p className="mt-1"> Guardar Cambios</p>
+                  </Button>
+                </div>
               </form>
             </Card>
           </DialogBody>

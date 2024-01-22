@@ -84,70 +84,57 @@ export default function AreasAdmin({ id_area, nombre_area, isadmin, rolarea }) {
               <div
                 key={task.a_id_area}
                 task={task}
-                className="bg-blue-gray-50 shadow-2xl"
+                className="bg-blue-gray-50 shadow-2xl cursor-pointer border-2 border-yellow-400 hover:border-4 hover:border-green-800 hover:shadow-2xl hover:shadow-green-700"
+                onClick={() => (
+                  id_area(task.a_id_area),
+                  nombre_area(task.a_nombre_area),
+                  rolarea(task.a_rol === "Administrador Area" ? true : false)
+                )}
               >
-                <div className="bg-zinc-900 text-black shadow-2xl ">
-                  <div className="mx-auto">
-                    <div className="text-center">
-                      <Avatar
-                        src={
-                          process.env.NEXT_PUBLIC_ACCESLINK +
-                          "area/Areaimagen/" +
-                          task.a_id_area
-                        }
-                        alt={task.logoarea}
-                        size="xl"
-                        className="mt-3"
-                      />
-                    </div>
-                    <div className="w-full p-4">
-                      <input
-                        className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
-                        disabled
-                        value={task.a_nombre_area}
-                      />
-                    </div>
-                    <div className="w-auto flex ml-2 mb-2">
-                      {task.a_rol === "Administrador Area" ? (
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value={task.a_rol}
-                          color="green"
-                        />
-                      ) : (
-                        <Chip
-                          variant="ghost"
-                          size="sm"
-                          value=" ___"
-                          className="bg-blue-gray-50 text-blue-gray-50"
-                        />
-                      )}
-                    </div>
-                    <Chip
-                      variant="ghost"
-                      className="ml-4 w-max mb-1"
-                      size="sm"
-                      value={task.a_prefijo}
-                      color="blue-gray"
+                <div className="mx-auto">
+                  <div className="text-center">
+                    <Avatar
+                      src={
+                        process.env.NEXT_PUBLIC_ACCESLINK +
+                        "area/Areaimagen/" +
+                        task.a_id_area
+                      }
+                      alt={task.logoarea}
+                      size="xl"
+                      className="mt-3"
                     />
                   </div>
-                  <div
-                    className="p-2  bg-green-400"
-                    onClick={() => (
-                      id_area(task.a_id_area),
-                      nombre_area(task.a_nombre_area),
-                      rolarea(
-                        task.a_rol === "Administrador Area" ? true : false
-                      )
-                    )}
-                  >
-                    <button className="bg-zinc-50 p-2 hover:bg-blue-700 bg-yellow-900">
-                      <p className="text-lg font-semibold items-center text-white">
-                        Seleccionar
-                      </p>
-                    </button>
+                  <div className="w-full p-4">
+                    <input
+                      className="w-full text-lg bg-blue-gray-50 font-semibold	text-blue-gray-800 "
+                      disabled
+                      value={task.a_nombre_area}
+                    />
                   </div>
+                  <div className="w-auto flex ml-2 mb-2">
+                    {task.a_rol === "Administrador Area" ? (
+                      <Chip
+                        variant="ghost"
+                        size="sm"
+                        value={task.a_rol}
+                        color="green"
+                      />
+                    ) : (
+                      <Chip
+                        variant="ghost"
+                        size="sm"
+                        value=" ___"
+                        className="bg-blue-gray-50 text-blue-gray-50"
+                      />
+                    )}
+                  </div>
+                  <Chip
+                    variant="ghost"
+                    className="ml-4 w-max mb-6"
+                    size="sm"
+                    value={task.a_prefijo}
+                    color="blue-gray"
+                  />
                 </div>
               </div>
             ))}
