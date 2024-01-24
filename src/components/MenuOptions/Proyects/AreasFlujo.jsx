@@ -57,7 +57,7 @@ export default function AreasFlujo({
       )}
       <Dialog size="sm" open={true} className="rounded-none">
         <DialogHeader className="bg-gray-200">
-          Lista de Areas para el nivel: {title}
+          Lista de Areas:
           <Button
             color="red"
             variant="text"
@@ -70,6 +70,9 @@ export default function AreasFlujo({
             </Typography>
           </Button>
         </DialogHeader>
+        <Typography variant="h5" color="blue-gray" className="ml-4">
+          {title}
+        </Typography>
         <DialogBody className="overflow-scroll h-96">
           <table className="mx-auto mt-4 w-full table-auto text-left">
             <thead>

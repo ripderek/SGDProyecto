@@ -88,6 +88,8 @@ export default function Crear_Flujo({ handlerFlujo }) {
   const HandleSUbumit = async () => {
     try {
       console.log("aqui van los archivos");
+      console.log(lista_niveles);
+      console.log("Titulo" + titulo);
       const result = await axios.post(
         process.env.NEXT_PUBLIC_ACCESLINK +
           "flujo/Crear_Jerarquias_Niveles/" +
@@ -114,7 +116,7 @@ export default function Crear_Flujo({ handlerFlujo }) {
     <div>
       <Dialog size="xl" open={true} className="rounded-none">
         <DialogHeader className="bg-gray-200">
-          Crear Flujo de trabajo
+          Crear Flujo de trabajo xd
           <Button
             color="red"
             variant="text"

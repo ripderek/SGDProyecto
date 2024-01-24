@@ -5,6 +5,7 @@ import {
   Crear,
   Ediatr,
   DefinirFlujo,
+    VerFlujoCategoria
 } from "@/components/MenuOptions/Categorias";
 import {
   CardHeader,
@@ -102,6 +103,7 @@ export default function OpCategorias() {
     );
     const data = await result.json();
     setUsers(data);
+    console.log(data);
     setLoad(false);
   };
   const HandleChange = (e) => {
@@ -179,9 +181,19 @@ export default function OpCategorias() {
   const cerrarDefinir = () => {
     SetOpenFlujo(false);
   };
+  //const para ver el flujo de una categoria
+  const [openVerFlujo, SetOpenVerFlujo] = useState(false);
+  //Ver flujo
+  //editCat
+  const cerrarVerFlujo = ()=> {
+    SetOpenVerFlujo(false);
+  }
   return (
     <div>
-      {openFlujo && <DefinirFlujo cerrar={cerrarDefinir} />}
+      {openVerFlujo && <VerFlujoCategoria cerrar={cerrarVerFlujo} idHistorial={editCat}/>}
+      {openFlujo && (
+        <DefinirFlujo cerrar={cerrarDefinir} idcategoria={editCat} />
+      )}
       {loading && <Loader />}
       {/* NUEVO METODO PARA CREAR PARA SEPARARLO DEL COMPONENTE PRINCIPAL */}
       {openCrear && <Crear cerrar={cerrar} />}
@@ -336,18 +348,31 @@ export default function OpCategorias() {
                         </div>
                       </td>
                       <td className="p-4 border-b border-blue-gray-50">
-                        <div className="w-max cursor-pointer">
-                          <Button onClick={() => SetOpenFlujo(true)}>
-                            Definir Flujo
-                          </Button>
-                          {/* 
-                          <Chip
-                            variant="ghost"
-                            size="sm"
-                            value={user.t_est}
-                            color={user.t_estado ? "green" : "blue-gray"}
-                          />
-                          */}
+                        <div>
+                          {user.tiene_flujo ? (
+                            <Button
+                              onClick={() => (
+                                setEditCat(user.t_id_categoria),
+                                    SetOpenVerFlujo(true)
+                              )}
+                              color="yellow"
+                              className="rounded-none"
+                            >
+                              Ver Flujo
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={() => (
+                                setEditCat(user.t_id_categoria),
+                                SetOpenFlujo(true),
+                                console.log(user)
+                              )}
+                              color="green"
+                              className="rounded-none"
+                            >
+                              Definir Flujo
+                            </Button>
+                          )}
                         </div>
                       </td>
                       <td
