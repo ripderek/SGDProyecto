@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogBody,
   DialogFooter,
+  
 } from "@material-tailwind/react";
 import {
   HomeIcon,
@@ -24,6 +25,9 @@ import {
   XCircleIcon,
   UserPlusIcon,
   UserMinusIcon,
+  BellIcon,
+  ArchiveBoxIcon,
+  CurrencyDollarIcon,
 } from "@heroicons/react/24/solid";
 import OpHistorial0 from "./OpHistorial0";
 import OpHistorial3 from "./OpHistorial3";
@@ -90,7 +94,7 @@ export default function Historial({ id }) {
           </Button>
         </DialogFooter>
       </Dialog>
-      <div className="">
+      <div className="ml-5">
         <Timeline>
           {users.map((task) => (
             <TimelineItem>

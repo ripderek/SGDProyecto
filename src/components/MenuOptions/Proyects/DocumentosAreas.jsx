@@ -32,12 +32,16 @@ export default function DocumentosAreas({
   const [users, setUsers] = useState([]);
   const [openUser, setOpenUsers] = useState(false);
   const [loading, setLoading] = useState(false);
-  const handlerOpenUsers = () => setOpenUsers(!openUser);
+  const handlerOpenUsers = () => {
+    setOpenUsers(!openUser);
+    SetFileName("");
+  };
   //para enviar la foto de perfil
   const [file, setFile] = useState(null);
   const ImagePreview = (e) => {
     try {
       setFile(e.target.files[0]);
+      SetFileName(e.target.files[0].name);
     } catch (error) {
       console.log(error);
     }
@@ -109,7 +113,7 @@ export default function DocumentosAreas({
       fileInputRef.current.click(); // Activa el input de tipo "file"
     }
   };
-
+  const [fileName, SetFileName] = useState("");
   return (
     <div>
       {loading ? (
@@ -227,7 +231,10 @@ export default function DocumentosAreas({
                     />
                   </div>
                   <div className="mx-auto bg-yellow-800 p-2 rounded-xl">
-                    <label htmlFor="fileInput" className="text-black ">
+                    <label
+                      htmlFor="fileInput"
+                      className="text-white font-bold "
+                    >
                       Subir archivo:
                     </label>
                     <input
@@ -245,6 +252,8 @@ export default function DocumentosAreas({
                       <AiOutlineUpload size="25px" color="black" />
                     </Button>
                   </div>
+
+                  {fileName && <Typography color="gray">{fileName}</Typography>}
                 </CardHeader>
                 <CardBody className="text-right">
                   <div>
@@ -270,7 +279,7 @@ export default function DocumentosAreas({
             onClick={handlerOpenUsers}
           >
             <ArrowUpCircleIcon className="h-7 w-7" />
-            <p className="mt-1"> Subir Documento</p>
+            <p className="mt-1 text-white font-bold"> Subir Documento</p>
           </Button>
         ) : (
           ""
