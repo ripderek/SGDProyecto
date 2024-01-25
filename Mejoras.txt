@@ -1,1 +1,0 @@
-para mostrar los nombres de los archivos {file && file.name}

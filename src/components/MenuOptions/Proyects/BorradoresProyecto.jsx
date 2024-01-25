@@ -1,14 +1,24 @@
 import { React, useState, useEffect } from "react";
-import { EyeIcon } from "@heroicons/react/24/solid";
+import {
+  EyeIcon,
+  BellIcon,
+  ArchiveBoxIcon,
+  CurrencyDollarIcon,
+} from "@heroicons/react/24/solid";
 import {
   Dialog,
-  Typography,
   IconButton,
   Tooltip,
   DialogHeader,
   Button,
   Chip,
   Avatar,
+  Timeline,
+  TimelineItem,
+  TimelineConnector,
+  TimelineIcon,
+  Typography,
+  TimelineHeader,
 } from "@material-tailwind/react";
 const TABLE_HEAD = ["", "", "Archivo", "Fecha"];
 import VerBorradorPDF from "./VerBorradorPDF";
@@ -107,7 +117,55 @@ export default function BorradoresProyecto({ id, TituloProyecto, idarea }) {
           <VerBorradorPDF link={link} />
         </Dialog>
       </div>
-      <table className="mt-4 w-full min-w-max table-auto text-left m-5">
+      {users.length === 0 ? (
+        <div className="items-center text-center text-2xl">
+          No hay documentos
+        </div>
+      ) : (
+        ""
+      )}
+      <div className="w-[25rem] ml-5 mt-4">
+        <Timeline>
+          {users.map(({ d_id, d_descripcion, d_fecha }, index) => {
+            return (
+              <Tooltip content="Ver documento">
+                <TimelineItem
+                  key={d_id}
+                  className="h-28  cursor-pointe"
+                  onClick={() => {
+                    setLink(
+                      process.env.NEXT_PUBLIC_ACCESLINK + "proyects/pdf/" + d_id
+                    );
+                    setOpenD(true);
+                  }}
+                >
+                  <TimelineConnector className="!w-[78px]" />
+                  <TimelineHeader className="hover:border-4 hover:border-green-800  cursor-pointer relative rounded-xl border border-blue-gray-50 bg-white py-3 pl-4 pr-8 shadow-xl shadow-blue-gray-900/5">
+                    <TimelineIcon className="p-3" variant="ghost">
+                      <BellIcon className="h-5 w-5" />
+                    </TimelineIcon>
+                    <div className="flex flex-col gap-1">
+                      <Typography variant="h6" color="blue-gray">
+                        {d_descripcion}
+                      </Typography>
+
+                      <Typography
+                        variant="small"
+                        color="gray"
+                        className="font-normal"
+                      >
+                        {d_fecha}
+                      </Typography>
+                    </div>
+                  </TimelineHeader>
+                </TimelineItem>
+              </Tooltip>
+            );
+          })}
+        </Timeline>
+      </div>
+
+      {/*  <table className="mt-4 w-full min-w-max table-auto text-left m-5">
         <thead>
           <tr>
             {TABLE_HEAD.map((head) => (
@@ -195,7 +253,7 @@ export default function BorradoresProyecto({ id, TituloProyecto, idarea }) {
             );
           })}
         </tbody>
-      </table>
+      </table>*/}
     </div>
   );
 }

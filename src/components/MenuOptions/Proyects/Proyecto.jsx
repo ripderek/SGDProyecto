@@ -372,6 +372,18 @@ export default function Proyecto({
     setOpenDocumentos(false);
     setFondo(false);
   };
+  //funcion para ver el clg para depurar
+  const VerCLG = () => {
+    console.log("Idpro:" + idproyecto);
+    console.log("dataUser");
+    console.log(dataUser);
+    console.log("areasdata");
+    console.log(areasdata);
+    console.log("RolUser");
+    console.log(RolUser);
+    console.log("users2");
+    console.log(users2);
+  };
   return (
     <div className="bg-white h-full mb-10">
       {loading ? (
@@ -407,6 +419,9 @@ export default function Proyecto({
       <DialogHeader className="justify-between">
         <div className="w-full text-2xl text-black font-bold overflow-hidden">
           {areasdata.p_titulo}
+        </div>
+        <div className="w-full text-2xl text-black font-bold overflow-hidden">
+          <button onClick={() => VerCLG()}>Ver CLG</button>
         </div>
       </DialogHeader>
       <div className="ml-6">
@@ -460,14 +475,15 @@ export default function Proyecto({
                 <Tab key={"Guias"} value={"Guias"} onClick={HandleGuias}>
                   Guias
                 </Tab>
-                {areasdata.p_flujo ? (
+                {/* {areasdata.p_flujo ? (
                   <Tab key={"Flujo"} value={"Flujo"} onClick={HandleFlujo}>
                     Flujo
                   </Tab>
                 ) : (
                   ""
-                )}
-                {areasdata.p_rol === "Admin" && !areasdata.p_flujo ? (
+                )}*/}
+
+                {RolUser.rol_user === "Admin" && !areasdata.p_flujo ? (
                   <Tab
                     key={"Definir Flujo"}
                     value={"Definir Flujo"}
@@ -478,7 +494,8 @@ export default function Proyecto({
                 ) : (
                   ""
                 )}
-                {areasdata.p_rol === "Admin" && users2.length === 1 ? (
+                {/* 
+                {areasdata.p_rol === "Admin" && users2.length >= 1 ? (
                   <Tab
                     key={"Subir Nivel"}
                     value={"Subir Nivel"}
@@ -489,13 +506,14 @@ export default function Proyecto({
                 ) : (
                   ""
                 )}
+                */}
                 {areasdata.p_flujo ? (
                   <Tab
                     key={"Revisiones"}
                     value={"Revisiones"}
                     onClick={HandlerRevisiones}
                   >
-                    Revisiones
+                    Flujo
                   </Tab>
                 ) : (
                   ""
@@ -522,7 +540,7 @@ export default function Proyecto({
                 >
                   Historial de borradores
                 </Tab>
-                {areasdata.p_rol === "Admin" && proyectoEdit ? (
+                {RolUser.rol_user === "Admin" && proyectoEdit ? (
                   <Tab
                     key={"Configuracion"}
                     value={"Configuracion"}
@@ -547,11 +565,7 @@ export default function Proyecto({
                   <DocumentosAreas
                     id={idproyecto}
                     rol={areasdata.p_rol}
-                    editproyecto={
-                      users2.length >= 2 || RolUser.rol_user === "Revisor"
-                        ? false
-                        : true
-                    }
+                    editproyecto={RolUser.rol_user === "Revisor" ? false : true}
                     TituloProyecto={areasdata.p_titulo}
                     idarea={idarea}
                   />
@@ -584,7 +598,16 @@ export default function Proyecto({
                   ""
                 )}
                 {openSubir ? <SubirNivel id_proyect={idproyecto} /> : ""}
-                {openRevisiones ? <NivelesProyecto id={idproyecto} /> : ""}
+                {openRevisiones ? (
+                  <NivelesProyecto
+                    id={idproyecto}
+                    SubirLevel={
+                      areasdata.p_rol === "Admin" && users2.length >= 1
+                    }
+                  />
+                ) : (
+                  ""
+                )}
                 {openParticipantes ? (
                   <Participantes
                     idproyecto={idproyecto}
